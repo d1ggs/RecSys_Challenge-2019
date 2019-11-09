@@ -1,86 +1,100 @@
-from abc import ABC, abstractmethod
-from scipy.sparse import csr_matrix
+# from abc import ABC, abstractmethod
 import numpy as np
-from data_utilities import prepare_data, write_submission, get_targets
+from data_utilities import build_URM, write_submission, get_targets, build_ICM
+from Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 
-class RecSys(ABC):
-    def __init__(self, *args, **kwargs):
-        self.URM_csr = None
-        super().__init__(*args, **kwargs)
 
-    @abstractmethod
-    def fit(self, URM_tuples):
-        pass
 
-    @abstractmethod
-    def predict(self, user_id):
-        pass
+# class RecSys(ABC):
+#     def __init__(self, *args, **kwargs):
+#         self.URM_csr = None
+#         super().__init__(*args, **kwargs)
 
-class TopOfThePops(RecSys):
+#     @abstractmethod
+#     def fit(self):
+#         pass
 
-    def __init__(self, *args, **kwargs):
-        self.popularItems = None
-        super().__init__(*args, **kwargs)
+#     @abstractmethod
+#     def predict(self):
+#         pass
 
-    def fit(self, URM_tuples):
-        ones = np.array([1]*len(URM_data)) # Assign 1 where there has been an interaction
+
+class ContentFilter(object):
+    def __init__(self, URM_tuples, ICM):
+        
+        self.URM_csr = URM_tuples
+
+        # self.URM = URM
+        self.ICM = ICM
+
+        self.W_sparse = []
+      
+    def fit(self, topK=50, shrink=100, normalize = True, similarity = "cosine"):
+        #TODO Verify that there is more than one feature!
+
+        for ICM in self.ICM:
+            similarity_object = Compute_Similarity_Python(ICM.T, shrink=shrink, 
+                                                  topK=topK, normalize=normalize, 
+                                                  similarity = similarity)
+        
+        self.W_sparse.append(similarity_object.compute_similarity())
+
+    def compute_scores(self, user_id):
+        weights = [0.45, 0.55]
+        user_profile = self.URM_csr[user_id]
+        scores = np.zeros_like(user_profile)
+        for W, weight in zip(self.W_sparse, weights):
+            scores = scores + weight * user_profile.dot(W).toarray().ravel()
+
+        return scores
+
+        #scores = user_profile.dot(self.W_sparse).toarray().ravel()
+        
+
+        
+    def recommend(self, user_id, at=10, exclude_seen=True):
+        # compute the scores using the dot product
+        
+        scores = self.compute_scores(user_id)
+
+        if exclude_seen:
+            scores = self.filter_seen(user_id, scores)
+
+        # rank items
+        ranking = scores.argsort()[::-1]
+            
+        return ranking[:at]
     
-        # Build COO representation
-        rows, cols = [], []
+    
+    def filter_seen(self, user_id, scores):
 
-        for URM_tuple in URM_tuples:
-            rows.append(int(URM_tuple[0]))
-            cols.append(int(URM_tuple[1]))
+        start_pos = self.URM_csr.indptr[user_id]
+        end_pos = self.URM_csr.indptr[user_id+1]
 
-        #print(len(rows))
-        #print(cols)
-
-        # Obtain CSR representation
+        user_profile = self.URM_csr.indices[start_pos:end_pos]
         
-        self.URM_csr = csr_matrix( (ones, (np.array(rows), np.array(cols)) ) )
+        scores[user_profile] = -np.inf
 
-        # Compute most popular items
+        return scores
 
-        item_popularity = (self.URM_csr > 0).sum(axis=0)
-        item_popularity = np.array(item_popularity).squeeze()
-
-        # Obtain most popular indices
-        self.popularItems = np.argsort(item_popularity)
-
-        # Flip (order to higher to lower)
-        self.popularItems = np.flip(self.popularItems, axis=0)
-
-
-    def predict(self, user_id):
-        unseen_items_mask = np.in1d(self.popularItems, self.URM_csr[user_id].indices,
-                                        assume_unique=True, invert = True)
-
-        unseen_items = self.popularItems[unseen_items_mask]
-        
-        return list(unseen_items[0:10])
-        #print(recommended_items.shape)
-
-
-class GlobalEffects(RecSys):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def fit(self, URM_tuples):
-        pass
-
-    def predict(self, user_id):
-        pass
-
+    
 if __name__ == "__main__":
 
-    target_playlists = get_targets("data/target_playlists")
-    URM_data = prepare_data("data/train.csv")
-    
-    topPop = TopOfThePops()
+    target_playlists = get_targets("data/target_playlists.csv")
+    URM_data = build_URM("data/train.csv")
+    ICM_album = build_ICM("data/tracks.csv", "album_id")
+    ICM_artist = build_ICM("data/tracks.csv", "artist_id")
+    #topPop = TopOfThePops(URM_data)
 
-    topPop.fit(URM_data)
+    #topPop.fit()
 
-    write_submission(topPop, target_playlists[1:])
+    ICM_data = [ICM_artist, ICM_album]
+
+    CF = ContentFilter(URM_data, ICM_data)
+
+    CF.fit()
+
+    write_submission(CF, target_playlists)
 
     #print(URM_csr.toarray())
 
