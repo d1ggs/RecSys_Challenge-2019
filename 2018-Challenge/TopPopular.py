@@ -1,3 +1,6 @@
+import numpy as np
+# from RecommenderSystem import RecommenderSystem
+
 class TopOfThePops(object):
 
     def __init__(self, URM):
