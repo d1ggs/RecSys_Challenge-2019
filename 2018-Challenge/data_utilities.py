@@ -3,6 +3,7 @@ from tqdm import tqdm
 from scipy.sparse import csr_matrix
 import numpy as np
 
+
 def build_URM(filename):
     URM_tuples = []
 
@@ -61,6 +62,7 @@ def build_ICM(filename, tag_name):
 
 
 def write_submission(recommender, target_users):
+    print("Writing submission file...")
     with open("submission.csv", "w+") as submission:
         submission.write("playlist_id,track_ids\n")
 
