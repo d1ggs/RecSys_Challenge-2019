@@ -160,7 +160,7 @@ class BaseRecommender(object):
 
 
 
-    def recommend(self, user_id_array, cutoff = None, remove_seen_flag=True, items_to_compute = None,
+    def recommend(self, user_id_array, at = 10, cutoff = None, remove_seen_flag=True, items_to_compute = None,
                   remove_top_pop_flag = False, remove_CustomItems_flag = False, return_scores = False):
 
         # If is a scalar transform it in a 1-cell array
@@ -245,14 +245,14 @@ class BaseRecommender(object):
 
         # Return single list for one user, instead of list of lists
         if single_user:
-            ranking_list = ranking_list[0]
+            ranking_list = ranking_list[0][:at]
 
 
         if return_scores:
-            return ranking_list, scores_batch
+            return ranking_list[:at], scores_batch
 
         else:
-            return ranking_list
+            return ranking_list[:at]
 
 
 

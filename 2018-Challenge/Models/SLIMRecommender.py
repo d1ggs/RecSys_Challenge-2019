@@ -6,10 +6,9 @@ from Base.Recommender_utils import check_matrix
 
 
 class SLIMRecommender():
-    def __init__(self, URM, learning_rate=1e-3, epochs=10):
+    def __init__(self, URM, learning_rate=1e-3):
 
         self.learning_rate = learning_rate
-        self.epochs = epochs
 
         self.URM = URM
 
@@ -118,7 +117,7 @@ class SLIMRecommender():
             #
             #     start_time_batch = time.time()
 
-    def similarityMatrixTopK(self, item_weights, force_sparse_output=True, k=100, verbose=True, inplace=True):
+    def similarityMatrixTopK(self, item_weights, force_sparse_output=True, k=100, verbose=False, inplace=True):
         """
         The function selects the TopK most similar elements, column-wise
 
@@ -145,7 +144,9 @@ class SLIMRecommender():
 
         if not sparse_weights:
 
+            print("Sorting columns...")
             idx_sorted = np.argsort(item_weights, axis=0)  # sort data inside each column
+            print("Done!")
 
             if inplace:
                 W = item_weights
@@ -158,6 +159,9 @@ class SLIMRecommender():
             W[not_top_k, np.arange(nitems)] = 0.0
 
             if force_sparse_output:
+                if verbose:
+                    print("Starting CSR compression...")
+
                 W_sparse = sps.csr_matrix(W, shape=(nitems, nitems))
 
                 if verbose:
@@ -196,7 +200,15 @@ class SLIMRecommender():
             cols_indptr.append(len(data))
 
             # During testing CSR is faster
+
+            if verbose:
+                print("Generating CSC matrix...")
+
             W_sparse = sps.csc_matrix((data, rows_indices, cols_indptr), shape=(nitems, nitems), dtype=np.float32)
+
+            if verbose:
+                print("Converting to CSR...")
+
             W_sparse = W_sparse.tocsr()
 
             if verbose:
@@ -207,9 +219,8 @@ class SLIMRecommender():
     def fit(self, learning_rate=0.01, epochs=10):
 
         self.learning_rate = learning_rate
-        self.epochs = epochs
 
-        for numEpoch in trange(self.epochs):
+        for numEpoch in trange(epochs):
             # print("Starting epoch " + str(numEpoch))
             self.epochIteration()
 
