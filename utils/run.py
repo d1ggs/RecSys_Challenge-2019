@@ -12,7 +12,7 @@ class RunRecommender:
     @staticmethod
     def run(recommender):
         # Open up target_playlists file
-        target__file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_playlists.csv"), "r")
+        target_users_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users.csv"), "r")
 
         # Helper contains methods to convert URM in CSR
         helper = Helper()
@@ -22,14 +22,14 @@ class RunRecommender:
         recommender.fit(URM_CSR)
 
         # Instantiate a new submission file
-        target_playlists = list(target_playlists_file)[1:] # Eliminate header
+        target_playlists = list(target_users_file)[1:] # Eliminate header
         recommendation_matrix_file_to_submit = open(os.path.join(ROOT_PROJECT_PATH, "data/recommendation_matrix_to_submit.csv"), "w")
-        recommendation_matrix_file_to_submit.write("playlist_id,track_ids\n")
+        recommendation_matrix_file_to_submit.write("user_id,item_id\n")
         for playlist in tqdm(target_playlists):
-            songs_recommended = recommender.recommend(int(playlist))
-            songs_recommended = " ".join(str(x) for x in songs_recommended)
-            playlist = playlist.replace("\n", "") # remove \n from playlist file
-            recommendation_matrix_file_to_submit.write(playlist + "," + songs_recommended + "\n")
+            items_recommended = recommender.recommend(int(playlist))
+            items_recommended = " ".join(str(x) for x in items_recommended)
+            user_id = user_id.replace("\n", "") # remove \n from playlist file
+            recommendation_matrix_file_to_submit.write(user_id + "," + items_recommended + "\n")
         recommendation_matrix_file_to_submit.close()
 
 
@@ -42,14 +42,14 @@ class RunRecommender:
         # Fit URM with training fit data
         recommender.fit(URM_train)
         # Open up target_playlists file
-        target_playlists_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_playlists.csv"), "r")
-        target_playlists = list(target_playlists_file)[1:]  # Eliminate header
+        target_users_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users.csv"), "r")
+        target_users = list(target_users_file)[1:]  # Eliminate header
 
         count = 0
-        for target in tqdm(target_playlists):
+        for target in tqdm(target_users):
             recommended_items = recommender.recommend(target)
             MAP_final += evaluator.evaluate(target, recommended_items)
             count += 1
-        MAP_final /= len(target_playlists)
+        MAP_final /= len(target_users)
         return MAP_final
 

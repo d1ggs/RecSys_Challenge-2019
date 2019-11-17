@@ -14,13 +14,13 @@ class Helper:
         # Loading of data using pandas, that creates a new object URM_data with the first line values as attributes
         # (playlist_id, track_id) as formatted in the .csv file
         self.URM_data = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/dataset.csv"))
-        self.playlists_list_data = np.asarray(list(self.URM_data.row))
-        self.tracks_list_data = np.asarray(list(self.URM_data.col))
+        self.users_list_data = np.asarray(list(self.URM_data.row))
+        self.items_list_data = np.asarray(list(self.URM_data.col))
 
 
     def convert_URM_to_csr(self, URM):
-        ratings_list = np.ones(len(np.asarray(list(URM.row))))
-        URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.row)), np.asarray(list(URM.track_id)))))
+        ratings_list = np.ones(len(np.asarray(list(URM.data))))
+        URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.row)), np.asarray(list(URM.col)))))
         URM = URM.tocsr()
         return URM
 
