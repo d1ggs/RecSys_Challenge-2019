@@ -14,13 +14,13 @@ class Helper:
         # Loading of data using pandas, that creates a new object URM_data with the first line values as attributes
         # (playlist_id, track_id) as formatted in the .csv file
         self.URM_data = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/dataset.csv"))
-        self.playlists_list_data = np.asarray(list(self.URM_data.playlist_id))
-        self.tracks_list_data = np.asarray(list(self.URM_data.track_id))
+        self.playlists_list_data = np.asarray(list(self.URM_data.row))
+        self.tracks_list_data = np.asarray(list(self.URM_data.col))
 
 
     def convert_URM_to_csr(self, URM):
-        ratings_list = np.ones(len(np.asarray(list(URM.playlist_id))))
-        URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.playlist_id)), np.asarray(list(URM.track_id)))))
+        ratings_list = np.ones(len(np.asarray(list(URM.row))))
+        URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.row)), np.asarray(list(URM.track_id)))))
         URM = URM.tocsr()
         return URM
 
@@ -29,7 +29,7 @@ class Helper:
         URM_train = self.convert_URM_to_csr(URM_train)
         return URM_train
 
-
+    '''
     def load_tracks_matrix(self):
         tracks_matrix = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/tracks.csv"))
         return tracks_matrix
@@ -51,7 +51,7 @@ class Helper:
         icm_artist = sps.coo_matrix((ratings_list, (track_ids, artist_ids)))
         icm_artist = icm_artist.tocsr()
         return icm_artist
-
+    '''
     def bm25_normalization(self, matrix):
         matrix_BM25 = matrix.copy().astype(np.float32)
         matrix_BM25 = okapi_BM_25(matrix_BM25)

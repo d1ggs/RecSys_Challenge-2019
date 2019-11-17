@@ -12,7 +12,7 @@ class RunRecommender:
     @staticmethod
     def run(recommender):
         # Open up target_playlists file
-        target_playlists_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_playlists.csv"), "r")
+        target__file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_playlists.csv"), "r")
 
         # Helper contains methods to convert URM in CSR
         helper = Helper()
