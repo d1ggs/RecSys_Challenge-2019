@@ -35,7 +35,7 @@ class RunRecommender:
 
 
     @staticmethod
-    def run_test_recommender(recommender):
+    def run_test_recommender(recommender, refit=True):
         evaluator = Evaluator()
         helper = Helper()
         MAP_final = 0.0
