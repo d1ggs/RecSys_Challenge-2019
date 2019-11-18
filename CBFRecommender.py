@@ -79,7 +79,7 @@ class CBFRecomender:
 if __name__ == "__main__":
     cbf_recommender = CBFRecomender()
     evaluator = Evaluator()
-    #evaluator.split_data_randomly()
+    evaluator.split_data_randomly()
 
     map_10 = RunRecommender.run_test_recommender(cbf_recommender)
     print(map_10)

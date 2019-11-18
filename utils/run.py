@@ -38,17 +38,20 @@ class RunRecommender:
     def run_test_recommender(recommender):
         evaluator = Evaluator()
         helper = Helper()
-        MAP_final = 0
+        MAP_final = 0.0
         URM_train = helper.convert_URM_to_csr(helper.URM_data)
         # Fit URM with training fit data
         recommender.fit(URM_train)
+        URM_test = helper.load_URM_test_csr()
         # Load target users
         target_users_test = helper.load_target_users_test()
         relevant_items = helper.load_relevant_items()
         for user in tqdm(target_users_test):
-            recommended_items = recommender.recommend(int(user))
+            recommended_items = recommender.recommend(int(user), URM_test)
             relevant_item = relevant_items[int(user)]
-            MAP_final += evaluator.MAP(recommended_items, relevant_item)
+            relevant_item = helper.convert_list_of_string_into_int(relevant_item)
+
+            MAP_final += evaluator.MAP(np.asarray(recommended_items), np.asarray(relevant_item))
 
 
         MAP_final /= len(target_users_test)

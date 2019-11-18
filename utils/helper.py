@@ -35,6 +35,31 @@ class Helper:
         URM_test = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"))
         return URM_test
 
+    def load_URM_test_csr(self):
+        URM_test = self.load_URM_test()
+        ratings_list = np.ones(len(np.asarray(list(URM_test.user_id)))*10)
+        a = list(URM_test.user_id)
+        a = [[element]*10 for element in a]
+
+        b = list(URM_test.item_list)
+        c = [el.split() for el in b]
+        d = []
+        for row in c:
+            for el in row:
+                d.append(int(el))
+        d = np.asarray(d)
+        a = np.asarray(a)
+        a = a.flatten()
+        URM_test = sps.coo_matrix((ratings_list, (a, d)))
+        URM_test = URM_test.tocsr()
+        return URM_test
+
+    def convert_list_of_string_into_int(self, string_list):
+        c = string_list[0].split()
+
+        return [int(el) for el in c]
+
+
     def load_target_users_test(self):
         target_users_test_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "r")
         return list(target_users_test_file)[1:]
