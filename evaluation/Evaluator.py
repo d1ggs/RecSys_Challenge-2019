@@ -22,7 +22,6 @@ class Evaluator:
         self.URM_train = self.helper.URM_data  # Matrix containing reduced training data, at the beginning it is equal to the test data (then it will be removed)
         self.target_users_test = None  # New list of playlists for which MAP will be computed
         self.split_size = split_size  # Percentage of training set that will be kept for training purposes (1-split_size is the size of the test set)
-        self.dictionary_evaluation = None
 
     def split_data_randomly(self):
         # Instantiate an array containing the playlists to be put in new target_playlist_file
@@ -55,7 +54,7 @@ class Evaluator:
                     # Keep just 10 tracks for each playlist
                     user_items_list = item_list_10[:NUMBER_OF_ITEMS_TEST_FILE]
                     # Create a tuple to be appended in URM_test matrix and append it
-                    URM_test_tuple = pd.DataFrame({"row": [int(self.target_users_test[count])], "col": [str(user_items_list)]})
+                    URM_test_tuple = pd.DataFrame({"user_id": [int(self.target_users_test[count])], "item_list": [str(user_items_list)]})
                     self.URM_test = self.URM_test.append(URM_test_tuple, ignore_index=True)
 
                     # Filter URM_train to eliminate test tuples
@@ -69,8 +68,8 @@ class Evaluator:
 
 
         # Format data of test_data.csv correctly and save it
-        self.URM_test["col"] = self.URM_test["col"].str.strip(' []')
-        self.URM_test["col"] = self.URM_test["col"].replace('\s+', ' ', regex=True)
+        self.URM_test["item_list"] = self.URM_test["item_list"].str.strip(' []')
+        self.URM_test["item_list"] = self.URM_test["item_list"].replace('\s+', ' ', regex=True)
         self.URM_test.to_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"), index=False)
 
         print("URM_test created, now creating URM_train")
@@ -78,20 +77,15 @@ class Evaluator:
 
 
     # Functions to evaluate a recommender
-    def MAP(recommended_items, relevant_items):
+    def MAP(self, recommended_items, relevant_items):
 
         is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
 
         # Cumulative sum: precision at 1, at 2, at 3 ...
-        p_at_k = is_relevant * np.cumsum(is_relevant, dtype=np.float32) / (1 + np.arange(is_relevant.shape[0]))
-
-        map_score = np.sum(p_at_k) / np.min([relevant_items.shape[0], is_relevant.shape[0]])
-
+        p_at_k = is_relevant * np.cumsum(is_relevant, dtype=np.float32) / (1 + np.arange(len(is_relevant)))
+        map_score = np.sum(p_at_k) / np.min([len(relevant_items), len(is_relevant)])
         return map_score
 
-    def evaluate(self, row, recommended_items):
-        relevant_items = self.dictionary_evaluation[row]
-        map = self.MAP(recommended_items, relevant_items)
-        return map
+
 
 

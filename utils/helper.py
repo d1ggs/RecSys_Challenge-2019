@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pandas as pd
 import numpy as np
 import scipy.sparse as sps
@@ -28,6 +30,53 @@ class Helper:
         URM_train = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/train_data.csv"))
         URM_train = self.convert_URM_to_csr(URM_train)
         return URM_train
+
+    def load_URM_test(self):
+        URM_test = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"))
+        return URM_test
+
+    def load_target_users_test(self):
+        target_users_test_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "r")
+        return list(target_users_test_file)[1:]
+
+    def load_relevant_items(self):
+        relevant_items = defaultdict(list)
+        URM_test = self.load_URM_test()
+        users_list_test = np.asarray(list(URM_test.user_id))
+        items_list_test = np.asarray(list(URM_test.item_list))
+        count = 0
+        for user_id in users_list_test:
+            relevant_items[user_id].append(items_list_test[count])
+            count += 1
+        return relevant_items
+
+    def load_icm_asset(self):
+        icm_asset = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_asset.csv"))
+        row = np.asarray(list(icm_asset.row))
+        col = np.asarray(list(icm_asset.col))
+        data = np.asarray(list(icm_asset.data))
+        icm_asset = sps.coo_matrix((data, (row, col)))
+        icm_asset = icm_asset.tocsr()
+        return icm_asset
+
+    def load_icm_price(self):
+        icm_price = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_price.csv"))
+        row = np.asarray(list(icm_price.row))
+        col = np.asarray(list(icm_price.col))
+        data = np.asarray(list(icm_price.data))
+        icm_price = sps.coo_matrix((data, (row, col)))
+        icm_price = icm_price.tocsr()
+        return icm_price
+
+    def load_icm_sub_class(self):
+        icm_sub_class = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_sub_class.csv"))
+        row = np.asarray(list(icm_sub_class.row))
+        col = np.asarray(list(icm_sub_class.col))
+        data = np.asarray(list(icm_sub_class.data))
+        icm_sub_class = sps.coo_matrix((data, (row, col)))
+        icm_sub_class = icm_sub_class.tocsr()
+        return icm_sub_class
+
 
     '''
     def load_tracks_matrix(self):
