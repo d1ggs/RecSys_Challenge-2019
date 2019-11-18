@@ -131,7 +131,7 @@ class Helper:
         matrix_BM25 = okapi_BM_25(matrix_BM25)
         matrix_BM25 = matrix_BM25.tocsr()
         return matrix_BM25
-
+#e
     def tfidf_normalization(self, matrix):
         matrix_tfidf = feature_extraction.text.TfidfTransformer().fit_transform(matrix)
         return matrix_tfidf.tocsr()

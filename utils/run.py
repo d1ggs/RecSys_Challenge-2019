@@ -48,6 +48,7 @@ class RunRecommender:
         relevant_items = helper.load_relevant_items()
         for user in tqdm(target_users_test):
             recommended_items = recommender.recommend(int(user), URM_test)
+            #p
             relevant_item = relevant_items[int(user)]
             relevant_item = helper.convert_list_of_string_into_int(relevant_item)
 

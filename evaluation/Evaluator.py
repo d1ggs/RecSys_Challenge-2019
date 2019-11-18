@@ -87,6 +87,6 @@ class Evaluator:
         map_score = np.sum(p_at_k) / np.min([relevant_items.shape[0], is_relevant.shape[0]])
 
         return map_score
-
+#push
 
 
