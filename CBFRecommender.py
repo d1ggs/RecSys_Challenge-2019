@@ -115,7 +115,7 @@ class CBFRecomender:
 if __name__ == "__main__":
     cbf_recommender = CBFRecomender()
     evaluator = Evaluator()
-    # evaluator.split_data_randomly()
+    evaluator.split_data_randomly()
 
     parameters = [{"knn_asset": 100, "knn_price": 100, "knn_sub_class": 100, "shrink_asset": 2, "shrink_price": 2,
                    "shrink_sub_class": 2, "weight_asset": 0.4, "weight_price": 0.5, "weight_sub_class": 0.1},
@@ -126,8 +126,8 @@ if __name__ == "__main__":
                   {"knn_asset": 100, "knn_price": 100, "knn_sub_class": 100, "shrink_asset": 2, "shrink_price": 2,
                    "shrink_sub_class": 2, "weight_asset": 0.4, "weight_price": 0.2, "weight_sub_class": 0.4}]
 
-    cbf_recommender.find_best_fit(parameters)
+    #cbf_recommender.find_best_fit(parameters)
 
-    # map_10 = RunRecommender.run_test_recommender(cbf_recommender)
-    # print(map_10)
-    # RunRecommender.run(cbf_recommender)
+    map_10 = RunRecommender.run_test_recommender(cbf_recommender)
+    print(map_10)
+    RunRecommender.run(cbf_recommender)

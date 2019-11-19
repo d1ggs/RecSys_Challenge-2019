@@ -35,23 +35,32 @@ class Helper:
         URM_test = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"))
         return URM_test
 
+    def load_test_targets(self):
+        return pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/evaluate_data.csv"))
+
     def load_URM_test_csr(self):
         URM_test = self.load_URM_test()
-        ratings_list = np.ones(len(np.asarray(list(URM_test.user_id)))*10)
-        a = list(URM_test.user_id)
-        a = [[element]*10 for element in a]
+        user_list = list(URM_test.user_id)
 
-        b = list(URM_test.item_list)
-        c = [el.split() for el in b]
-        d = []
-        for row in c:
-            for el in row:
-                d.append(int(el))
-        d = np.asarray(d)
-        a = np.asarray(a)
-        a = a.flatten()
-        URM_test = sps.coo_matrix((ratings_list, (a, d)))
-        URM_test = URM_test.tocsr()
+        ratings_list = list(URM_test.item_list)
+
+        ratings_list = [el.split() for el in ratings_list]
+        cols = []
+        rows = []
+        for i in range(len(ratings_list)):
+            for _ in range(len(ratings_list[i])):
+                rows.append(user_list[i])
+            for el in ratings_list[i]:
+                cols.append(int(el))
+
+        cols = np.asarray(cols)
+        rows = np.asarray(rows)
+        rows = rows.flatten()
+
+        print(rows.shape)
+        print(cols.shape)
+        ratings_list = np.ones(rows.shape[0])
+        URM_test = sps.csr_matrix((ratings_list, (rows, cols)))
         return URM_test
 
     def convert_list_of_string_into_int(self, string_list):
@@ -69,6 +78,17 @@ class Helper:
         URM_test = self.load_URM_test()
         users_list_test = np.asarray(list(URM_test.user_id))
         items_list_test = np.asarray(list(URM_test.item_list))
+        count = 0
+        for user_id in users_list_test:
+            relevant_items[user_id].append(items_list_test[count])
+            count += 1
+        return relevant_items
+
+    def load_relevant_items2(self):
+        relevant_items = defaultdict(list)
+        target_matrix = self.load_test_targets()
+        users_list_test = np.asarray(list(target_matrix.user_id))
+        items_list_test = np.asarray(list(target_matrix.item_list))
         count = 0
         for user_id in users_list_test:
             relevant_items[user_id].append(items_list_test[count])
