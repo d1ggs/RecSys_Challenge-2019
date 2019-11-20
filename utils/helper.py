@@ -35,9 +35,6 @@ class Helper:
         URM_test = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"))
         return URM_test
 
-    def load_test_targets(self):
-        return pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/evaluate_data.csv"))
-
     def load_URM_test_csr(self):
         URM_test = self.load_URM_test()
         user_list = list(URM_test.user_id)
@@ -84,17 +81,6 @@ class Helper:
             count += 1
         return relevant_items
 
-    def load_relevant_items2(self):
-        relevant_items = defaultdict(list)
-        target_matrix = self.load_test_targets()
-        users_list_test = np.asarray(list(target_matrix.user_id))
-        items_list_test = np.asarray(list(target_matrix.item_list))
-        count = 0
-        for user_id in users_list_test:
-            relevant_items[user_id].append(items_list_test[count])
-            count += 1
-        return relevant_items
-
     def load_icm_asset(self):
         icm_asset = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_asset.csv"))
         row = np.asarray(list(icm_asset.row))
@@ -122,30 +108,6 @@ class Helper:
         icm_sub_class = icm_sub_class.tocsr()
         return icm_sub_class
 
-
-    '''
-    def load_tracks_matrix(self):
-        tracks_matrix = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/tracks.csv"))
-        return tracks_matrix
-
-    def load_icm_album(self):
-        tracks_matrix = self.load_tracks_matrix()
-        track_ids = np.asarray(list(tracks_matrix.track_id))
-        album_ids = np.asarray(list(tracks_matrix.album_id))
-        ratings_list = np.ones(len(album_ids))
-        icm_album = sps.coo_matrix((ratings_list, (track_ids, album_ids)))
-        icm_album = icm_album.tocsr()
-        return icm_album
-
-    def load_icm_artist(self):
-        tracks_matrix = self.load_tracks_matrix()
-        track_ids = np.asarray(list(tracks_matrix.track_id))
-        artist_ids = np.asarray(list(tracks_matrix.artist_id))
-        ratings_list = np.ones(len(artist_ids))
-        icm_artist = sps.coo_matrix((ratings_list, (track_ids, artist_ids)))
-        icm_artist = icm_artist.tocsr()
-        return icm_artist
-    '''
     def bm25_normalization(self, matrix):
         matrix_BM25 = matrix.copy().astype(np.float32)
         matrix_BM25 = okapi_BM_25(matrix_BM25)

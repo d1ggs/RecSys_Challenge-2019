@@ -56,6 +56,7 @@ class Evaluator:
             item_list_10 = np.random.shuffle(item_list_10)
             # Keep just 10 items for each user
             user_items_list = item_list_10[:NUMBER_OF_ITEMS_TEST_FILE]
+
             # Create a tuple to be appended in URM_test matrix and append it
             URM_test_tuple = pd.DataFrame({"user_id": [int(random_index)], "item_list": [str(user_items_list)]})
             self.URM_test = self.URM_test.append(URM_test_tuple, ignore_index=True)
@@ -67,8 +68,6 @@ class Evaluator:
         # Write target playlist for test set in its csv file
         for user in self.target_users_test:
             target_users_new_csv_file.write(str(int(user)) + "\n")
-
-
 
         # Format data of test_data.csv correctly and save it
         self.URM_test["item_list"] = self.URM_test["item_list"].str.strip(' []')
