@@ -54,6 +54,7 @@ class CBFRecomender:
 
     def compute_scores(self, user_id):
         users_list_train = self.URM[user_id]
+        print(users_list_train)
         scores_asset = users_list_train.dot(self.SM_asset).toarray().ravel()
         scores_price = users_list_train.dot(self.SM_prince).toarray().ravel()
         scores_sub_class = users_list_train.dot(self.SM_sub_class).toarray().ravel()

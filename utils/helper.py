@@ -21,7 +21,10 @@ class Helper:
 
 
     def convert_URM_to_csr(self, URM):
+        # TODO is it really necessary to convert to numpy array before calling ones?
         ratings_list = np.ones(len(np.asarray(list(URM.data))))
+
+        # TODO implement data splitting here
         URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.row)), np.asarray(list(URM.col)))))
         URM = URM.tocsr()
         return URM

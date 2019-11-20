@@ -41,11 +41,11 @@ class RunRecommender:
         evaluator = Evaluator()
         helper = Helper()
         MAP_final = 0.0
+        # TODO URM_data contains the whole dataset and not the train set
         URM_train = helper.convert_URM_to_csr(helper.URM_data)
 
         # Fit URM with training fit data
         recommender.fit(URM_train)
-        URM_test = helper.load_URM_test_csr()
 
         # Load target users
         target_users_test = helper.load_target_users_test()

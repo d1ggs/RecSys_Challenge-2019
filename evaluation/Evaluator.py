@@ -8,6 +8,8 @@ from utils.helper import Helper
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from scipy import sparse
+from copy import deepcopy
 
 ROW_INDEX, COL_ID_INDEX = 0, 1
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,17 +33,32 @@ class Evaluator:
             return indices
         return np.random.choice(indices, sample_size, replace=False)
 
+    def csr_row_set_nz_to_val(self, csr, row, value=0):
+        """Set all nonzero elements (elements currently in the sparsity pattern)
+        to the given value. Useful to set to 0 mostly.
+        """
+        if not isinstance(csr, sparse.csr_matrix):
+            raise ValueError('Matrix given must be of CSR format.')
+        csr.data[csr.indptr[row]:csr.indptr[row + 1]] = value
+
     def split_data_randomly(self):
         # Instantiate an array containing the users to be put in new target_users_file
         URM_csr = self.helper.convert_URM_to_csr(self.helper.URM_data)
-        # Group by the URM just to have faster search
-        grouped_by_user_URM = self.URM_data.groupby('row', as_index=True).apply(lambda x: list(x['col']))
+
+        # URM_train = deepcopy(URM_csr)
 
         # Number of tuples of the test set, used for the upper bound over the counter
         test_dimensions = URM_csr.shape[0] * (1 - self.split_size)
 
         # Sample users where item list in the dataset is >= 10, otherwise MAP10 wouldn't work
         random_indices = self.sampleTestUsers(URM_csr, int(test_dimensions))
+
+        # for index in random_indices:
+        #     self.csr_row_set_nz_to_val(URM_train, index, 0)
+
+
+        # Group by the URM just to have faster search
+        grouped_by_user_URM = self.URM_data.groupby('row', as_index=True).apply(lambda x: list(x['col']))
 
         # Instantiate csv file to write target users
         target_users_new_csv_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "w")
