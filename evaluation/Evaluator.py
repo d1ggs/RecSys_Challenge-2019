@@ -34,24 +34,27 @@ class Evaluator:
     def split_data_randomly(self):
         # Instantiate an array containing the users to be put in new target_users_file
         URM_csr = self.helper.convert_URM_to_csr(self.helper.URM_data)
-        # Will contain target user ids of the test file
         # Group by the URM just to have faster search
         grouped_by_user_URM = self.URM_data.groupby('row', as_index=True).apply(lambda x: list(x['col']))
 
         # Number of tuples of the test set, used for the upper bound over the counter
         test_dimensions = URM_csr.shape[0] * (1 - self.split_size)
+
+        # Sample users where item list in the dataset is >= 10, otherwise MAP10 wouldn't work
         random_indices = self.sampleTestUsers(URM_csr, int(test_dimensions))
+
         # Instantiate csv file to write target users
         target_users_new_csv_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "w")
         target_users_new_csv_file.write("user_id\n")
-        for random_index in tqdm(random_indices):
-            # Don't consider items with less than 10 elements (would not be good for testing since Kaggle evaluates with MAP10)
-            # Choose a random index between 0 and the length of URM's number of playlists
 
-            # Append random playlist to playlist test set
-            # np array containing all the tracks contained in a selected playlist
+        # Loop through all random idices which we are known to be correct
+        for random_index in tqdm(random_indices):
+
+            # np array containing all the items contained in the selected user
             item_list_10 = np.asarray(list(grouped_by_user_URM[random_index]))
-            # Keep just 10 tracks for each playlist
+            # Shuffle it to increase randomicity
+            item_list_10 = np.random.shuffle(item_list_10)
+            # Keep just 10 items for each user
             user_items_list = item_list_10[:NUMBER_OF_ITEMS_TEST_FILE]
             # Create a tuple to be appended in URM_test matrix and append it
             URM_test_tuple = pd.DataFrame({"user_id": [int(random_index)], "item_list": [str(user_items_list)]})
