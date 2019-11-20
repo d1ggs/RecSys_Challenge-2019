@@ -28,9 +28,9 @@ class TopPopRecommender:
         # Flip order high to lower
         self.popular_items = np.flip(self.popular_items, axis=0)
 
-    def recommend(self, user_id, URM, at=10, remove_seen=True):
+    def recommend(self, user_id, at=10, remove_seen=True):
         if remove_seen:
-            unseen_items_mask = np.in1d(self.popular_items, URM[user_id].indices, assume_unique=True, invert=True)
+            unseen_items_mask = np.in1d(self.popular_items, self.URM_CSR[user_id].indices, assume_unique=True, invert=True)
 
             unseen_items = self.popular_items[unseen_items_mask]
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     helper = Helper()
     top_popular = TopPopRecommender(helper)
 
-    map10 = RunRecommender.run_test_recommender2(top_popular)
+    map10 = RunRecommender.run_test_recommender(top_popular)
 
     #print('{0:.128f}'.format(map10))
     print(map10)
