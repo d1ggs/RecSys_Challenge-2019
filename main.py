@@ -25,4 +25,4 @@ if __name__ == '__main__':
         {"top_k": 900, "shrink": 0}
     ]
 
-    RunRecommender.train_test_recommender("collaborative_filter", parameters_set=pset, test_mode=True, split=False)
+    RunRecommender.train_test_recommender("collaborative_filter", parameters_set=[{"top_k": 800, "shrink": 0}], test_mode=False, split=False)

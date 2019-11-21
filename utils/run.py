@@ -81,6 +81,9 @@ class RunRecommender:
 
         if test_mode:
             URM_train, URM_test, test_data = split_train_test(URM_all, 0.8, rewrite=split)
+        else:
+            URM_train = URM_all
+            test_data = None
 
         if model == "top_popular":
             raise NotImplementedError
