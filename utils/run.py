@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from CollaborativeFilterDiego import CollaborativeFilter
+from CollaborativeFilter import CollaborativeFilter
 from SLIM.SLIMRecommender import SLIMRecommender
 from utils.helper import Helper
 import os
