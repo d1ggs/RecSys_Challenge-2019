@@ -29,6 +29,8 @@ class RunRecommender:
 
     @staticmethod
     def write_submission(recommender):
+        print("Writing submission...")
+
         # Open up target_users file
         target_users_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users.csv"), "r")
         target_users = list(target_users_file)[1:]  # Eliminate header
@@ -106,14 +108,17 @@ class RunRecommender:
                     recommender.fit(URM_train, topK=pset["top_k"], shrink=pset["shrink"])
                     map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
 
-                    if map10 > best_map:
-                        best_map = map10
-                        best_parameters = pset
+                    if test_mode:
+                        if map10 > best_map:
+                            best_map = map10
+                            best_parameters = pset
                     i += 1
-                print("Best MAP score:", best_map)
-                print("Best parameters:")
-                for k in best_parameters.keys():
-                    print(k, ":", best_parameters[k])
+
+                if test_mode:
+                    print("Best MAP score:", best_map)
+                    print("Best parameters:")
+                    for k in best_parameters.keys():
+                        print(k, ":", best_parameters[k])
 
 
         elif model == "SLIM":
