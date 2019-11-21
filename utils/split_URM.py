@@ -37,15 +37,15 @@ def split_train_test(URM_all, split_fraction, rewrite=False):
     if not rewrite:
         print("Loading pickled data")
 
-        test_data_in = open(TEST_DATA_PATH, "r")
+        test_data_in = open(TEST_DATA_PATH, "rb")
         test_data = pickle.load(test_data_in)
         test_data_in.close()
 
-        URM_train_in = open(URM_TRAIN_PATH, "r")
+        URM_train_in = open(URM_TRAIN_PATH, "rb")
         URM_train = pickle.load(URM_train_in)
         URM_train_in.close()
 
-        URM_test_in = open(URM_TEST_PATH, "r")
+        URM_test_in = open(URM_TEST_PATH, "rb")
         URM_test = pickle.load(URM_test_in)
         URM_test_in.close()
 

@@ -29,15 +29,15 @@ class RunRecommender:
 
     @staticmethod
     def write_submission(recommender):
-        print("Writing submission...")
+        submission_target = os.path.join(ROOT_PROJECT_PATH, "data/recommendation_matrix_to_submit.csv")
+        print("Writing submission in", submission_target)
 
         # Open up target_users file
         target_users_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users.csv"), "r")
         target_users = list(target_users_file)[1:]  # Eliminate header
 
         # Instantiate a new submission file
-        recommendation_matrix_file_to_submit = open(
-            os.path.join(ROOT_PROJECT_PATH, "data/recommendation_matrix_to_submit.csv"), "w")
+        recommendation_matrix_file_to_submit = open(submission_target, 'w')
         recommendation_matrix_file_to_submit.write("user_id,item_list\n")
         for user in tqdm(target_users):
             items_recommended = recommender.recommend(int(user))
@@ -102,7 +102,8 @@ class RunRecommender:
 
                 for pset in parameters_set:
                     print("---------------------------------------------------------------------------------")
-                    print("Computing performance of parameter set", i)
+                    if test_mode:
+                        print("Computing performance of parameter set", i)
                     # TODO Validate that the dictionary contains the correct keys
                     recommender = CollaborativeFilter()
                     recommender.fit(URM_train, topK=pset["top_k"], shrink=pset["shrink"])
