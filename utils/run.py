@@ -40,7 +40,7 @@ class RunRecommender:
         recommendation_matrix_file_to_submit = open(submission_target, 'w')
         recommendation_matrix_file_to_submit.write("user_id,item_list\n")
         for user in tqdm(target_users):
-            items_recommended = recommender.recommend(int(user))
+            items_recommended = recommender.recommend(int(user), exclude_seen=True)
             items_recommended = " ".join(str(x) for x in items_recommended)
             user = user.replace("\n", "")  # remove \n from user file
             recommendation_matrix_file_to_submit.write(user + "," + items_recommended + "\n")
@@ -100,6 +100,8 @@ class RunRecommender:
                 best_map = 0
                 best_parameters = None
 
+                # Fit and validate for each parameter set
+
                 for pset in parameters_set:
                     print("---------------------------------------------------------------------------------")
                     if test_mode:
@@ -123,6 +125,9 @@ class RunRecommender:
 
 
         elif model == "SLIM":
+            if parameters_set:
+                raise NotImplementedError
+
             recommender = SLIMRecommender(URM_train)
             recommender.fit(epochs=1000)
             RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
@@ -135,6 +140,8 @@ class RunRecommender:
 
     @staticmethod
     def perform_evaluation(recommender, test_data: dict, test_mode=False):
+        '''Takes an already fitted recommender and evaluates on test data.
+         If test_mode is false writes the submission'''
 
         if test_mode:
             if not test_data:
