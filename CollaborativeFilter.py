@@ -1,7 +1,12 @@
+from tqdm import tqdm
+
 from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
+
+from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
-from utils.run import RunRecommender
+from utils.split_URM import split_train_test
+
 
 class CollaborativeFilter(object):
 
@@ -47,16 +52,38 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
 
+    evaluator = Evaluator()
     helper = Helper()
-    cb = CollaborativeFilter()
 
-    map10 = RunRecommender.run_test_recommender2(cb)
+    MAP_final = 0.0
+    URM_all = helper.convert_URM_to_csr(helper.URM_data)
 
-    cb = CollaborativeFilter()
+    URM_train, URM_test, target_users_test, test_data = split_train_test(URM_all, 0.8)
 
-    map10 = RunRecommender.run_test_recommender2(cb)
-    cb = CollaborativeFilter()
+    recommender = CollaborativeFilter()
 
-    map10 = RunRecommender.run_test_recommender2(cb)
-    #print('{0:.128f}'.format(map10))
-    print(map10)
+    recommender.fit(URM_train)
+
+
+    for user in tqdm(target_users_test):
+        recommended_items = recommender.recommend(int(user), exclude_seen=True)
+        relevant_item = test_data[int(user)]
+
+        MAP_final += evaluator.MAP(recommended_items, relevant_item)
+
+    MAP_final /= len(target_users_test)
+
+    print(MAP_final)
+
+
+
+    # map10 = RunRecommender.run_test_recommender2(cb)
+    #
+    # cb = CollaborativeFilter()
+    #
+    # map10 = RunRecommender.run_test_recommender2(cb)
+    # cb = CollaborativeFilter()
+    #
+    # map10 = RunRecommender.run_test_recommender2(cb)
+    # print('{0:.128f}'.format(map10))
+    # print(map10)

@@ -5,7 +5,6 @@ from scipy import sparse as sps
 from Base.Recommender_utils import check_matrix
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
-from utils.run import RunRecommender
 from utils.split_URM import split_train_test
 
 
@@ -260,7 +259,7 @@ if __name__ == '__main__':
     URM_train, URM_test, target_users_test, test_data = split_train_test(URM_all, 0.8)
 
     recommender = SLIMRecommender(URM_train)
-    recommender.fit(epochs=100)
+    recommender.fit(epochs=1000)
 
     # Load target users
     # target_users_test = helper.load_target_users_test()
