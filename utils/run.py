@@ -72,7 +72,7 @@ class RunRecommender:
         return MAP_final
 
     @staticmethod
-    def train_test_recommender(model, test_mode=True, parameters_set=True):
+    def train_test_recommender(model, test_mode=True, parameters_set=None, split=False):
 
         helper = Helper()
 
@@ -80,9 +80,7 @@ class RunRecommender:
         URM_all = helper.convert_URM_to_csr(helper.URM_data)
 
         if test_mode:
-            URM_train, URM_test, _, test_data = split_train_test(URM_all, 0.8)
-        else:
-            URM_train = URM_all
+            URM_train, URM_test, test_data = split_train_test(URM_all, 0.8, rewrite=split)
 
         if model == "top_popular":
             raise NotImplementedError
@@ -92,9 +90,28 @@ class RunRecommender:
             raise NotImplementedError
 
         elif model == "collaborative_filter":
-            recommender = CollaborativeFilter()
-            recommender.fit(URM_train)
-            RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+            if parameters_set:
+                i = 1
+                best_map = 0
+                best_parameters = None
+
+                for pset in parameters_set:
+                    print("---------------------------------------------------------------------------------")
+                    print("Computing performance of parameter set", i)
+                    # TODO Validate that the dictionary contains the correct keys
+                    recommender = CollaborativeFilter()
+                    recommender.fit(URM_train, topK=pset["top_k"], shrink=pset["shrink"])
+                    map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+
+                    if map10 > best_map:
+                        best_map = map10
+                        best_parameters = pset
+                    i += 1
+                print("Best MAP score:", best_map)
+                print("Best parameters:")
+                for k in best_parameters.keys():
+                    print(k, ":", best_parameters[k])
+
 
         elif model == "SLIM":
             recommender = SLIMRecommender(URM_train)
@@ -129,8 +146,9 @@ class RunRecommender:
             MAP_final /= len(test_data.keys())
 
             print("MAP-10 score:", MAP_final)
+            return MAP_final
 
         else:
             RunRecommender.write_submission(recommender)
-
+            return True
 

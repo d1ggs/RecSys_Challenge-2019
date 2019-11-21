@@ -14,7 +14,8 @@ class CollaborativeFilter(object):
         self.URM_train = None
         self.W_sparse = None
 
-    def fit(self, URM_train, topK=500, shrink=2, normalize=True, similarity = "cosine"):
+    def fit(self, URM_train, topK=500, shrink=2, normalize=True, similarity="cosine"):
+        print("Fitting model...")
         self.URM_train = URM_train
         similarity_object = Compute_Similarity_Python(self.URM_train.T, shrink=shrink,
                                                   topK=topK, normalize=normalize, 
