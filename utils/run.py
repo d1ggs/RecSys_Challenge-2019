@@ -81,11 +81,20 @@ class RunRecommender:
         # TODO URM_data contains the whole dataset and not the train set
         URM_all = helper.convert_URM_to_csr(helper.URM_data)
 
+        # Check if we need to split the data to perform evaluation of the model
         if test_mode:
             URM_train, URM_test, test_data = split_train_test(URM_all, 0.8, rewrite=split)
         else:
             URM_train = URM_all
             test_data = None
+
+        # Prepare for multiple evaluations
+        if parameters_set:
+            i = 1
+            best_map = 0
+            best_parameters = None
+        else:
+            raise NotImplementedError
 
         if model == "top_popular":
             raise NotImplementedError
@@ -95,53 +104,64 @@ class RunRecommender:
             raise NotImplementedError
 
         elif model == "collaborative_filter":
-            if parameters_set:
-                i = 1
-                best_map = 0
-                best_parameters = None
 
-                # Fit and validate for each parameter set
+            # Fit and validate for each parameter set
 
-                for pset in parameters_set:
-                    print("---------------------------------------------------------------------------------")
-                    if test_mode:
-                        print("Computing performance of parameter set", i)
-                    # TODO Validate that the dictionary contains the correct keys
-                    recommender = CollaborativeFilter()
-                    recommender.fit(URM_train, topK=pset["top_k"], shrink=pset["shrink"])
-                    map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
-
-                    if test_mode:
-                        if map10 > best_map:
-                            best_map = map10
-                            best_parameters = pset
-                    i += 1
+            for pset in parameters_set:
+                print("---------------------------------------------------------------------------------")
+                if test_mode:
+                    print("Computing performance of parameter set", i)
+                # TODO Validate that the dictionary contains the correct keys
+                recommender = CollaborativeFilter(URM_train)
+                recommender.fit(topK=pset["top_k"], shrink=pset["shrink"])
+                map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
 
                 if test_mode:
-                    print("Best MAP score:", best_map)
-                    print("Best parameters:")
-                    for k in best_parameters.keys():
-                        print(k, ":", best_parameters[k])
+                    if map10 > best_map:
+                        best_map = map10
+                        best_parameters = pset
+                i += 1
+
+            if test_mode:
+                print("Best MAP score:", best_map)
+                print("Best parameters:")
+                for k in best_parameters.keys():
+                    print(k, ":", best_parameters[k])
 
 
         elif model == "SLIM":
-            if parameters_set:
-                raise NotImplementedError
 
-            recommender = SLIMRecommender(URM_train)
-            recommender.fit(epochs=1000)
-            RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+            # Fit and validate for each parameter set
+
+            for pset in parameters_set:
+                print("---------------------------------------------------------------------------------")
+                if test_mode:
+                    print("Computing performance of parameter set", i)
+                # TODO Validate that the dictionary contains the correct keys
+                recommender = SLIMRecommender(URM_train)
+                recommender.fit(epochs=pset["epochs"], learning_rate=pset["lr"], top_k=pset["top_k"])
+                map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+
+                if test_mode:
+                    if map10 > best_map:
+                        best_map = map10
+                        best_parameters = pset
+                i += 1
+
+            if test_mode:
+                print("Best MAP score:", best_map)
+                print("Best parameters:")
+                for k in best_parameters.keys():
+                    print(k, ":", best_parameters[k])
 
         else:
             print("No model called", model, "available")
             exit(-1)
 
-
-
     @staticmethod
     def perform_evaluation(recommender, test_data: dict, test_mode=False):
-        '''Takes an already fitted recommender and evaluates on test data.
-         If test_mode is false writes the submission'''
+        """Takes an already fitted recommender and evaluates on test data.
+         If test_mode is false writes the submission"""
 
         if test_mode:
             if not test_data:
