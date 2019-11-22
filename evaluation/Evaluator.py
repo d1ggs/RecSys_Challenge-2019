@@ -69,8 +69,9 @@ class Evaluator:
 
             # np array containing all the items contained in the selected user
             item_list_10 = np.asarray(list(grouped_by_user_URM[random_index]))
+
             # Shuffle it to increase randomicity
-            item_list_10 = np.random.shuffle(item_list_10)
+            #item_list_10 = np.random.shuffle(item_list_10)
             # Keep just 10 items for each user
             user_items_list = item_list_10[:NUMBER_OF_ITEMS_TEST_FILE]
 

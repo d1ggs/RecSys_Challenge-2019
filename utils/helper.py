@@ -6,6 +6,9 @@ import scipy.sparse as sps
 from sklearn.preprocessing import normalize
 from sklearn import feature_extraction
 import os
+
+from tqdm import tqdm
+
 from base.IR_feature_weighting import okapi_BM_25
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -123,3 +126,26 @@ class Helper:
 
     def sklearn_normalization(self, matrix, axis=0):
         return normalize(matrix, axis=axis, norm='l2').tocsr()
+
+    def load_ucm_age(self):
+        ucm_age = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_age.csv"))
+        row = np.asarray(list(ucm_age.row))
+        col = np.asarray(list(ucm_age.col))
+        data = np.asarray(list(ucm_age.data))
+        ucm_age = sps.coo_matrix((data, (row, col)))
+        ucm_age = ucm_age.tocsr()
+        return ucm_age
+
+    def load_ucm_region(self):
+        ucm_region = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region_no_zero_cols.csv"))
+        row = np.asarray(list(ucm_region.row))
+        col = np.asarray(list(ucm_region.col))
+        data = np.asarray(list(ucm_region.data))
+        ucm_region = sps.coo_matrix((data, (row, col)))
+        ucm_region = ucm_region.tocsr()
+        return ucm_region
+
+    def split_ucm_region(self):
+        ucm_region_file = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region.csv"))
+        ucm_region_correct = ucm_region_file.loc[~(ucm_region_file.col == 0)]
+        ucm_region_correct.to_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region_no_zero_cols.csv"), index=False)

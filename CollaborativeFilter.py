@@ -1,33 +1,31 @@
-from tqdm import tqdm
-
 from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
-
-from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
-from utils.split_URM import split_train_test
-
-
+#from utils.run import RunRecommender
+from evaluation.Evaluator import Evaluator
 class CollaborativeFilter(object):
 
     def __init__(self, URM_train):
         self.URM_train = URM_train
         self.W_sparse = None
+        self.topK = topK
+        self.shrink = shrink
+        self.normalize = normalize
+        self.similarity = similarity
 
     def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
         print("Fitting model...")
         self.URM_train = URM_train
-        similarity_object = Compute_Similarity_Python(self.URM_train.T, shrink=shrink,
-                                                  topK=topK, normalize=normalize, 
-                                                  similarity=similarity)
+        self.W_sparse  = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
 
-        self.W_sparse = similarity_object.compute_similarity()
+    def compute_scores(self, user_id):
+        return self.W_sparse[user_id, :].dot(self.URM_train).toarray().ravel()
 
     def recommend(self, user_id, at=10, exclude_seen=False):
 
         # compute the scores using the dot product
         
-        scores = self.W_sparse[user_id, :].dot(self.URM_train).toarray().ravel()
+        scores = self.compute_scores(user_id)
 
         if exclude_seen:
             scores = self.filter_seen(user_id, scores)
@@ -51,40 +49,11 @@ class CollaborativeFilter(object):
 if __name__ == "__main__":
 
     # evaluator = Evaluator()
-    # evaluator.split_data_randomly_2()
+    # evaluator.split_data_randomly()
 
-    evaluator = Evaluator()
     helper = Helper()
+    cb = CollaborativeFilter(topK=210, shrink=0)
 
-    MAP_final = 0.0
-    URM_all = helper.convert_URM_to_csr(helper.URM_data)
-
-    URM_train, URM_test, target_users_test, test_data = split_train_test(URM_all, 0.8)
-
-    recommender = CollaborativeFilter()
-
-    recommender.fit(URM_train)
-
-
-    for user in tqdm(target_users_test):
-        recommended_items = recommender.recommend(int(user), exclude_seen=True)
-        relevant_item = test_data[int(user)]
-
-        MAP_final += evaluator.MAP(recommended_items, relevant_item)
-
-    MAP_final /= len(target_users_test)
-
-    print(MAP_final)
-
-
-
-    # map10 = RunRecommender.run_test_recommender2(cb)
-    #
-    # cb = CollaborativeFilter()
-    #
-    # map10 = RunRecommender.run_test_recommender2(cb)
-    # cb = CollaborativeFilter()
-    #
-    # map10 = RunRecommender.run_test_recommender2(cb)
-    # print('{0:.128f}'.format(map10))
-    # print(map10)
+    map10 = RunRecommender.run(cb)
+    print('{0:.128f}'.format(map10))
+    print(map10)
