@@ -10,11 +10,11 @@ from utils.split_URM import split_train_test
 
 class CollaborativeFilter(object):
 
-    def __init__(self):
-        self.URM_train = None
+    def __init__(self, URM_train):
+        self.URM_train = URM_train
         self.W_sparse = None
 
-    def fit(self, URM_train, topK=500, shrink=2, normalize=True, similarity="cosine"):
+    def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
         print("Fitting model...")
         self.URM_train = URM_train
         similarity_object = Compute_Similarity_Python(self.URM_train.T, shrink=shrink,

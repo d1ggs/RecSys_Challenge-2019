@@ -1,7 +1,7 @@
 from utils.run import RunRecommender
 
 if __name__ == '__main__':
-    pset = [
+    pset_collaborative_filter = [
         {"top_k": 500, "shrink": 0},
         {"top_k": 550, "shrink": 0},
         {"top_k": 600, "shrink": 0},
@@ -24,4 +24,29 @@ if __name__ == '__main__':
         {"top_k": 900, "shrink": 2},
     ]
 
-    RunRecommender.train_test_recommender("collaborative_filter", parameters_set=pset, test_mode=True, split=False)
+    # pset = [{"lr": 0.1, "epochs": 10, "top_k": 100},
+    #         {"lr": 0.1, "epochs": 20, "top_k": 100},
+    #         {"lr": 0.1, "epochs": 30, "top_k": 100},
+    #         {"lr": 0.1, "epochs": 40, "top_k": 100},
+    #         {"lr": 0.1, "epochs": 50, "top_k": 100},
+    #         {"lr": 0.01, "epochs": 10, "top_k": 100},
+    #         {"lr": 0.01, "epochs": 20, "top_k": 100},
+    #         {"lr": 0.01, "epochs": 30, "top_k": 100},
+    #         {"lr": 0.01, "epochs": 40, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 50, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 10, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 20, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 30, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 40, "top_k": 100},
+    #         {"lr": 0.001, "epochs": 50, "top_k": 100},
+    #         ]
+
+    pset = [{"lr": 0.1, "epochs": 10, "top_k": 1},
+    {"lr": 0.1, "epochs": 1000, "top_k": 9},
+    {"lr": 0.1, "epochs": 2000, "top_k": 9},
+    {"lr": 0.1, "epochs": 500, "top_k": 9},
+    {"lr": 0.1, "epochs": 300, "top_k": 9},
+    {"lr": 0.1, "epochs": 100, "top_k": 9}]
+
+
+    RunRecommender.train_test_recommender("SLIM", parameters_set=pset, test_mode=True, split=False)
