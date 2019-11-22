@@ -220,7 +220,7 @@ class SLIMRecommender(object):
 
             return W_sparse
 
-    def fit(self, learning_rate=0.01, epochs=20):
+    def fit(self, learning_rate=0.01, epochs=20, top_k=100):
 
         self.learning_rate = learning_rate
         print("Training model...")
@@ -231,7 +231,7 @@ class SLIMRecommender(object):
 
         self.similarity_matrix = self.similarity_matrix.T
 
-        self.similarity_matrix = self.similarityMatrixTopK(self.similarity_matrix, k=100)
+        self.similarity_matrix = self.similarityMatrixTopK(self.similarity_matrix, k=top_k)
 
     def recommend(self, user_id, at=10, exclude_seen=True):
         # compute the scores using the dot product
