@@ -1,4 +1,4 @@
-from Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
+from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 
 class CollaborativeFilter(object):

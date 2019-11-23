@@ -6,9 +6,8 @@
 """
 
 import numpy as np
-from Base.DataIO import DataIO
-import os
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.DataIO import DataIO
+from Legacy.Base.Recommender_utils import check_matrix
 
 
 class BaseRecommender(object):

@@ -13,7 +13,7 @@ import time, sys, copy
 from enum import Enum
 from Utils.seconds_to_biggest_unit import seconds_to_biggest_unit
 
-from Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
+from Legacy.Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
     Novelty, Coverage_Item, Metrics_Object, Coverage_User, Gini_Diversity, Shannon_Entropy, Diversity_MeanInterList, Diversity_Herfindahl, AveragePopularity
 
 

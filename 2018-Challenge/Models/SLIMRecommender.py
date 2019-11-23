@@ -2,7 +2,7 @@ import numpy as np
 import time
 from tqdm import trange
 from scipy import sparse as sps
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.Recommender_utils import check_matrix
 
 
 class SLIMRecommender():

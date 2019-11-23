@@ -7,10 +7,10 @@
 
 import numpy as np
 import scipy.sparse as sps
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.Recommender_utils import check_matrix
 from sklearn.linear_model import ElasticNet
 
-from Base.BaseSimilarityMatrixRecommender import BaseSimilarityMatrixRecommender
+from Legacy.Base.BaseSimilarityMatrixRecommender import BaseSimilarityMatrixRecommender
 import time, sys
 
 from tqdm import trange
@@ -167,7 +167,7 @@ class SLIMElasticNetRecommender(BaseSimilarityMatrixRecommender):
 import multiprocessing
 from multiprocessing import Pool
 from functools import partial
-import threading
+
 
 class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseSimilarityMatrixRecommender):
 

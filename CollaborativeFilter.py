@@ -1,7 +1,6 @@
-from Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
+from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
-from utils.run import RunRecommender
 # from evaluation.Evaluator import Evaluator
 class CollaborativeFilter(object):
 
@@ -60,6 +59,6 @@ if __name__ == "__main__":
     helper = Helper()
     cb = CollaborativeFilter(topK=210, shrink=0)
 
-    map10 = RunRecommender.run(cb)
-    print('{0:.128f}'.format(map10))
+    # map10 = RunRecommender.run(cb) # THIS GENERATES A CIRCULAR IMPORT
+    # print('{0:.128f}'.format(map10))
     print(map10)

@@ -41,12 +41,8 @@ if __name__ == '__main__':
     #         {"lr": 0.001, "epochs": 50, "top_k": 100},
     #         ]
 
-    pset = [{"lr": 0.1, "epochs": 10, "top_k": 1},
-    {"lr": 0.1, "epochs": 1000, "top_k": 9},
-    {"lr": 0.1, "epochs": 2000, "top_k": 9},
-    {"lr": 0.1, "epochs": 500, "top_k": 9},
-    {"lr": 0.1, "epochs": 300, "top_k": 9},
-    {"lr": 0.1, "epochs": 100, "top_k": 9}]
+    pset = [
+    {"lr": 0.1, "epochs": 50, "top_k": 20}]
 
 
-    RunRecommender.train_test_recommender("SLIM", parameters_set=pset, test_mode=True, split=False)
+    RunRecommender.train_test_recommender("SLIM_cython", parameters_set=pset, test_mode=True, split=False)

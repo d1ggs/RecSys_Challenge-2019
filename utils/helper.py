@@ -7,9 +7,9 @@ from sklearn.preprocessing import normalize
 from sklearn import feature_extraction
 import os
 
-from tqdm import tqdm
+from utils.split_URM import split_train_test
 
-from Base.IR_feature_weighting import okapi_BM_25
+from Legacy.Base.IR_feature_weighting import okapi_BM_25
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,7 +21,13 @@ class Helper:
         self.URM_data = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/dataset.csv"))
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
+        self.URM_train = None
+        self.test_data = None
 
+    def get_train_test_data(self, resplit = False):
+        if not self.URM_train or not self.test_data:
+            self.URM_train, _, self.test_data = split_train_test(self.URM_data, split_fraction=0.8, rewrite=resplit)
+        return self.URM_train.copy(), self.test_data.copy()
 
     def convert_URM_to_csr(self, URM):
         # TODO is it really necessary to convert to numpy array before calling ones?

@@ -13,7 +13,7 @@ import time, sys, copy
 from enum import Enum
 from Utils.seconds_to_biggest_unit import seconds_to_biggest_unit
 
-from Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
+from Legacy.Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
     Novelty, Coverage_Item, Metrics_Object, Coverage_User, Gini_Diversity, Shannon_Entropy, Diversity_MeanInterList, Diversity_Herfindahl, AveragePopularity
 
 
@@ -269,12 +269,12 @@ class EvaluatorHoldout(Evaluator):
 
             # Compute predictions for a batch of users using vectorization, much more efficient than computing it one at a time
             recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
-                                                                      remove_seen_flag=self.exclude_seen,
-                                                                      cutoff = self.max_cutoff,
-                                                                      remove_top_pop_flag=False,
-                                                                      remove_CustomItems_flag=self.ignore_items_flag,
-                                                                      return_scores = True
-                                                                     )
+                                                                                      exclude_seen=self.exclude_seen,
+                                                                                      cutoff = self.max_cutoff,
+                                                                                      remove_top_pop_flag=False,
+                                                                                      remove_CustomItems_flag=self.ignore_items_flag,
+                                                                                      return_scores = True
+                                                                                      )
 
 
             assert len(recommended_items_batch_list) == len(test_user_batch_array), "{}: recommended_items_batch_list contained recommendations for {} users, expected was {}".format(
@@ -504,13 +504,13 @@ class EvaluatorNegativeItemSample(Evaluator):
             items_to_compute = self._get_user_specific_items_to_compute(test_user)
 
             recommended_items, all_items_predicted_ratings = recommender_object.recommend(np.atleast_1d(test_user),
-                                                              remove_seen_flag=self.exclude_seen,
-                                                              cutoff = self.max_cutoff,
-                                                              remove_top_pop_flag=False,
-                                                              items_to_compute = items_to_compute,
-                                                              remove_CustomItems_flag=self.ignore_items_flag,
-                                                              return_scores = True
-                                                             )
+                                                                                          exclude_seen=self.exclude_seen,
+                                                                                          cutoff = self.max_cutoff,
+                                                                                          remove_top_pop_flag=False,
+                                                                                          items_to_compute = items_to_compute,
+                                                                                          remove_CustomItems_flag=self.ignore_items_flag,
+                                                                                          return_scores = True
+                                                                                          )
 
 
             assert len(recommended_items) == 1, "{}: recommended_items contained recommendations for {} users, expected was {}".format(

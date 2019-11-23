@@ -6,13 +6,13 @@ Created on 07/09/17
 @author: Maurizio Ferrari Dacrema
 """
 
-from Base.Recommender_utils import check_matrix
-from Base.BaseSimilarityMatrixRecommender import BaseSimilarityMatrixRecommender
-from Base.Recommender_utils import similarityMatrixTopK
-from Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
+from Legacy.Base.Recommender_utils import check_matrix
+from Legacy.Base.BaseSimilarityMatrixRecommender import BaseSimilarityMatrixRecommender
+from Legacy.Base.Recommender_utils import similarityMatrixTopK
+from Legacy.Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
 
 
-from Base.CythonCompiler.run_compile_subprocess import run_compile_subprocess
+from Legacy.Base.CythonCompiler.run_compile_subprocess import run_compile_subprocess
 import os, sys
 
 
@@ -66,9 +66,12 @@ class SLIM_BPR_Cython(BaseSimilarityMatrixRecommender, Incremental_Training_Earl
 
         self.free_mem_threshold = free_mem_threshold
 
+        self.verbose = verbose
+
         if recompile_cython:
             print("Compiling in Cython")
             self.runCompilationScript()
+
             print("Compilation Complete")
 
 
@@ -109,10 +112,10 @@ class SLIM_BPR_Cython(BaseSimilarityMatrixRecommender, Incremental_Training_Earl
                 string = "Automatic selection of fastest train mode. Unable to get current RAM status, you may be using a non-Linux operating system. "
 
             if total_m is None or required_m/available_m < self.free_mem_threshold:
-                self._print(string + "Using dense matrix.")
+                print(string + "Using dense matrix.")
                 self.train_with_sparse_weights = False
             else:
-                self._print(string + "Using sparse matrix.")
+                print(string + "Using sparse matrix.")
                 self.train_with_sparse_weights = True
 
 

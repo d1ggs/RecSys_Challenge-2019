@@ -1,6 +1,8 @@
 from ItemBasedCBF import ItemBasedCBF
 from CollaborativeFilter import CollaborativeFilter
 import numpy as np
+
+from utils.helper import Helper
 from utils.run import RunRecommender
 
 item_cbf_parameters = {"topK_asset": 100,
@@ -62,6 +64,15 @@ class HybridCBCBFRecommender():
 
 
 if __name__ == "__main__":
+    helper = Helper()
+
+    # Train and test data are now loaded by the helper
+    URM_train, test_data = helper.get_train_test_data()
+
     weights_hybrid = {"cbf": 0.3, "cb": 0.7}
+
     hybrid_cbcbf = HybridCBCBFRecommender(weights_hybrid)
-    RunRecommender.run_test_recommender(hybrid_cbcbf)
+    hybrid_cbcbf.fit(URM_train)
+
+    # Evaluation is performed by RunRecommender
+    RunRecommender.perform_evaluation(hybrid_cbcbf, test_data)

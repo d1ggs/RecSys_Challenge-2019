@@ -2,7 +2,7 @@ import numpy as np
 import time
 from tqdm import trange, tqdm
 from scipy import sparse as sps
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.Recommender_utils import check_matrix
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
 from utils.split_URM import split_train_test
@@ -10,15 +10,13 @@ from utils.split_URM import split_train_test
 
 class SLIMRecommender(object):
 
-    def __init__(self, URM):
+    def __init__(self, URM, learning_rate=0.01 , top_k=100):
 
-        self.learning_rate = learning_rate
-
-        self.top_k = 100
+        self.top_k = top_k
 
         self.URM = URM
 
-        self.learning_rate = 1e-3
+        self.learning_rate = learning_rate
 
         self.URM_mask = self.URM.copy()
 
@@ -224,10 +222,8 @@ class SLIMRecommender(object):
 
             return W_sparse
 
-    def fit(self, learning_rate=0.01, epochs=20, top_k=100):
+    def fit(self, epochs=20):
 
-        self.learning_rate = learning_rate
-        self.top_k = top_k
         print("Training model...")
 
         for _ in trange(epochs):

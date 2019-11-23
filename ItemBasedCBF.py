@@ -5,7 +5,7 @@ Created on 09/11/2019
 """
 
 import numpy as np
-from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
+from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
 from evaluation.Evaluator import Evaluator

@@ -31,7 +31,7 @@ ELSE:
 
 
 
-from Base.Recommender_utils import similarityMatrixTopK, check_matrix
+from Legacy.Base.Recommender_utils import similarityMatrixTopK, check_matrix
 import cython
 import time
 import sys
