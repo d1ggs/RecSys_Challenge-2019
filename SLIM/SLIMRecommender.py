@@ -10,11 +10,15 @@ from utils.split_URM import split_train_test
 
 class SLIMRecommender(object):
 
-    def __init__(self, URM, learning_rate=1e-3):
+    def __init__(self, URM):
 
         self.learning_rate = learning_rate
 
+        self.top_k = 100
+
         self.URM = URM
+
+        self.learning_rate = 1e-3
 
         self.URM_mask = self.URM.copy()
 
@@ -223,15 +227,22 @@ class SLIMRecommender(object):
     def fit(self, learning_rate=0.01, epochs=20, top_k=100):
 
         self.learning_rate = learning_rate
+        self.top_k = top_k
         print("Training model...")
 
         for _ in trange(epochs):
             # print("Starting epoch " + str(numEpoch))
             self.epochIteration()
 
+            # TODO save the model every X epochs to do faster evaluation
+
+        self.complete_fitting()
+
+    def complete_fitting(self):
+
         self.similarity_matrix = self.similarity_matrix.T
 
-        self.similarity_matrix = self.similarityMatrixTopK(self.similarity_matrix, k=top_k)
+        self.similarity_matrix = self.similarityMatrixTopK(self.similarity_matrix, k=self.top_k)
 
     def recommend(self, user_id, at=10, exclude_seen=True):
         # compute the scores using the dot product

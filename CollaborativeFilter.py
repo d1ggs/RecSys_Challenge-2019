@@ -5,22 +5,16 @@ from utils.run import RunRecommender
 from evaluation.Evaluator import Evaluator
 class CollaborativeFilter(object):
 
-    def __init__(self, topK=500, shrink=2, normalize=True, similarity = "cosine"):
-        self.URM_train = None
+    def __init__(self, URM_train):
+        self.URM_train = URM_train
         self.W_sparse = None
         self.topK = topK
         self.shrink = shrink
         self.normalize = normalize
         self.similarity = similarity
 
-    def compute_similarity_matrix(self, URM_train, shrink, topK, normalize, similarity):
-        similarity_object = Compute_Similarity_Python(URM_train.T, shrink=shrink,
-                                                      topK=topK, normalize=normalize,
-                                                      similarity=similarity)
-
-        return similarity_object.compute_similarity()
-
-    def fit(self, URM_train):
+    def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
+        print("Fitting model...")
         self.URM_train = URM_train
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
 
