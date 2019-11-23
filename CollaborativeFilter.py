@@ -1,7 +1,7 @@
 from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
-#from utils.run import RunRecommender
+from utils.run import RunRecommender
 from evaluation.Evaluator import Evaluator
 class CollaborativeFilter(object):
 
@@ -16,7 +16,7 @@ class CollaborativeFilter(object):
     def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
         print("Fitting model...")
         self.URM_train = URM_train
-        self.W_sparse  = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
+        self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
 
     def compute_scores(self, user_id):
         return self.W_sparse[user_id, :].dot(self.URM_train).toarray().ravel()

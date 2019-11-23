@@ -11,7 +11,7 @@ class UserBasedCBF():
         self.URM_train = None
         self.W_sparse = None
         self.topK_age = topK_age
-        self.topk_region = topK_region
+        self.topK_region = topK_region
         self.shrink_age = shrink_age
         self.shrink_region = shrink_region
         self.normalize = normalize
@@ -34,7 +34,7 @@ class UserBasedCBF():
 
         # Compute similarities
         self.SM_age = self.compute_similarity(self.UCM_age, self.topK_age, self.shrink_age)
-        self.SM_region = self.compute_similarity(self.UCM_region, self.topk_region, self.shrink_region)
+        self.SM_region = self.compute_similarity(self.UCM_region, self.topK_region, self.shrink_region)
 
     def compute_scores(self, user_id):
         scores_age = self.user_list_train.dot(self.SM_age).toarray().ravel()
@@ -44,7 +44,7 @@ class UserBasedCBF():
         scores = (scores_age * self.age_weight) + (scores_region * region_weight)
         return scores
 
-    def recommend(self, user_id, at=10, exclude_seen=False):
+    def recommend(self, user_id, at=10, exclude_seen=True):
         # Compute scores of the recommendation
         scores = self.compute_scores(user_id)
 
@@ -73,6 +73,5 @@ if __name__ == "__main__":
     helper = Helper()
     helper.split_ucm_region()
     ubcbf = UserBasedCBF()
-    map10 = RunRecommender.run(ubcbf)
+    RunRecommender.run(ubcbf)
     # print('{0:.128f}'.format(map10))
-    print(map10)
