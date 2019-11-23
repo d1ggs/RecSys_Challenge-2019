@@ -9,7 +9,7 @@ import os
 
 from tqdm import tqdm
 
-from base.IR_feature_weighting import okapi_BM_25
+from Base.IR_feature_weighting import okapi_BM_25
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

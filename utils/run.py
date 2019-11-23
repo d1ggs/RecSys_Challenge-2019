@@ -2,6 +2,7 @@ from tqdm import tqdm
 
 from CollaborativeFilter import CollaborativeFilter
 from SLIM.SLIMRecommender import SLIMRecommender
+from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from utils.helper import Helper
 import os
 from evaluation.Evaluator import Evaluator
@@ -112,8 +113,8 @@ class RunRecommender:
                 if test_mode:
                     print("Computing performance of parameter set", i)
                 # TODO Validate that the dictionary contains the correct keys
-                recommender = CollaborativeFilter(URM_train)
-                recommender.fit(topK=pset["top_k"], shrink=pset["shrink"])
+                recommender = CollaborativeFilter(URM_train, shrink=pset["shrink"], topK=pset["top_k"])
+                recommender.fit()
                 map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
 
                 if test_mode:
@@ -153,6 +154,32 @@ class RunRecommender:
                 print("Best parameters:")
                 for k in best_parameters.keys():
                     print(k, ":", best_parameters[k])
+
+            elif model == "SLIM_cython":
+
+                for pset in parameters_set:
+                    print("---------------------------------------------------------------------------------")
+                    if test_mode:
+                        print("Computing performance of parameter set", i)
+                    # TODO Validate that the dictionary contains the correct keys
+                    recommender = SLIM_BPR_Cython(URM_train, recompile_cython=True)
+                    recommender.fit(epochs=pset["epochs"], learning_rate=pset["lr"], topK=pset["top_k"])
+                    map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+
+                    if test_mode:
+                        if map10 > best_map:
+                            best_map = map10
+                            best_parameters = pset
+                    i += 1
+
+                recommender = SLIM_BPR_Cython(URM_train, recompile_cython=True)
+                recommender.fit()
+
+                if test_mode:
+                    print("Best MAP score:", best_map)
+                    print("Best parameters:")
+                    for k in best_parameters.keys():
+                        print(k, ":", best_parameters[k])
 
         else:
             print("No model called", model, "available")
