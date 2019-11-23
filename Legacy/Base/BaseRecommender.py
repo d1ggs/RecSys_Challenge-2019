@@ -160,7 +160,7 @@ class BaseRecommender(object):
 
 
 
-    def recommend(self, user_id_array, at = 10, cutoff = None, remove_seen_flag=True, items_to_compute = None,
+    def recommend(self, user_id_array, at = 10, cutoff = None, exclude_seen=True, items_to_compute = None,
                   remove_top_pop_flag = False, remove_CustomItems_flag = False, return_scores = False):
 
         # If is a scalar transform it in a 1-cell array
@@ -198,7 +198,7 @@ class BaseRecommender(object):
 
             user_id = user_id_array[user_index]
 
-            if remove_seen_flag:
+            if exclude_seen:
                 scores_batch[user_index,:] = self._remove_seen_on_scores(user_id, scores_batch[user_index, :])
 
             # Sorting is done in three steps. Faster then plain np.argsort for higher number of items

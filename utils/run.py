@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from CollaborativeFilter import CollaborativeFilter
+# from CollaborativeFilter import CollaborativeFilter
 from SLIM.SLIMRecommender import SLIMRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from utils.helper import Helper
@@ -106,28 +106,30 @@ class RunRecommender:
 
         elif model == "collaborative_filter":
 
+            raise NotImplementedError
+
             # Fit and validate for each parameter set
 
-            for pset in parameters_set:
-                print("---------------------------------------------------------------------------------")
-                if test_mode:
-                    print("Computing performance of parameter set", i)
-                # TODO Validate that the dictionary contains the correct keys
-                recommender = CollaborativeFilter(URM_train, shrink=pset["shrink"], topK=pset["top_k"])
-                recommender.fit()
-                map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
-
-                if test_mode:
-                    if map10 > best_map:
-                        best_map = map10
-                        best_parameters = pset
-                i += 1
-
-            if test_mode:
-                print("Best MAP score:", best_map)
-                print("Best parameters:")
-                for k in best_parameters.keys():
-                    print(k, ":", best_parameters[k])
+            # for pset in parameters_set:
+            #     print("---------------------------------------------------------------------------------")
+            #     if test_mode:
+            #         print("Computing performance of parameter set", i)
+            #     # TODO Validate that the dictionary contains the correct keys
+            #     recommender = CollaborativeFilter(URM_train)
+            #     recommender.fit(topK=pset["top_k"], shrink=pset["shrink"])
+            #     map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
+            #
+            #     if test_mode:
+            #         if map10 > best_map:
+            #             best_map = map10
+            #             best_parameters = pset
+            #     i += 1
+            #
+            # if test_mode:
+            #     print("Best MAP score:", best_map)
+            #     print("Best parameters:")
+            #     for k in best_parameters.keys():
+            #         print(k, ":", best_parameters[k])
 
 
         elif model == "SLIM":
@@ -155,31 +157,32 @@ class RunRecommender:
                 for k in best_parameters.keys():
                     print(k, ":", best_parameters[k])
 
-            elif model == "SLIM_cython":
+        elif model == "SLIM_cython":
 
-                for pset in parameters_set:
-                    print("---------------------------------------------------------------------------------")
-                    if test_mode:
-                        print("Computing performance of parameter set", i)
-                    # TODO Validate that the dictionary contains the correct keys
-                    recommender = SLIM_BPR_Cython(URM_train, recompile_cython=True)
-                    recommender.fit(epochs=pset["epochs"], learning_rate=pset["lr"], topK=pset["top_k"])
-                    map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
-
-                    if test_mode:
-                        if map10 > best_map:
-                            best_map = map10
-                            best_parameters = pset
-                    i += 1
-
+            for pset in parameters_set:
+                print("---------------------------------------------------------------------------------")
+                if test_mode:
+                    print("Computing performance of parameter set", i)
+                # TODO Validate that the dictionary contains the correct keys
                 recommender = SLIM_BPR_Cython(URM_train, recompile_cython=True)
-                recommender.fit()
+                recommender.fit(epochs=pset["epochs"], learning_rate=pset["lr"], topK= pset["top_k"])
+                map10 = RunRecommender.perform_evaluation(recommender, test_data, test_mode=test_mode)
 
                 if test_mode:
-                    print("Best MAP score:", best_map)
-                    print("Best parameters:")
-                    for k in best_parameters.keys():
-                        print(k, ":", best_parameters[k])
+                    if map10 > best_map:
+                        best_map = map10
+                        best_parameters = pset
+                i += 1
+
+            recommender = SLIM_BPR_Cython(URM_train, recompile_cython=True)
+            recommender.fit()
+
+            if test_mode:
+                print("Best MAP score:", best_map)
+                print("Best parameters:")
+                for k in best_parameters.keys():
+                    print(k, ":", best_parameters[k])
+
 
         else:
             print("No model called", model, "available")
