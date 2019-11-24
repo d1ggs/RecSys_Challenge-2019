@@ -1,7 +1,7 @@
 from MatrixFactorization.Cython.MatrixFactorization_Cython import MatrixFactorization_BPR_Cython
 from utils.helper import Helper
 from utils.run import RunRecommender
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 pset = [{"lr": 0.1, "epochs": 300, "nf": 10},
         {"lr": 0.05, "epochs": 300, "nf": 10},
