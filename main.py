@@ -1,5 +1,6 @@
 from utils.run import RunRecommender
-
+from utils.helper import Helper
+from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 if __name__ == '__main__':
     pset_collaborative_filter = [
         {"top_k": 500, "shrink": 0},
@@ -45,4 +46,9 @@ if __name__ == '__main__':
     {"lr": 0.1, "epochs": 50, "top_k": 20}]
 
 
-    RunRecommender.train_test_recommender("SLIM_cython", parameters_set=pset, test_mode=True, split=False)
+
+    helper = Helper()
+    URM_train, test_data = helper.get_train_test_data()
+    slim = SLIM_BPR_Cython(URM_train)
+    slim.fit(epochs=10)
+    RunRecommender.perform_evaluation_slim(slim, test_data)

@@ -1,16 +1,9 @@
 from tqdm import tqdm
-
-# from CollaborativeFilter import CollaborativeFilter
-from SLIM.SLIMRecommender import SLIMRecommender
-from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from utils.helper import Helper
 import os
 from evaluation.Evaluator import Evaluator
-import numpy as np
 
 # Put root project dir in a constant
-from utils.split_URM import split_train_test
-
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -47,8 +40,34 @@ class RunRecommender:
             recommendation_matrix_file_to_submit.write(user + "," + items_recommended + "\n")
         recommendation_matrix_file_to_submit.close()
 
+            
+
     @staticmethod
-    def perform_evaluation(recommender, test_data: dict):
+    def perform_evaluation(recommender):
+        """Takes an already fitted recommender and evaluates on test data.
+         If test_mode is false writes the submission"""
+
+
+
+        print("Performing evaluation on test set...")
+
+        MAP_final = 0.0
+        evaluator, helper = Evaluator(),  Helper()
+        URM_train, test_data = helper.get_train_test_data()
+        recommender.fit(URM_train)
+        for user in tqdm(test_data.keys()):
+            recommended_items = recommender.recommend(int(user), exclude_seen=True)
+            relevant_item = test_data[int(user)]
+
+            MAP_final += evaluator.MAP(recommended_items, relevant_item)
+
+        MAP_final /= len(test_data.keys())
+
+        print("MAP-10 score:", MAP_final)
+        return MAP_final
+
+    @staticmethod
+    def perform_evaluation_slim(recommender, test_data: dict):
         """Takes an already fitted recommender and evaluates on test data.
          If test_mode is false writes the submission"""
 
@@ -71,4 +90,3 @@ class RunRecommender:
 
         print("MAP-10 score:", MAP_final)
         return MAP_final
-

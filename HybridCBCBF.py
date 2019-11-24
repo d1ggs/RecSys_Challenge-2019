@@ -39,7 +39,7 @@ class HybridCBCBFRecommender():
     def compute_scores(self, user_id):
         scores_cbf = self.cbf.compute_scores(user_id)
         scores_cb = self.cb.compute_scores(user_id)
-        scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] + scores_cb)
+        scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb)
 
         return scores
 
@@ -64,15 +64,12 @@ class HybridCBCBFRecommender():
 
 
 if __name__ == "__main__":
-    helper = Helper()
 
     # Train and test data are now loaded by the helper
-    URM_train, test_data = helper.get_train_test_data()
 
-    weights_hybrid = {"cbf": 0.3, "cb": 0.7}
+    weights_hybrid = {"cbf": 0.2, "cb": 0.8}
 
     hybrid_cbcbf = HybridCBCBFRecommender(weights_hybrid)
-    hybrid_cbcbf.fit(URM_train)
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.perform_evaluation(hybrid_cbcbf, test_data)
+    RunRecommender.perform_evaluation(hybrid_cbcbf)
