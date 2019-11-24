@@ -126,3 +126,7 @@ dmypy.json
 .DS_Store
 
 .idea/
+
+*.c
+
+*.html

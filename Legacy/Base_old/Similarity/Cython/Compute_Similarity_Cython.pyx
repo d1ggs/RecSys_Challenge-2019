@@ -32,15 +32,13 @@ import cython
 import numpy as np
 cimport numpy as np
 
-from cpython.array cimport array, clone
-
-from libc.math cimport sqrt
+from cpython.array cimport array
 
 
 
 
 import scipy.sparse as sps
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.Recommender_utils import check_matrix
 
 @cython.boundscheck(False)
 @cython.wraparound(False)

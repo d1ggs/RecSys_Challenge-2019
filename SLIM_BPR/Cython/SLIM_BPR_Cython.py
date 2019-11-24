@@ -7,14 +7,13 @@ Created on 07/09/17
 """
 
 from Legacy.Base.Recommender_utils import check_matrix
-from Legacy.Base.BaseSimilarityMatrixRecommender import BaseSimilarityMatrixRecommender
+from Legacy.Base.BaseSimilarityMatrixRecommender import BaseItemSimilarityMatrixRecommender
 from Legacy.Base.Recommender_utils import similarityMatrixTopK
 from Legacy.Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
 
 
 from Legacy.Base.CythonCompiler.run_compile_subprocess import run_compile_subprocess
 import os, sys
-
 
 def estimate_required_MB(n_items, symmetric):
 
@@ -47,7 +46,7 @@ def get_RAM_status():
 
 
 
-class SLIM_BPR_Cython(BaseSimilarityMatrixRecommender, Incremental_Training_Early_Stopping):
+class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_Early_Stopping):
 
     RECOMMENDER_NAME = "SLIM_BPR_Recommender"
 
@@ -222,4 +221,3 @@ class SLIM_BPR_Cython(BaseSimilarityMatrixRecommender, Incremental_Training_Earl
 
         # Command to generate html report
         # cython -a SLIM_BPR_Cython_Epoch.pyx
-

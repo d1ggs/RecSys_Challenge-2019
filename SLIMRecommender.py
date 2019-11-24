@@ -5,6 +5,7 @@ from scipy import sparse as sps
 from Legacy.Base.Recommender_utils import check_matrix
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
+from utils.run import RunRecommender
 from utils.split_URM import split_train_test
 
 
@@ -302,5 +303,17 @@ if __name__ == '__main__':
     print(MAP_final)
 
 
+if __name__ == '__main__':
+    helper = Helper()
 
+    # Train and test data are now loaded by the helper
+    URM_train, test_data = helper.get_train_test_data()
+
+    weights_hybrid = {"cbf": 0.3, "cb": 0.7}
+
+    recommender = SLIMRecommender(URM_train)
+    recommender.fit(epochs=20)
+
+    # Evaluation is performed by RunRecommender
+    RunRecommender.perform_evaluation(recommender, test_data)
 

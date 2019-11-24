@@ -6,8 +6,8 @@
 """
 
 import numpy as np
-from Base.BaseRecommender import BaseRecommender
-from Base.Recommender_utils import check_matrix
+from Legacy.Base.BaseRecommender import BaseRecommender
+from Legacy.Base.Recommender_utils import check_matrix
 
 import scipy.sparse as sps
 
@@ -30,7 +30,7 @@ class PredefinedListRecommender(BaseRecommender):
         pass
 
 
-    def recommend(self, user_id, cutoff = None, remove_seen_flag=True, remove_top_pop_flag = False, remove_custom_items_flag = False):
+    def recommend(self, user_id, cutoff = None, exclude_seen=True, remove_top_pop_flag = False, remove_CustomItems_flag = False):
 
         if cutoff is None:
             cutoff= self.URM_train.shape[1] - 1

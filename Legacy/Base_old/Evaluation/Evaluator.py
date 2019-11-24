@@ -13,7 +13,7 @@ import time, sys, copy
 from enum import Enum
 from Utils.seconds_to_biggest_unit import seconds_to_biggest_unit
 
-from Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
+from Legacy.Base.Evaluation.metrics import roc_auc, precision, precision_recall_min_denominator, recall, MAP, MRR, ndcg, arhr, rmse, \
     Novelty, Coverage_Item, Metrics_Object, Coverage_User, Gini_Diversity, Shannon_Entropy, Diversity_MeanInterList, Diversity_Herfindahl, AveragePopularity
 
 
@@ -111,23 +111,6 @@ def get_result_string(results_run, n_decimals=7):
 
 
 
-def _remove_item_interactions(URM, item_list):
-
-    URM = sps.csc_matrix(URM.copy())
-
-    for item_index in item_list:
-
-        start_pos = URM.indptr[item_index]
-        end_pos = URM.indptr[item_index+1]
-
-        URM.data[start_pos:end_pos] = np.zeros_like(URM.data[start_pos:end_pos])
-
-    URM.eliminate_zeros()
-    URM = sps.csr_matrix(URM)
-
-    return URM
-
-
 class Evaluator(object):
     """Abstract Evaluator"""
 
@@ -136,18 +119,17 @@ class Evaluator(object):
     def __init__(self, URM_test_list, cutoff_list, minRatingsPerUser=1, exclude_seen=True,
                         diversity_object = None,
                         ignore_items = None,
-                        ignore_users = None,
-                        verbose=True):
+                        ignore_users = None):
 
         super(Evaluator, self).__init__()
-        
-        self.verbose = verbose
-        
+
+
+
         if ignore_items is None:
             self.ignore_items_flag = False
             self.ignore_items_ID = np.array([])
         else:
-            self._print("Ignoring {} Items".format(len(ignore_items)))
+            print("Ignoring {} Items".format(len(ignore_items)))
             self.ignore_items_flag = True
             self.ignore_items_ID = np.array(ignore_items)
 
@@ -174,8 +156,6 @@ class Evaluator(object):
 
         for URM_test in URM_test_list:
 
-            URM_test = _remove_item_interactions(URM_test, self.ignore_items_ID)
-
             URM_test = sps.csr_matrix(URM_test)
             self.URM_test_list.append(URM_test)
 
@@ -187,20 +167,19 @@ class Evaluator(object):
 
         self.usersToEvaluate = np.arange(self.n_users)[usersToEvaluate_mask]
 
+
         if ignore_users is not None:
-            self._print("Ignoring {} Users".format(len(ignore_users)))
+            print("Ignoring {} Users".format(len(ignore_users)))
             self.ignore_users_ID = np.array(ignore_users)
             self.usersToEvaluate = set(self.usersToEvaluate) - set(ignore_users)
         else:
             self.ignore_users_ID = np.array([])
 
+
         self.usersToEvaluate = list(self.usersToEvaluate)
 
 
-    def _print(self, string):
-        
-        if self.verbose:
-            print("{}: {}".format(self.EVALUATOR_NAME, string))
+
 
 
     def evaluateRecommender(self, recommender_object):
@@ -240,15 +219,13 @@ class EvaluatorHoldout(Evaluator):
     def __init__(self, URM_test_list, cutoff_list, minRatingsPerUser=1, exclude_seen=True,
                  diversity_object = None,
                  ignore_items = None,
-                 ignore_users = None,
-                 verbose=True):
+                 ignore_users = None):
 
 
         super(EvaluatorHoldout, self).__init__(URM_test_list, cutoff_list,
                                                diversity_object = diversity_object,
                                                minRatingsPerUser=minRatingsPerUser, exclude_seen=exclude_seen,
-                                               ignore_items = ignore_items, ignore_users = ignore_users,
-                                               verbose = verbose)
+                                               ignore_items = ignore_items, ignore_users = ignore_users)
 
 
 
@@ -256,9 +233,11 @@ class EvaluatorHoldout(Evaluator):
 
     def _run_evaluation_on_selected_users(self, recommender_object, usersToEvaluate, block_size = None):
 
+
         if block_size is None:
             block_size = min(1000, int(1e8/self.n_items))
-            block_size = min(block_size, len(usersToEvaluate))
+
+
 
         start_time = time.time()
         start_time_print = time.time()
@@ -274,18 +253,13 @@ class EvaluatorHoldout(Evaluator):
                                                              cutoff,
                                                              self.diversity_object)
 
-
-        if self.ignore_items_flag:
-            recommender_object.set_items_to_ignore(self.ignore_items_ID)
-
-
         n_users_evaluated = 0
 
         # Start from -block_size to ensure it to be 0 at the first block
         user_batch_start = 0
         user_batch_end = 0
 
-        while user_batch_start < len(usersToEvaluate):
+        while user_batch_start < len(self.usersToEvaluate):
 
             user_batch_end = user_batch_start + block_size
             user_batch_end = min(user_batch_end, len(usersToEvaluate))
@@ -298,7 +272,7 @@ class EvaluatorHoldout(Evaluator):
                                                                                       exclude_seen=self.exclude_seen,
                                                                                       cutoff = self.max_cutoff,
                                                                                       remove_top_pop_flag=False,
-                                                                                      remove_custom_items_flag=self.ignore_items_flag,
+                                                                                      remove_CustomItems_flag=self.ignore_items_flag,
                                                                                       return_scores = True
                                                                                       )
 
@@ -366,7 +340,8 @@ class EvaluatorHoldout(Evaluator):
                     elapsed_time = time.time()-start_time
                     new_time_value, new_time_unit = seconds_to_biggest_unit(elapsed_time)
 
-                    self._print("Processed {} ( {:.2f}% ) in {:.2f} {}. Users per second: {:.0f}".format(
+                    print("{}: Processed {} ( {:.2f}% ) in {:.2f} {}. Users per second: {:.0f}".format(
+                                  self.EVALUATOR_NAME,
                                   n_users_evaluated,
                                   100.0* float(n_users_evaluated)/len(self.usersToEvaluate),
                                   new_time_value, new_time_unit,
@@ -394,7 +369,10 @@ class EvaluatorHoldout(Evaluator):
         if self.ignore_items_flag:
             recommender_object.set_items_to_ignore(self.ignore_items_ID)
 
+
+
         results_dict, n_users_evaluated = self._run_evaluation_on_selected_users(recommender_object, self.usersToEvaluate)
+
 
         if (n_users_evaluated > 0):
 
@@ -420,16 +398,21 @@ class EvaluatorHoldout(Evaluator):
 
 
         else:
-            self._print("WARNING: No users had a sufficient number of relevant items")
+            print("WARNING: No users had a sufficient number of relevant items")
 
 
 
         results_run_string = get_result_string(results_dict)
 
+
+
+
         if self.ignore_items_flag:
             recommender_object.reset_items_to_ignore()
 
+
         return (results_dict, results_run_string)
+
 
 
 
@@ -456,6 +439,8 @@ class EvaluatorNegativeItemSample(Evaluator):
         :param ignore_items:
         :param ignore_users:
         """
+
+
         super(EvaluatorNegativeItemSample, self).__init__(URM_test_list, cutoff_list,
                                                           diversity_object = diversity_object,
                                                           minRatingsPerUser=minRatingsPerUser, exclude_seen=exclude_seen,
@@ -507,6 +492,7 @@ class EvaluatorNegativeItemSample(Evaluator):
         if self.ignore_items_flag:
             recommender_object.set_items_to_ignore(self.ignore_items_ID)
 
+
         for test_user in self.usersToEvaluate:
 
             # Being the URM CSR, the indices are the non-zero column indexes
@@ -522,7 +508,7 @@ class EvaluatorNegativeItemSample(Evaluator):
                                                                                           cutoff = self.max_cutoff,
                                                                                           remove_top_pop_flag=False,
                                                                                           items_to_compute = items_to_compute,
-                                                                                          remove_custom_items_flag=self.ignore_items_flag,
+                                                                                          remove_CustomItems_flag=self.ignore_items_flag,
                                                                                           return_scores = True
                                                                                           )
 
@@ -544,6 +530,8 @@ class EvaluatorNegativeItemSample(Evaluator):
             recommender_object.reset_items_to_ignore()
 
             is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
+
+
 
             for cutoff in self.cutoff_list:
 
@@ -581,7 +569,8 @@ class EvaluatorNegativeItemSample(Evaluator):
                 elapsed_time = time.time()-start_time
                 new_time_value, new_time_unit = seconds_to_biggest_unit(elapsed_time)
 
-                self._print("Processed {} ( {:.2f}% ) in {:.2f} {}. Users per second: {:.0f}".format(
+                print("{}: Processed {} ( {:.2f}% ) in {:.2f} {}. Users per second: {:.0f}".format(
+                              self.EVALUATOR_NAME,
                               n_users_evaluated,
                               100.0* float(n_users_evaluated)/len(self.usersToEvaluate),
                               new_time_value, new_time_unit,
@@ -618,11 +607,13 @@ class EvaluatorNegativeItemSample(Evaluator):
 
 
         else:
-            self._print("WARNING: No users had a sufficient number of relevant items")
+            print("WARNING: No users had a sufficient number of relevant items")
 
 
         if self.ignore_items_flag:
             recommender_object.reset_items_to_ignore()
+
+
 
         results_run_string = get_result_string(results_dict)
 
