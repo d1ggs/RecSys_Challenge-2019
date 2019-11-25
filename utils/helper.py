@@ -8,6 +8,7 @@ from sklearn import feature_extraction
 import os
 
 from utils.split_URM import split_train_test
+from utils.data_utilities import build_URM
 
 from Legacy.Base.IR_feature_weighting import okapi_BM_25
 # Put root project dir in a global constant
@@ -19,14 +20,16 @@ class Helper:
         # Loading of data using pandas, that creates a new object URM_data with the first line values as attributes
         # (playlist_id, track_id) as formatted in the .csv file
         self.URM_data = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/dataset.csv"))
+        self.URM_csr = self.convert_URM_to_csr(self.URM_data)
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
         self.URM_train = None
         self.test_data = None
 
-    def get_train_test_data(self, resplit=False, split_fraction=0.8):
-        if not self.URM_train or not self.test_data:
-            self.URM_train, _, self.test_data = split_train_test(self.convert_URM_to_csr(self.URM_data), split_fraction=split_fraction, rewrite=resplit)
+    def get_train_test_data(self, resplit=False, split_fraction=0.8, leave_out=1):
+        if self.URM_train is None or self.test_data is None:
+            self.URM_train, _, self.test_data = split_train_test(self.URM_csr, split_fraction=split_fraction,
+                                                                 rewrite=resplit, leave_out=leave_out)
         return self.URM_train.copy(), self.test_data.copy()
 
     def convert_URM_to_csr(self, URM):

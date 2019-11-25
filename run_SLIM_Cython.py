@@ -57,14 +57,14 @@ if __name__ == '__main__':
     helper = Helper()
 
     # Train and test data are now loaded by the helper
-    URM_train, test_data = helper.get_train_test_data(resplit=False, split_fraction=0)
+    URM_train, test_data = helper.get_train_test_data_diego(resplit=True, split_fraction=0, leave_out=10)
 
     map = []
 
     for params in pset5:
         recommender = SLIM_BPR_Cython(URM_train, recompile_cython=False, verbose=False)
-        recommender.fit(epochs=params["epochs"], learning_rate=params["lr"], topK=params["top_k"])
-        RunRecommender.write_submission(recommender)
+        recommender.fit(epochs=params["epochs"], learning_rate=params["lr"], topK=params["top_k"], random_seed=1234)
+        #RunRecommender.write_submission(recommender)
         map.append(RunRecommender.perform_evaluation_slim(recommender, test_data))
 
     #plt.plot(map)

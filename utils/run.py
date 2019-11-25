@@ -14,10 +14,10 @@ class RunRecommender:
 
         # Helper contains methods to convert URM in CSR
         helper = Helper()
-        URM_CSR = helper.convert_URM_to_csr(helper.URM_data)
+        URM_all = helper.URM_csr
 
         # Start recommendation
-        recommender.fit(URM_CSR)
+        recommender.fit(URM_all)
 
         RunRecommender.write_submission(recommender)
 
@@ -47,8 +47,6 @@ class RunRecommender:
     def perform_evaluation(recommender):
         """Takes an already fitted recommender and evaluates on test data.
          If test_mode is false writes the submission"""
-
-
 
         print("Performing evaluation on test set...")
 
