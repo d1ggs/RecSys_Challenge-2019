@@ -34,7 +34,8 @@ class RunRecommender:
         recommendation_matrix_file_to_submit = open(submission_target, 'w')
         recommendation_matrix_file_to_submit.write("user_id,item_list\n")
         for user in tqdm(target_users):
-            items_recommended = recommender.recommend(int(user), exclude_seen=True)
+            items_recommended = recommender.recommend(int(user), exclude_seen=True)[:10]
+
             items_recommended = " ".join(str(x) for x in items_recommended)
             user = user.replace("\n", "")  # remove \n from user file
             recommendation_matrix_file_to_submit.write(user + "," + items_recommended + "\n")
@@ -81,7 +82,7 @@ class RunRecommender:
         evaluator = Evaluator()
 
         for user in tqdm(test_data.keys()):
-            recommended_items = recommender.recommend(int(user), exclude_seen=True)
+            recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
             relevant_item = test_data[int(user)]
 
             MAP_final += evaluator.MAP(recommended_items, relevant_item)
