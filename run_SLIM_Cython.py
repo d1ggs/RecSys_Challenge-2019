@@ -28,39 +28,41 @@ if __name__ == '__main__':
         {"top_k": 900, "shrink": 2},
     ]
 
-    pset = [{"lr": 0.1, "epochs": 10, "top_k": 100},
-            {"lr": 0.1, "epochs": 20, "top_k": 100},
-            {"lr": 0.1, "epochs": 30, "top_k": 100},
-            {"lr": 0.1, "epochs": 40, "top_k": 100},
-            {"lr": 0.1, "epochs": 50, "top_k": 100},
-            {"lr": 0.01, "epochs": 10, "top_k": 100},
-            {"lr": 0.01, "epochs": 20, "top_k": 100},
-            {"lr": 0.01, "epochs": 30, "top_k": 100},
-            {"lr": 0.01, "epochs": 40, "top_k": 100},
-            {"lr": 0.01, "epochs": 50, "top_k": 100},
-            {"lr": 0.001, "epochs": 10, "top_k": 100},
-            {"lr": 0.001, "epochs": 20, "top_k": 100},
+    pset = [{"lr": 0.001, "epochs": 30, "top_k": 1},
+            {"lr": 0.001, "epochs": 30, "top_k": 2},
+            {"lr": 0.001, "epochs": 30, "top_k": 3},
+            {"lr": 0.001, "epochs": 30, "top_k": 4},
+            {"lr": 0.001, "epochs": 30, "top_k": 5},
+            {"lr": 0.001, "epochs": 30, "top_k": 6},
+            {"lr": 0.001, "epochs": 30, "top_k": 7},
+            {"lr": 0.001, "epochs": 30, "top_k": 8},
+            {"lr": 0.001, "epochs": 30, "top_k": 9},
+            {"lr": 0.001, "epochs": 30, "top_k": 10},
+            {"lr": 0.001, "epochs": 30, "top_k": 20},
+            {"lr": 0.001, "epochs": 30, "top_k": 30},
+            {"lr": 0.001, "epochs": 30, "top_k": 40},
+            {"lr": 0.001, "epochs": 30, "top_k": 50},
+            {"lr": 0.001, "epochs": 30, "top_k": 60},
+            {"lr": 0.001, "epochs": 30, "top_k": 70},
+            {"lr": 0.001, "epochs": 30, "top_k": 80},
+            {"lr": 0.001, "epochs": 30, "top_k": 90},
             {"lr": 0.001, "epochs": 30, "top_k": 100},
-            {"lr": 0.001, "epochs": 40, "top_k": 100},
-            {"lr": 0.001, "epochs": 50, "top_k": 100},
-            ]
+            {"lr": 0.001, "epochs": 30, "top_k": 200}]
 
-    pset = [{"lr": 0.1, "epochs": 50, "top_k": 20},
+    pset2 = [{"lr": 0.1, "epochs": 50, "top_k": 20},
             {"lr": 0.01, "epochs": 30, "top_k": 5}]
 
     helper = Helper()
 
     # Train and test data are now loaded by the helper
-    URM_train, test_data = helper.get_train_test_data()
+    URM_train, test_data = helper.get_train_test_data(resplit=True, split_fraction=0)
 
     map = []
 
     for params in pset:
         recommender = SLIM_BPR_Cython(URM_train, recompile_cython=False, verbose=False)
-        recommender.fit(epochs=params["epochs"], learning_rate=params["lr"], topK=params["top_k"])
+        recommender.fit(epochs=params["epochs"], learning_rate=params["lr"], topK=params["top_k"], random_seed=1234)
         map.append(RunRecommender.perform_evaluation_slim(recommender, test_data))
-
-    exit(1)
 
     plt.plot(map)
     plt.ylabel('MAP-10 score')

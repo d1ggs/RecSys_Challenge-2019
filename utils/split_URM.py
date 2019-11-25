@@ -34,7 +34,7 @@ def csr_row_set_nz_to_val(csr, row, value=0):
     csr.data[csr.indptr[row]:csr.indptr[row + 1]] = value
 
 
-def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, rewrite=False):
+def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, rewrite=False, leave_out=1):
     '''Split the full URM into a train URM and a test dictionary.
     Also save all objects in Pickle serialized format'''
 
@@ -62,10 +62,9 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, rewrite=
         URM_test_in.close()
 
     else:
-
         print("Splitting data into train and test...")
         sample_size = int((1 - split_fraction) * URM_all.shape[0])
-        indices = sample_test_users(URM_all, sample_size)
+        indices = sample_test_users(URM_all, sample_size, sample_threshold=leave_out)
 
         URM_test = copy.deepcopy(URM_all)
         URM_train = copy.deepcopy(URM_all)
@@ -90,10 +89,10 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, rewrite=
                 np.random.shuffle(interactions)
 
                 # Pick 10 to hold out to compute MAP@10
-                test_data[i] = interactions[:, 1][:10]
+                test_data[i] = np.array(interactions[:, 1][:leave_out])
 
                 # Set to 0 the corresponding interaction in the train matrix
-                for inter in interactions[:10]:
+                for inter in interactions[:leave_out]:
                     URM_train[i, inter] = 0
             else:
                 # It is not a test user, fill the row with zeros in test matrix

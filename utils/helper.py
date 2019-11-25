@@ -24,9 +24,9 @@ class Helper:
         self.URM_train = None
         self.test_data = None
 
-    def get_train_test_data(self, resplit = False):
+    def get_train_test_data(self, resplit=False, split_fraction=0.8):
         if not self.URM_train or not self.test_data:
-            self.URM_train, _, self.test_data = split_train_test(self.URM_data, split_fraction=0.8, rewrite=resplit)
+            self.URM_train, _, self.test_data = split_train_test(self.convert_URM_to_csr(self.URM_data), split_fraction=split_fraction, rewrite=resplit)
         return self.URM_train.copy(), self.test_data.copy()
 
     def convert_URM_to_csr(self, URM):

@@ -101,6 +101,7 @@ class Evaluator:
 
         is_relevant = np.in1d(recommended_items, relevant_items, assume_unique=True)
         # Cumulative sum: precision at 1, at 2, at 3 ...
+
         p_at_k = is_relevant * np.cumsum(is_relevant, dtype=np.float32) / (1 + np.arange(is_relevant.shape[0]))
 
         map_score = np.sum(p_at_k) / np.min([relevant_items.shape[0], is_relevant.shape[0]])
