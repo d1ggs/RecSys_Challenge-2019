@@ -66,7 +66,7 @@ class RunRecommender:
         return MAP_final
 
     @staticmethod
-    def perform_evaluation_slim(recommender, test_data: dict):
+    def perform_evaluation_slim(recommender, test_data: dict, total_users=0):
         """Takes an already fitted recommender and evaluates on test data.
          If test_mode is false writes the submission"""
 
@@ -85,7 +85,11 @@ class RunRecommender:
 
             MAP_final += evaluator.MAP(recommended_items, relevant_item)
 
-        MAP_final /= len(test_data.keys())
-
+        if total_users == 0:
+            # Compute MAP without considering cold users
+            MAP_final /= len(test_data.keys())
+        else:
+            # Compute MAP as predictions for cold users were all wrong
+            MAP_final /= total_users
         print("MAP-10 score:", MAP_final)
         return MAP_final

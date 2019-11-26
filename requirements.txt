@@ -1,0 +1,10 @@
+scipy
+numpy
+sklearn
+theano
+tqdm
+cython
+pandas
+torch
+matplotlib
+graphviz
