@@ -15,7 +15,7 @@ def sample_test_users(URM_csr, sample_size, sample_threshold=10):
     candidates = URM_csr.sum(1)
 
     # Get the users with enough interactions
-    indices = np.argwhere(candidates > sample_threshold)[:, 0]
+    indices = np.argwhere(candidates >= sample_threshold)[:, 0]
 
     if sample_size > indices.shape[0]:
         print("The sample requested is larger than the candidate users number. Returning whole vector.")
