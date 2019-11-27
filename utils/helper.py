@@ -45,53 +45,10 @@ class Helper:
         return self.URM_train.copy(), self.test_data.copy()
 
     def convert_URM_to_csr(self, URM):
-        # TODO is it really necessary to convert to numpy array before calling ones?
         ratings_list = np.ones(len(np.asarray(list(URM.data))))
-
-        # TODO implement data splitting here
         URM = sps.coo_matrix((ratings_list, (np.asarray(list(URM.row)), np.asarray(list(URM.col)))))
         URM = URM.tocsr()
         return URM
-
-    def load_URM_train_csr(self):
-        URM_train = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/train_data.csv"))
-        URM_train = self.convert_URM_to_csr(URM_train)
-        return URM_train
-
-    def load_URM_test(self):
-        URM_test = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/test_data.csv"))
-        return URM_test
-
-    def load_URM_test_csr(self):
-        URM_test = self.load_URM_test()
-        user_list = list(URM_test.user_id)
-
-        ratings_list = list(URM_test.item_list)
-
-        ratings_list = [el.split() for el in ratings_list]
-        cols = []
-        rows = []
-        for i in range(len(ratings_list)):
-            for _ in range(len(ratings_list[i])):
-                rows.append(user_list[i])
-            for el in ratings_list[i]:
-                cols.append(int(el))
-
-        cols = np.asarray(cols)
-        rows = np.asarray(rows)
-        rows = rows.flatten()
-
-        print(rows.shape)
-        print(cols.shape)
-        ratings_list = np.ones(rows.shape[0])
-        URM_test = sps.csr_matrix((ratings_list, (rows, cols)))
-        return URM_test
-
-    def convert_list_of_string_into_int(self, string_list):
-        c = string_list[0].split()
-
-        return [int(el) for el in c]
-
 
     def load_target_users_test(self):
         target_users_test_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "r")
