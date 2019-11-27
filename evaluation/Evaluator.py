@@ -108,6 +108,25 @@ class Evaluator:
 
         return map_score
 
+    def evaluateRecommender(self, recommender):
+
+        MAP_final = 0.0
+
+        helper = Helper()
+
+        _, test_data  = helper.get_train_test_data(resplit=False, split_fraction=0, leave_out=1)
+
+        for user in tqdm(test_data.keys()):
+            recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
+            relevant_item = test_data[int(user)]
+
+            MAP_final += self.MAP(recommended_items, relevant_item)
+
+        MAP_final /= len(test_data.keys())
+
+        result_string = "MAP@10 score: " + str(MAP_final)
+        return MAP_final, result_string
+
 
 
 

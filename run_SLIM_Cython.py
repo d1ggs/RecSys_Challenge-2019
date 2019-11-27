@@ -1,4 +1,5 @@
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
+from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
 from utils.run import RunRecommender
 
@@ -28,29 +29,41 @@ if __name__ == '__main__':
         {"top_k": 900, "shrink": 2},
     ]
 
-    pset1 = [{"lr": 0.001, "epochs": 30, "top_k": 1},
-            {"lr": 0.001, "epochs": 30, "top_k": 2},
-            {"lr": 0.001, "epochs": 30, "top_k": 3},
-            {"lr": 0.001, "epochs": 30, "top_k": 4},
-            {"lr": 0.001, "epochs": 30, "top_k": 5}]
+    pset1 = [{"lr": 0.1, "epochs": 10, "top_k": 5},
+             {"lr": 0.1, "epochs": 20, "top_k": 5},
+             {"lr": 0.1, "epochs": 30, "top_k": 5},
+             {"lr": 0.1, "epochs": 40, "top_k": 5},
+             {"lr": 0.1, "epochs": 50, "top_k": 5},
+             {"lr": 0.1, "epochs": 60, "top_k": 5},
+             {"lr": 0.1, "epochs": 70, "top_k": 5},
+             {"lr": 0.1, "epochs": 80, "top_k": 5},
+             {"lr": 0.1, "epochs": 90, "top_k": 5},
+             {"lr": 0.1, "epochs": 100, "top_k": 5}]
 
-    pset2 = [{"lr": 0.001, "epochs": 30, "top_k": 6},
-            {"lr": 0.001, "epochs": 30, "top_k": 7},
-            {"lr": 0.001, "epochs": 30, "top_k": 8},
-            {"lr": 0.001, "epochs": 30, "top_k": 9},
-            {"lr": 0.001, "epochs": 30, "top_k": 10}]
+    pset2 = [{"lr": 0.005, "epochs": 10, "top_k": 5},
+             {"lr": 0.005, "epochs": 20, "top_k": 5},
+             {"lr": 0.005, "epochs": 30, "top_k": 5},
+             {"lr": 0.005, "epochs": 40, "top_k": 5},
+             {"lr": 0.005, "epochs": 50, "top_k": 5},
+             {"lr": 0.005, "epochs": 60, "top_k": 5},
+             {"lr": 0.005, "epochs": 70, "top_k": 5},
+             {"lr": 0.005, "epochs": 80, "top_k": 5},
+             {"lr": 0.005, "epochs": 90, "top_k": 5},
+             {"lr": 0.005, "epochs": 100, "top_k": 5}]
 
-    pset3 = [{"lr": 0.001, "epochs": 30, "top_k": 20},
-            {"lr": 0.001, "epochs": 30, "top_k": 30},
-            {"lr": 0.001, "epochs": 30, "top_k": 40},
-            {"lr": 0.001, "epochs": 30, "top_k": 50},
-            {"lr": 0.001, "epochs": 30, "top_k": 60}]
+    pset3 = [{"lr": 0.001, "epochs": 50, "top_k": 5},
+             {"lr": 0.001, "epochs": 60, "top_k": 5},
+             {"lr": 0.001, "epochs": 70, "top_k": 5},
+             {"lr": 0.001, "epochs": 80, "top_k": 5},
+             {"lr": 0.001, "epochs": 90, "top_k": 5},
+             {"lr": 0.001, "epochs": 100, "top_k": 5},
+             {"lr": 0.001, "epochs": 120, "top_k": 5},
+             {"lr": 0.001, "epochs": 140, "top_k": 5},
+             {"lr": 0.001, "epochs": 160, "top_k": 5},
+             {"lr": 0.001, "epochs": 180, "top_k": 5},
+             {"lr": 0.001, "epochs": 200, "top_k": 5},
+             ]
 
-    pset4 = [{"lr": 0.001, "epochs": 30, "top_k": 70},
-            {"lr": 0.001, "epochs": 30, "top_k": 80},
-            {"lr": 0.001, "epochs": 30, "top_k": 90},
-            {"lr": 0.001, "epochs": 30, "top_k": 100},
-            {"lr": 0.001, "epochs": 30, "top_k": 200}]
 
     pset5 = [{"lr": 0.001, "epochs": 30, "top_k": 5}]
 
@@ -58,16 +71,16 @@ if __name__ == '__main__':
 
     # Train and test data are now loaded by the helper
     URM_train, test_data = helper.get_train_test_data(resplit=False, split_fraction=0, leave_out=1)
-    num_users = helper.get_number_of_users()
-    map = []
 
-    for params in pset5:
-        recommender = SLIM_BPR_Cython(URM_train, recompile_cython=False, verbose=False)
-        recommender.fit(epochs=params["epochs"], learning_rate=params["lr"], topK=params["top_k"], random_seed=1234)
-        #RunRecommender.write_submission(recommender)
-        map.append(RunRecommender.perform_evaluation_slim(recommender, test_data, num_users))
+    evaluator = Evaluator()
 
-    #plt.plot(map)
-    #plt.ylabel('MAP-10 score')
-    #plt.xlabel('Parameter set')
-    #plt.show()
+    pset2 = {"lr": 0.001, "epochs": 1000, "top_k": 5}
+    pset = {"lr": 0.001, "epochs": 1000, "top_k": 100}
+
+    recommender = SLIM_BPR_Cython(URM_train, recompile_cython=False, verbose=False)
+
+    recommender.fit(epochs=1000, learning_rate=pset["lr"], topK=pset["top_k"], random_seed=1234,
+                    **{"validation_every_n": 10, "stop_on_validation": True,
+                       "validation_metric" : "MAP", "lower_validations_allowed" : 2,
+                       "evaluator_object" : evaluator})
+    # RunRecommender.write_submission(recommender)
