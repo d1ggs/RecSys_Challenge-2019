@@ -6,16 +6,16 @@ from evaluation.Evaluator import Evaluator
 
 class TopPopRecommender:
 
-    def __init__(self, helper):
-        self.helper = helper
+    def __init__(self):
+        self.URM_CSR = None
 
     def fit(self, URM_CSR):
-        """ --- CSR Matrix Computation ---
-        Training data loading and its conversion to a CSR matrix is done in run.py with the functions provided by Helper
-    """
+        # --- CSR Matrix Computation ---
+        #Training data loading and its conversion to a CSR matrix is done in run.py with the functions provided by Helper
+
         # self.URM_data = self.helper.URM_data
         self.URM_CSR = URM_CSR
-        """ --- Actual Popularity computation --- """
+        # --- Actual Popularity computation ---
         # Calculate item popularity by summing for each item the rating of every use
         # The most popular playlist is the one with more songs in it
         item_popularity = (self.URM_CSR > 0).sum(axis=0)

@@ -29,6 +29,15 @@ class Helper:
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
 
+    def get_cold_user_ids(self):
+        # Sum interactions for each user
+        interactions = self.URM_csr.sum(1)
+
+        # Get the users with enough interactions
+        indices = np.argwhere(interactions == 0)[:, 0]
+
+        return list(indices)
+
     def get_train_test_data(self, resplit=False, split_fraction=0.8, leave_out=1):
         if self.URM_train is None or self.test_data is None:
             self.URM_train, _, self.test_data = split_train_test(self.URM_csr, split_fraction=split_fraction,

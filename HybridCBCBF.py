@@ -2,6 +2,7 @@ from ItemBasedCBF import ItemBasedCBF
 from CollaborativeFilter import CollaborativeFilter
 import numpy as np
 
+from TopPopularRecommender import TopPopRecommender
 from utils.helper import Helper
 from utils.run import RunRecommender
 
@@ -27,6 +28,8 @@ class HybridCBCBFRecommender():
                                 weight_asset=item_cbf_parameters["weight_asset"], weight_price=item_cbf_parameters["weight_price"],
                                 weight_sub_class=item_cbf_parameters["weight_sub_class"])
         self.cb = CollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
+        self.toppop = TopPopRecommender()
+        self.cold_users = Helper().get_cold_user_ids()
 
 
 
@@ -35,11 +38,17 @@ class HybridCBCBFRecommender():
         # Fit the URM into single recommenders
         self.cbf.fit(self.URM_train)
         self.cb.fit(self.URM_train)
+        self.toppop.fit(self.URM_train)
 
     def compute_scores(self, user_id):
-        scores_cbf = self.cbf.compute_scores(user_id)
-        scores_cb = self.cb.compute_scores(user_id)
-        scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb)
+        if user_id in self.cold_users:
+            # If the user has no interactions a TopPopular recommendations is still better than random
+            scores = self.toppop.recommend(user_id)
+        else:
+            # Otherwise proceed with regular recommendations
+            scores_cbf = self.cbf.compute_scores(user_id)
+            scores_cb = self.cb.compute_scores(user_id)
+            scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb)
 
         return scores
 
