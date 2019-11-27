@@ -59,7 +59,7 @@ if __name__ == '__main__':
     for i in range(len(map10)):
         if map10[i][0] > max_map:
             max_map = map10[i][0]
-            best_epochs = map10[1]
+            best_epochs = map10[i]
             best_parameters = params[i]
 
     print("Parameters:", best_parameters)
