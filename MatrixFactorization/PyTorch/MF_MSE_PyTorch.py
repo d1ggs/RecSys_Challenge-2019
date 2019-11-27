@@ -5,8 +5,7 @@ Created on 06/07/2018
 
 @author: Maurizio Ferrari Dacrema
 """
-
-
+from Legacy.Base.BaseMatrixFactorizationRecommender import BaseMatrixFactorizationRecommender
 from Legacy.Base.Incremental_Training_Early_Stopping import Incremental_Training_Early_Stopping
 from Legacy.Base.BaseRecommender import BaseRecommender
 import os, sys
@@ -29,10 +28,10 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
     RECOMMENDER_NAME = "MF_MSE_PyTorch_Recommender"
 
 
-    def __init__(self, URM_train, positive_threshold=4):
+    def __init__(self, URM_train, positive_threshold=0):
 
 
-        super(MF_MSE_PyTorch, self).__init__()
+        super(MF_MSE_PyTorch, self).__init__(URM_train)
 
 
         self.URM_train = URM_train
@@ -42,14 +41,17 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
 
         self.positive_threshold = positive_threshold
 
-        self.compute_item_score = self.compute_score_MF
+        self._compute_item_score = self.compute_score_MF
 
 
 
 
 
 
-    def compute_score_MF(self, user_id):
+    def compute_score_MF(self, user_id, items_to_compute=None):
+
+        if items_to_compute is not None:
+            raise NotImplementedError("Don't know how to handle items_to_compute")
 
         scores_array = np.dot(self.W[user_id], self.H.T)
 
@@ -100,7 +102,7 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
         #Choose loss
         self.lossFunction = torch.nn.MSELoss(size_average=False)
         #self.lossFunction = torch.nn.BCELoss(size_average=False)
-        self.optimizer = torch.optim.Adagrad(self.pyTorchModel.parameters(), lr = self.learning_rate)
+        self.optimizer = torch.optim.Adagrad(self.pyTorchModel.parameters(), lr=self.learning_rate)
 
 
         dataset_iterator = DatasetIterator_URM(self.URM_train)
@@ -114,13 +116,12 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
 
         ########################################################################################################
 
+        self._initialize_incremental_model()
+
         self._train_with_early_stopping(epochs,
                                         algorithm_name = self.RECOMMENDER_NAME,
                                         **earlystopping_kwargs)
 
-
-        self.ITEM_factors = self.W_best.copy()
-        self.USER_factors = self.H_best.copy()
 
         self._print("Computing NMF decomposition... Done!")
         
@@ -182,3 +183,9 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+
+        self._update_incremental_model()
+
+    def _prepare_model_for_validation(self):
+        self.ITEM_factors = self.W_best.copy()
+        self.USER_factors = self.H_best.copy()

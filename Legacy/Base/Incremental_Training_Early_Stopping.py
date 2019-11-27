@@ -178,7 +178,6 @@ class Incremental_Training_Early_Stopping(object):
 
             # If no validation required, always keep the latest
             if evaluator_object is None:
-
                 self.epochs_best = epochs_current
 
             # Determine whether a validaton step is required
