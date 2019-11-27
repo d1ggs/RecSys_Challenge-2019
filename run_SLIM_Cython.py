@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 
 from threading import Thread
 
+
 class SLIMRunner(Thread):
     pass
+
 
 if __name__ == '__main__':
 
@@ -34,17 +36,17 @@ if __name__ == '__main__':
               {"lr": 0.001, "epochs": 1000, "top_k": 6},
               {"lr": 0.001, "epochs": 1000, "top_k": 7},
               {"lr": 0.001, "epochs": 1000, "top_k": 8},
-              {"lr": 0.001, "epochs": 1000, "top_k": 9},
-              {"lr": 0.001, "epochs": 1000, "top_k": 10}]
+              {"lr": 0.001, "epochs": 1000, "top_k": 9}]
+
 
     for p in params:
-
+        early_stopping = {"validation_every_n": 10, "stop_on_validation": True,
+                          "validation_metric": "MAP", "lower_validations_allowed": 2,
+                          "evaluator_object": evaluator}
         recommender = SLIM_BPR_Cython(URM_train, recompile_cython=False, verbose=False)
 
-        best_MAP, best_epoch = recommender.fit(epochs=1000, learning_rate=p["lr"], topK=p["top_k"], random_seed=1234,
-                        **{"validation_every_n": 10, "stop_on_validation": True,
-                           "validation_metric" : "MAP", "lower_validations_allowed" : 2,
-                           "evaluator_object" : evaluator})
+        best_MAP, best_epoch = recommender.fit(epochs=1000, learning_rate=p["lr"], topK=p["top_k"]*100, random_seed=1234,
+                                               **early_stopping)
         print("Parameters:", pset)
         print("Best epoch:", best_epoch)
         print("MAP score:", best_MAP)

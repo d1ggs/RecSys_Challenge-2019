@@ -179,7 +179,6 @@ class Incremental_Training_Early_Stopping(object):
             # If no validation required, always keep the latest
             if evaluator_object is None:
                 self.epochs_best = epochs_current
-                return None, None
 
             # Determine whether a validaton step is required
             elif (epochs_current + 1) % validation_every_n == 0:
@@ -253,8 +252,9 @@ class Incremental_Training_Early_Stopping(object):
             if evaluator_object is not None and self.best_validation_metric is not None:
                 print("{}: Terminating at epoch {}. Best value for '{}' at epoch {} is {:.4f}. Elapsed time {:.2f} {}".format(
                     algorithm_name, epochs_current, validation_metric, self.epochs_best, self.best_validation_metric, new_time_value, new_time_unit))
-                return self.best_validation_metric, self.epochs_best
             else:
                 print("{}: Terminating at epoch {}. Elapsed time {:.2f} {}".format(
                     algorithm_name, epochs_current, new_time_value, new_time_unit))
+
+        return self.best_validation_metric, self.epochs_best
 
