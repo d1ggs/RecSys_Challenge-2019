@@ -166,7 +166,7 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
         self.S_incremental = self.cythonEpoch.get_S()
         self.S_best = self.S_incremental.copy()
 
-        self._train_with_early_stopping(epochs,
+        best_evaluation, best_epoch = self._train_with_early_stopping(epochs,
                                         algorithm_name = self.RECOMMENDER_NAME,
                                         **earlystopping_kwargs)
 
@@ -176,8 +176,7 @@ class SLIM_BPR_Cython(BaseItemSimilarityMatrixRecommender, Incremental_Training_
 
         sys.stdout.flush()
 
-
-
+        return best_epoch, best_evaluation
 
     def _prepare_model_for_validation(self):
         self.get_S_incremental_and_set_W()
