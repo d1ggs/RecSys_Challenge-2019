@@ -1,24 +1,21 @@
 from ItemBasedCBF import ItemBasedCBF
-from CollaborativeFilter import CollaborativeFilter
+from HybridUCB_ICB import HybridUCBICBRecommender
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
-from TopPopularRecommender import TopPopRecommender
 import numpy as np
-
-from utils.helper import Helper
 from utils.run import RunRecommender
 
 item_cbf_parameters = {"topK_asset": 100,
-                       "topK_price": 100,
-                       "topK_sub_class": 200,
-                       "shrink_asset": 2,
-                       "shrink_price": 2,
+                       "topK_price": 300,
+                       "topK_sub_class": 80,
+                       "shrink_asset": 20,
+                       "shrink_price": 20,
                        "shrink_sub_class": 0,
-                       "weight_asset": 0.2,
-                       "weight_price": 0.15,
+                       "weight_asset": 0.35,
+                       "weight_price": 0,
                        "weight_sub_class": 0.65}
-cb_parameters = {"topK": 210,
-                 "shrink": 0}
-slim_parameters = {"lr": 0.1, "epochs": 50, "top_k": 20}
+weights_hybrid_ucb_icb = {"user_cb": 0.1, "item_cb": 0.9}
+
+slim_parameters = {"lr": 0.1, "epochs": 15, "top_k": 4}
 
 
 class HybridCBCBFSLIMRecommender():
@@ -29,35 +26,24 @@ class HybridCBCBFSLIMRecommender():
                                 shrink_price=item_cbf_parameters["shrink_price"], shrink_sub_class=item_cbf_parameters["shrink_sub_class"],
                                 weight_asset=item_cbf_parameters["weight_asset"], weight_price=item_cbf_parameters["weight_price"],
                                 weight_sub_class=item_cbf_parameters["weight_sub_class"])
-        self.cb = CollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
-        self.toppop = TopPopRecommender()
-        self.cold_users = Helper().get_cold_user_ids()
+        self.cb = HybridUCBICBRecommender(weights_hybrid_ucb_icb)
 
-    def set_weights(self, weights):
-        self.weights = weights
 
 
     def fit(self, URM_train):
         self.URM_train = URM_train
         self.slim = SLIM_BPR_Cython(self.URM_train)
-
         # Fit the URM into single recommenders
         self.slim.fit(epochs=slim_parameters["epochs"], learning_rate=slim_parameters["lr"], topK=slim_parameters["top_k"])
-        self.toppop.fit(self.URM_train)
+
         self.cbf.fit(self.URM_train)
         self.cb.fit(self.URM_train)
 
     def compute_scores(self, user_id):
-
-        if user_id in self.cold_users:
-            # If the user has no interactions a TopPopular recommendation is still better than random
-            scores = self.toppop.recommend(user_id)
-        else:
-            # Otherwise proceed with regular recommendations
-            scores_cbf = self.cbf.compute_scores(user_id)
-            scores_cb = self.cb.compute_scores(user_id)
-            scores_slim = self.slim._compute_item_score(user_id_array=np.asarray(user_id))
-            scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb) + (self.weights["slim"] * scores_slim.squeeze())
+        scores_cbf = self.cbf.compute_scores(user_id)
+        scores_cb = self.cb.compute_scores(user_id)
+        scores_slim = self.slim._compute_item_score(user_id_array=np.asarray(user_id))
+        scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb) + (self.weights["slim"] * scores_slim.squeeze())
 
         return scores
 
@@ -84,67 +70,11 @@ class HybridCBCBFSLIMRecommender():
 if __name__ == "__main__":
 
     # Train and test data are now loaded by the helper
-    map = []
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
+
+    weights_hybrid = {"cbf": 0.2, "cb": 0.4, "slim": 0.4}
+    weights_hybrid_ucb_icb = {"user_cb": 0.1, "item_cb": 0.9}
 
     hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights_hybrid)
 
     # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0.1, "cb": 0.4, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
-
-    # Evaluation is performed by RunRecommender
-    map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    weights_hybrid = {"cbf": 0, "cb": 0.5, "slim": 0.5}
-
-    hybrid_cbcbf.set_weights(weights_hybrid)
+    RunRecommender.perform_evaluation(hybrid_cbcbf)

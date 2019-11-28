@@ -8,7 +8,7 @@ import pickle
 SEED = 12345678
 
 
-def sample_test_users(URM_csr, sample_size, sample_threshold=10):
+def sample_test_users(URM_csr, sample_size, sample_threshold=0):
     """Sample test user ids of users that have more interactions than a given threshold"""
 
     # Get a column vector containing for each user the number of interactions
@@ -104,8 +104,6 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, rewrite=
         URM_train = URM_train.tocsr()
         URM_test = URM_test.tocsr()
 
-        # print(URM_train.nnz)
-        # print(URM_test.nnz)
 
         # Serialize the objects with Pickle, for faster loading
 

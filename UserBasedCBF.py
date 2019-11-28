@@ -1,4 +1,4 @@
-from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
+from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
 from utils.run import RunRecommender
@@ -26,19 +26,20 @@ class UserBasedCBF():
 
     def fit(self, URM_train):
         self.URM_train = URM_train
-        self.user_list_train = self.URM_train[:30910,0]
-        self.user_list_train = self.user_list_train.transpose()
         # UCMs loading
         self.UCM_age = self.helper.load_ucm_age()
         self.UCM_region = self.helper.load_ucm_region()
+        self.UCM_region = self.helper.sklearn_normalization(self.UCM_region, axis=0)
 
         # Compute similarities
         self.SM_age = self.compute_similarity(self.UCM_age, self.topK_age, self.shrink_age)
         self.SM_region = self.compute_similarity(self.UCM_region, self.topK_region, self.shrink_region)
 
     def compute_scores(self, user_id):
-        scores_age = self.user_list_train.dot(self.SM_age).toarray().ravel()
-        scores_region = self.user_list_train.dot(self.SM_region).toarray().ravel()
+        users_list_train = self.URM_train[user_id]
+        print(users_list_train.shape, self.SM_age.shape, self.SM_region.shape)
+        scores_age = users_list_train.dot(self.SM_age).toarray().ravel()
+        scores_region = users_list_train.dot(self.SM_region).toarray().ravel()
         region_weight = 1 - self.age_weight
 
         scores = (scores_age * self.age_weight) + (scores_region * region_weight)
@@ -69,9 +70,7 @@ class UserBasedCBF():
 if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
-
-    helper = Helper()
-    helper.split_ucm_region()
     ubcbf = UserBasedCBF()
-    RunRecommender.run(ubcbf)
+    ubcbf.helper.split_ucm_region()
+    #RunRecommender.perform_evaluation(ubcbf)
     # print('{0:.128f}'.format(map10))
