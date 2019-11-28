@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_ucb_icb = {"user_cb": 0.0, "item_cb": 1}
+    weights_hybrid_ucb_icb = {"user_cb": 0.02, "item_cb": 0.98}
 
     hybrid_ucbicb = HybridUCBICBRecommender(weights_hybrid_ucb_icb)
 
