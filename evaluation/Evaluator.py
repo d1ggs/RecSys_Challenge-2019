@@ -41,7 +41,7 @@ class Evaluator:
             MAP_final += self.MAP(recommended_items, relevant_item)
 
         MAP_final /= len(self.test_data.keys())
-
+        MAP_final *= 0.665
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string
 
