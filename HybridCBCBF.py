@@ -1,5 +1,5 @@
 from ItemBasedCBF import ItemBasedCBF
-from UserCollaborativeFilter import CollaborativeFilter
+from UserCollaborativeFilter import UserCollaborativeFilter
 import numpy as np
 
 from TopPopularRecommender import TopPopRecommender
@@ -31,7 +31,7 @@ class HybridCBCBFRecommender():
                                 weight_asset=item_cbf_parameters["weight_asset"],
                                 weight_price=item_cbf_parameters["weight_price"],
                                 weight_sub_class=item_cbf_parameters["weight_sub_class"])
-        self.cb = CollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
+        self.cb = UserCollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
         self.toppop = TopPopRecommender()
         self.cold_users = Helper().get_cold_user_ids()
 

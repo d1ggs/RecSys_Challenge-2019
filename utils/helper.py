@@ -113,16 +113,16 @@ class Helper:
         row = np.asarray(list(ucm_age.row))
         col = np.asarray(list(ucm_age.col))
         data = np.asarray(list(ucm_age.data))
-        ucm_age = sps.coo_matrix((data, (row, col)))
+        ucm_age = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col)+1))
         ucm_age = ucm_age.tocsr()
         return ucm_age
 
     def load_ucm_region(self):
-        ucm_region = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region_no_zero_cols.csv"))
+        ucm_region = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region.csv"))
         row = np.asarray(list(ucm_region.row))
         col = np.asarray(list(ucm_region.col))
         data = np.asarray(list(ucm_region.data))
-        ucm_region = sps.coo_matrix((data, (row, col)))
+        ucm_region = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col)+1))
         ucm_region = ucm_region.tocsr()
         return ucm_region
 

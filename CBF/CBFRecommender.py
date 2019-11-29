@@ -5,7 +5,7 @@ Created on 09/11/2019
 """
 
 import numpy as np
-from base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
+from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
 from evaluation.Evaluator import Evaluator
@@ -84,34 +84,6 @@ class CBFRecomender:
         scores[user_profile] = -np.inf
 
         return scores
-
-    def find_best_fit(self, parameter_list):
-        print("Looking for best parameter set over ", len(parameter_list))
-        results = []
-        best = 0
-        best_parameters = None
-        best_model = None
-
-        # Collect MAP scores for each parameter set
-
-        for parameter_set in tqdm(parameter_list):
-            self.__init__(knn_asset=parameter_set["knn_asset"], knn_price=parameter_set["knn_price"],
-                          knn_sub_class=parameter_set["knn_sub_class"], shrink_asset=parameter_set["shrink_asset"],
-                          shrink_price=parameter_set["shrink_price"],
-                          shrink_sub_class=parameter_set["shrink_sub_class"],
-                          weight_asset=parameter_set["weight_asset"], weight_price=parameter_set["weight_price"],
-                          weight_sub_class=parameter_set["weight_sub_class"])
-
-            result = RunRecommender.run_test_recommender(cbf_recommender)
-            results.append(result)
-
-            if result > best:
-                best_parameters = parameter_set
-                best_model = deepcopy(self)
-                best = result
-
-        print("Best MAP score obtained: ", best)
-        return results, best_model, best_parameters
 
 
 if __name__ == "__main__":

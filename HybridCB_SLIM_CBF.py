@@ -1,4 +1,5 @@
 from ItemBasedCBF import ItemBasedCBF
+from HybridUCB_ICB import HybridUCBICBRecommender
 from UserCollaborativeFilter import UserCollaborativeFilter
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from TopPopularRecommender import TopPopRecommender
