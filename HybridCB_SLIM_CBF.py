@@ -1,7 +1,10 @@
 from ItemBasedCBF import ItemBasedCBF
-from HybridUCB_ICB import HybridUCBICBRecommender
+from UserCollaborativeFilter import UserCollaborativeFilter
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
+from TopPopularRecommender import TopPopRecommender
 import numpy as np
+
+from utils.helper import Helper
 from utils.run import RunRecommender
 
 item_cbf_parameters = {"topK_asset": 100,
@@ -13,9 +16,11 @@ item_cbf_parameters = {"topK_asset": 100,
                        "weight_asset": 0.35,
                        "weight_price": 0,
                        "weight_sub_class": 0.65}
-weights_hybrid_ucb_icb = {"user_cb": 0.1, "item_cb": 0.9}
 
-slim_parameters = {"lr": 0.1, "epochs": 15, "top_k": 4}
+cb_parameters = {"topK": 510,
+                 "shrink": 4}
+# slim_parameters = {"lr": 0.001, "epochs": 120, "top_k": 6}
+slim_parameters={"lr": 0.1, "epochs": 15, "top_k":4}
 
 
 class HybridCBCBFSLIMRecommender():
@@ -30,8 +35,12 @@ class HybridCBCBFSLIMRecommender():
                                 weight_asset=item_cbf_parameters["weight_asset"],
                                 weight_price=item_cbf_parameters["weight_price"],
                                 weight_sub_class=item_cbf_parameters["weight_sub_class"])
-        self.cb = HybridUCBICBRecommender(weights_hybrid_ucb_icb)
+        self.cb = UserCollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
+        self.toppop = TopPopRecommender()
+        self.cold_users = Helper().get_cold_user_ids()
 
+    def set_weights(self, weights):
+        self.weights = weights
 
     def fit(self, URM_train):
         self.URM_train = URM_train
@@ -45,10 +54,6 @@ class HybridCBCBFSLIMRecommender():
         self.cb.fit(self.URM_train)
 
     def compute_scores(self, user_id):
-        scores_cbf = self.cbf.compute_scores(user_id)
-        scores_cb = self.cb.compute_scores(user_id)
-        scores_slim = self.slim._compute_item_score(user_id_array=np.asarray(user_id))
-        scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb) + (self.weights["slim"] * scores_slim.squeeze())
 
         scores_cbf = self.cbf.compute_scores(user_id)
         scores_cb = self.cb.compute_scores(user_id)
@@ -85,10 +90,6 @@ if __name__ == "__main__":
     # Train and test data are now loaded by the helper
     map10 = []
 
-    weights_hybrid = {"cbf": 0.2, "cb": 0.4, "slim": 0.4}
-    weights_hybrid_ucb_icb = {"user_cb": 0.1, "item_cb": 0.9}
-
-    hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights_hybrid)
     weights = [{"cbf": 0.2, "cb": 0.3, "slim": 0.5}]
     # weights = [{"cbf": 0.1, "cb": 0.2, "slim": 0.7},
     #            {"cbf": 0.2, "cb": 0.1, "slim": 0.7}]
@@ -99,8 +100,6 @@ if __name__ == "__main__":
     # weights = [{"cbf": 0.4, "cb": 0.3, "slim": 0.3},
     #            {"cbf": 0.2, "cb": 0.5, "slim": 0.3}]
 
-    # Evaluation is performed by RunRecommender
-    RunRecommender.perform_evaluation(hybrid_cbcbf)
     helper = Helper()
     URM_train, _ = helper.get_train_test_data()
     hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights[0])

@@ -25,18 +25,21 @@ class Helper:
         self.items_list_data = np.asarray(list(self.URM_data.col))
         self.URM_train = None
         self.test_data = None
+        self.cold_users = None
 
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
 
     def get_cold_user_ids(self):
-        # Sum interactions for each user
-        interactions = self.URM_csr.sum(1)
+        if self.cold_users == None:
+            # Sum interactions for each user
+            interactions = self.URM_csr.sum(1)
 
-        # Get the users with enough interactions
-        indices = np.argwhere(interactions == 0)[:, 0]
+            # Get the users with enough interactions
+            indices = np.argwhere(interactions == 0)[:, 0]
+            self.cold_users = list(indices)
 
-        return list(indices)
+        return self.cold_users
 
     def get_train_test_data(self, resplit=False, split_fraction=0, leave_out=1):
         if self.URM_train is None or self.test_data is None:
