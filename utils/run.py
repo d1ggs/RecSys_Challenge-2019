@@ -61,8 +61,10 @@ class RunRecommender:
             MAP_final += evaluator.MAP(recommended_items, relevant_item)
 
         MAP_final /= len(test_data.keys())
-
         print("MAP-10 score:", MAP_final)
+        MAP_final *= 0.665
+        print("MAP-10 public approx score:", MAP_final)
+
         return MAP_final
 
     @staticmethod
@@ -86,6 +88,6 @@ class RunRecommender:
             MAP_final += evaluator.MAP(recommended_items, relevant_item)
 
         MAP_final /= len(test_data.keys())
-
+        MAP_final *= 0.665
         print("MAP-10 score:", MAP_final)
         return MAP_final

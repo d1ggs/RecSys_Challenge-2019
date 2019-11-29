@@ -1,5 +1,5 @@
 from ItemBasedCBF import ItemBasedCBF
-from CollaborativeFilter import CollaborativeFilter
+from UserCollaborativeFilter import CollaborativeFilter
 import numpy as np
 
 from TopPopularRecommender import TopPopRecommender
@@ -77,7 +77,7 @@ class HybridCBCBFRecommender():
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights_hybrid = {"cbf": 0.2, "cb": 0.8}
+    weights_hybrid = {"cbf": 0.4, "cb": 0.6}
 
     hybrid_cbcbf = HybridCBCBFRecommender(weights_hybrid)
 
