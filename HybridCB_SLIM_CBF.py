@@ -19,7 +19,8 @@ item_cbf_parameters = {"topK_asset": 100,
 
 cb_parameters = {"topK": 510,
                  "shrink": 4}
-slim_parameters = {"lr": 0.001, "epochs": 120, "top_k": 6}
+# slim_parameters = {"lr": 0.001, "epochs": 120, "top_k": 6}
+slim_parameters={"lr": 0.1, "epochs": 15, "top_k":4}
 
 
 class HybridCBCBFSLIMRecommender():
@@ -47,7 +48,7 @@ class HybridCBCBFSLIMRecommender():
 
         # Fit the URM into single recommenders
         self.slim.fit(epochs=slim_parameters["epochs"], learning_rate=slim_parameters["lr"],
-                      topK=slim_parameters["top_k"])
+                      topK=slim_parameters["top_k"], random_seed=1234)
         self.toppop.fit(self.URM_train)
         self.cbf.fit(self.URM_train)
         self.cb.fit(self.URM_train)
@@ -58,11 +59,11 @@ class HybridCBCBFSLIMRecommender():
         scores_cb = self.cb.compute_scores(user_id)
         scores_slim = self.slim._compute_item_score(user_id_array=np.asarray(user_id))
         scores = (self.weights["cbf"] * scores_cbf) + (self.weights["cb"] * scores_cb) + (
-                    self.weights["slim"] * scores_slim.squeeze())
+                self.weights["slim"] * scores_slim.squeeze())
         return scores
 
-    def recommend(self, user_id, at=10, exclude_seen=True):
-        if user_id in self.cold_users:
+    def recommend(self, user_id, at=10, exclude_seen=True, enable_toppop=True):
+        if user_id in self.cold_users and enable_toppop:
             # If the user has no interactions a TopPopular recommendation is still better than random
             recommended_items = self.toppop.recommend(user_id)
         else:
@@ -79,18 +80,40 @@ class HybridCBCBFSLIMRecommender():
 
         user_profile = self.URM_train.indices[start_pos:end_pos]
         scores[user_profile] = -np.inf
-        
+
         return scores
 
 
 if __name__ == "__main__":
+    from matplotlib import pyplot as plt
+
     # Train and test data are now loaded by the helper
-    map = []
+    map10 = []
 
-    weights_hybrid = {"cbf": 0.2, "cb": 0.3, "slim": 0.5}
+    weights = [{"cbf": 0.2, "cb": 0.3, "slim": 0.5}]
+    # weights = [{"cbf": 0.1, "cb": 0.2, "slim": 0.7},
+    #            {"cbf": 0.2, "cb": 0.1, "slim": 0.7}]
+    # weights = [{"cbf": 0.2, "cb": 0.3, "slim": 0.5}, ############
+    #            {"cbf": 0.3, "cb": 0.2, "slim": 0.5}]
+    # weights = [{"cbf": 0.3, "cb": 0.3, "slim": 0.4},
+    #            {"cbf": 0.3, "cb": 0.4, "slim": 0.3}]
+    # weights = [{"cbf": 0.4, "cb": 0.3, "slim": 0.3},
+    #            {"cbf": 0.2, "cb": 0.5, "slim": 0.3}]
 
-    hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights_hybrid)
+    helper = Helper()
+    URM_train, _ = helper.get_train_test_data()
+    hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights[0])
+    # hybrid_cbcbf.fit(URM_train)
 
     # Evaluation is performed by RunRecommender
-    #map = map.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
-    RunRecommender.run(hybrid_cbcbf)
+    for w in weights:
+        hybrid_cbcbf.set_weights(w)
+        map10.append(RunRecommender.perform_evaluation(hybrid_cbcbf))
+
+    print(map10)
+
+    # plt.plot(map10)
+    # plt.ylabel("MAP@10")
+    # plt.xlabel("Parameter set")
+    # plt.show()
+    # RunRecommender.run(hybrid_cbcbf)

@@ -38,7 +38,7 @@ class Helper:
 
         return list(indices)
 
-    def get_train_test_data(self, resplit=False, split_fraction=0.8, leave_out=1):
+    def get_train_test_data(self, resplit=False, split_fraction=0, leave_out=1):
         if self.URM_train is None or self.test_data is None:
             self.URM_train, _, self.test_data = split_train_test(self.URM_csr, split_fraction=split_fraction,
                                                                  rewrite=resplit, leave_out=leave_out)

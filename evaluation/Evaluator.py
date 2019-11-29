@@ -6,10 +6,7 @@ from random import randint
 import os
 from utils.helper import Helper
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
-from scipy import sparse
-from copy import deepcopy
 
 ROW_INDEX, COL_ID_INDEX = 0, 1
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
