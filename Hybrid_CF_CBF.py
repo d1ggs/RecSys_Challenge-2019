@@ -5,6 +5,7 @@ from utils.run import RunRecommender
 from utils.helper import Helper
 from TopPopularRecommender import TopPopRecommender
 from UserBasedCBF import UserBasedCBF
+from ItemBasedCBF import ItemBasedCBF
 
 user_cf_parameters = {"topK": 410,
                       "shrink": 0}
@@ -15,7 +16,15 @@ user_cbf_parameters = {"topK_age": 48,
                        "shrink_age": 8,
                        "shrink_region": 1,
                        "age_weight": 0.3}
-
+item_cbf_parameters = {"topK_asset": 100,
+                       "topK_price": 300,
+                       "topK_sub_class": 80,
+                       "shrink_asset": 20,
+                       "shrink_price": 20,
+                       "shrink_sub_class": 0,
+                       "weight_asset": 0.35,
+                       "weight_price": 0,
+                       "weight_sub_class": 0.65}
 
 class HybridUCFICFRecommender():
     def __init__(self, weights):
@@ -24,6 +33,7 @@ class HybridUCFICFRecommender():
         self.item_cf = ItemCollaborativeFilter(topK=item_cf_parameters["topK"], shrink=item_cf_parameters["shrink"])
         self.top_pop = TopPopRecommender()
         self.user_based_cbf = UserBasedCBF(**user_cbf_parameters)
+        self.item_based_cbf = ItemBasedCBF(**item_cbf_parameters)
         self.helper = Helper()
         self.cold_users = self.helper.get_cold_user_ids()
 
@@ -35,13 +45,15 @@ class HybridUCFICFRecommender():
         self.item_cf.fit(self.URM_train)
         self.top_pop.fit(self.URM_train)
         self.user_based_cbf.fit(self.URM_train)
+        self.item_based_cbf.fit(self.URM_train)
 
     def compute_scores(self, user_id):
         scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_item_cf = self.item_cf.compute_scores(user_id)
-        scores_user_cbf = self.userbasedcbf.compute_scores(user_id)
+        scores_user_cbf = self.user_based_cbf.compute_scores(user_id)
+        scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
         scores = (self.weights["user_cf"] * scores_user_cf) + (self.weights["item_cf"] * scores_item_cf) +\
-                 (self.weights["user_cbf"] * scores_user_cbf)
+                 (self.weights["user_cbf"] * scores_user_cbf) + (self.weights["item_cbf"] * scores_item_cbf)
 
         return scores
 
@@ -72,10 +84,10 @@ if __name__ == "__main__":
 
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_ucf_icf = {"user_cf": 0.03, "item_cf": 0.91, "user_cbf": 0.06}
+    weights_hybrid_ucf_icf = {"user_cf": 0.03, "item_cf": 0.86, "user_cbf": 0.06, "item_cbf": 0.05}
 
     hybrid_ucficf = HybridUCFICFRecommender(weights_hybrid_ucf_icf)
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.run(hybrid_ucficf)
+    RunRecommender.perform_evaluation(hybrid_ucficf)
     #RunRecommender.run(hybrid_ucficf)

@@ -43,19 +43,19 @@ class ItemBasedCBF:
 
         # Load ICMs from helper
         self.ICM_asset = self.helper.load_icm_asset()
-        self.ICM_asset = self.helper.tfidf_normalization(self.ICM_asset)
+        # self.ICM_asset = self.helper.tfidf_normalization(self.ICM_asset)
 
         self.ICM_price = self.helper.load_icm_price()
         self.ICM_sub_class = self.helper.load_icm_sub_class()
         # Computing SMs
         self.SM_asset = self.compute_similarity_cbf(self.ICM_asset, top_k=self.topK_asset, shrink=self.shrink_asset)
-        self.SM_prince = self.compute_similarity_cbf(self.ICM_price, top_k=self.topK_price, shrink=self.shrink_price)
+        self.SM_price = self.compute_similarity_cbf(self.ICM_price, top_k=self.topK_price, shrink=self.shrink_price)
         self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK_sub_class, shrink=self.shrink_sub_class)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]
         scores_asset = users_list_train.dot(self.SM_asset).toarray().ravel()
-        scores_price = users_list_train.dot(self.SM_prince).toarray().ravel()
+        scores_price = users_list_train.dot(self.SM_price).toarray().ravel()
         scores_sub_class = users_list_train.dot(self.SM_sub_class).toarray().ravel()
 
         scores = (scores_asset * self.weight_asset) + (scores_price * self.weight_price) + (
