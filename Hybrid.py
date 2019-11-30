@@ -10,9 +10,9 @@ user_cf_parameters = {"topK": 410,
                       "shrink": 0}
 item_cf_parameters = {"topK": 5,
                       "shrink": 8}
-user_cbf_parameters = {"topK_age": 600,
-                       "topK_region": 300,
-                       "shrink_age": 1,
+user_cbf_parameters = {"topK_age": 48,
+                       "topK_region": 0,
+                       "shrink_age": 8,
                        "shrink_region": 1,
                        "age_weight": 0.3}
 
@@ -72,10 +72,10 @@ if __name__ == "__main__":
 
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_ucf_icf = {"user_cf": 0.05, "item_cf": 0.90, "user_cbf": 0.05}
+    weights_hybrid_ucf_icf = {"user_cf": 0.03, "item_cf": 0.91, "user_cbf": 0.06}
 
     hybrid_ucficf = HybridUCFICFRecommender(weights_hybrid_ucf_icf)
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.perform_evaluation(hybrid_ucficf)
+    RunRecommender.run(hybrid_ucficf)
     #RunRecommender.run(hybrid_ucficf)
