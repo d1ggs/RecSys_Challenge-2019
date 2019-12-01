@@ -102,7 +102,7 @@ if __name__ == "__main__":
     #            {"cbf": 0.2, "cb": 0.5, "slim": 0.3}]
 
     helper = Helper()
-    URM_train, _ = helper.get_train_test_data()
+    URM_train, _ = helper.get_train_evaluation_data()
     hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights[0])
     # hybrid_cbcbf.fit(URM_train)
 

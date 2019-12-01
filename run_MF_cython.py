@@ -15,7 +15,7 @@ pset = [{"lr": 0.1, "epochs": 20, "nf": 5},
 helper = Helper()
 
 # Train and test data are now loaded by the helper
-URM_train, test_data = helper.get_train_test_data(resplit=False, split_fraction=0, leave_out=1)
+URM_train, test_data = helper.get_train_evaluation_data(resplit=False, split_fraction=0, leave_out=1)
 num_users = helper.get_number_of_users()
 
 map = []

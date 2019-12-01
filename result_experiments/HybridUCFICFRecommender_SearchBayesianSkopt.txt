@@ -1,0 +1,184 @@
+SearchBayesianSkopt: Config 0 Exception. Config: {'user_cf': 0.9045829251624378, 'item_cf': 0.08596975124075136, 'user_cbf': 0.38290550158857395} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 1 Exception. Config: {'user_cf': 0.0, 'item_cf': 1.0, 'user_cbf': 1.0} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 2 Exception. Config: {'user_cf': 0.9957401694902533, 'item_cf': 0.046949919353554206, 'user_cbf': 0.00014544974766617094} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 3 Exception. Config: {'user_cf': 0.012313779507824942, 'item_cf': 0.999625820621527, 'user_cbf': 0.0019083095886417282} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 4 Exception. Config: {'user_cf': 0.9903815454643211, 'item_cf': 0.9814877405800106, 'user_cbf': 0.9929153054086572} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 5 Exception. Config: {'user_cf': 0.056566330965476266, 'item_cf': 0.017451911034431892, 'user_cbf': 0.9881033351500224} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 6 Exception. Config: {'user_cf': 0.024175299552052942, 'item_cf': 0.019713913788788527, 'user_cbf': 0.010140314930625708} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 7 Exception. Config: {'user_cf': 0.9320820845735707, 'item_cf': 0.999665759375456, 'user_cbf': 0.017015837120430758} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 8 Exception. Config: {'user_cf': 0.9615433520976948, 'item_cf': 0.012696740541940144, 'user_cbf': 0.9914327139698232} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: Config 9 Exception. Config: {'user_cf': 0.0019338983063827847, 'item_cf': 0.92115494134107, 'user_cbf': 0.9977758624254028} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf'
+
+SearchBayesianSkopt: New best config found. Config 0: {'user_cf_weight': 0.4547299516272195, 'item_cf_weight': 0.7702628665865944, 'user_cbf_weight': 0.9493927513470667} - results: MAP@10 score: 0.029023149676919664
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'user_cf_weight': 1.0, 'item_cf_weight': 0.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.025191779286165665
+SearchBayesianSkopt: New best config found. Config 2: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03210182433396517
+SearchBayesianSkopt: New best config found. Config 0: {'user_cf_weight': 0.516983779000463, 'item_cf_weight': 0.9358351482977724, 'user_cbf_weight': 0.12282482196802394} - results: MAP@10 score: 0.029353051937463053
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.0038097499949040913
+SearchBayesianSkopt: Config 2 is suboptimal. Config: {'user_cf_weight': 1.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.02806170529362607
+SearchBayesianSkopt: New best config found. Config 3: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 4 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: New best config found. Config 5: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03210182433396517
+SearchBayesianSkopt: Config 6 is suboptimal. Config: {'user_cf_weight': 0.9271016636379366, 'item_cf_weight': 0.9995308719459833, 'user_cbf_weight': 0.87002529088056} - results: MAP@10 score: 0.02815814988075585
+SearchBayesianSkopt: Config 7 is suboptimal. Config: {'user_cf_weight': 0.9955970622245871, 'item_cf_weight': 0.9959807012103168, 'user_cbf_weight': 0.08184399098707519} - results: MAP@10 score: 0.028101809046250467
+SearchBayesianSkopt: New best config found. Config 8: {'user_cf_weight': 0.004191032780770488, 'item_cf_weight': 0.9963130087884181, 'user_cbf_weight': 0.6923043606663751} - results: MAP@10 score: 0.03256916569844468
+SearchBayesianSkopt: New best config found. Config 9: {'user_cf_weight': 0.012070579349389491, 'item_cf_weight': 0.9969621634859798, 'user_cbf_weight': 0.9421372618870526} - results: MAP@10 score: 0.032728138058256334
+SearchBayesianSkopt: Config 10 is suboptimal. Config: {'user_cf_weight': 0.9555397248206328, 'item_cf_weight': 0.6525107823694543, 'user_cbf_weight': 0.04597929511762922} - results: MAP@10 score: 0.027555867424937354
+SearchBayesianSkopt: Config 11 is suboptimal. Config: {'user_cf_weight': 0.012105441981800972, 'item_cf_weight': 0.6525584403569551, 'user_cbf_weight': 0.9357423022872107} - results: MAP@10 score: 0.03253316720683255
+SearchBayesianSkopt: Config 12 is suboptimal. Config: {'user_cf_weight': 0.004619591627333165, 'item_cf_weight': 0.6264735873093278, 'user_cbf_weight': 0.9787540740719767} - results: MAP@10 score: 0.032362111437248965
+SearchBayesianSkopt: Config 13 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.7902630305945324, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03198514390835519
+SearchBayesianSkopt: New best config found. Config 14: {'user_cf_weight': 0.010912224285401841, 'item_cf_weight': 0.49463702589852865, 'user_cbf_weight': 0.062191144651843513} - results: MAP@10 score: 0.03287560794145819
+SearchBayesianSkopt: Config 15 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.7629366897693582, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 16 is suboptimal. Config: {'user_cf_weight': 0.9980284041577383, 'item_cf_weight': 0.39861718074069397, 'user_cbf_weight': 0.8811413582636954} - results: MAP@10 score: 0.02677084276075748
+SearchBayesianSkopt: Config 17 is suboptimal. Config: {'user_cf_weight': 0.003261800543505112, 'item_cf_weight': 0.40000089404753103, 'user_cbf_weight': 0.0013386932298070644} - results: MAP@10 score: 0.032742535518457294
+SearchBayesianSkopt: Config 18 is suboptimal. Config: {'user_cf_weight': 0.032112848442226956, 'item_cf_weight': 0.3777588808154442, 'user_cbf_weight': 0.9797506066742289} - results: MAP@10 score: 0.03157338816527038
+SearchBayesianSkopt: Config 19 is suboptimal. Config: {'user_cf_weight': 0.011347631308625263, 'item_cf_weight': 0.5754825136770535, 'user_cbf_weight': 0.976533434985197} - results: MAP@10 score: 0.03231828971238712
+SearchBayesianSkopt: Config 20 is suboptimal. Config: {'user_cf_weight': 0.9951240075032958, 'item_cf_weight': 0.5683449468578697, 'user_cbf_weight': 0.013600331250315904} - results: MAP@10 score: 0.027344436800587072
+SearchBayesianSkopt: Config 21 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.5526170218631157, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.031546762062006926
+SearchBayesianSkopt: Config 22 is suboptimal. Config: {'user_cf_weight': 0.031266785724694775, 'item_cf_weight': 0.3362470354790606, 'user_cbf_weight': 0.024687428176277122} - results: MAP@10 score: 0.032718010456796925
+SearchBayesianSkopt: Config 23 is suboptimal. Config: {'user_cf_weight': 0.007875419375515726, 'item_cf_weight': 0.8401644519647553, 'user_cbf_weight': 0.0038537177078269433} - results: MAP@10 score: 0.032783559081921695
+SearchBayesianSkopt: Config 24 is suboptimal. Config: {'user_cf_weight': 0.999625971671679, 'item_cf_weight': 0.3121455663141017, 'user_cbf_weight': 0.9641851827607859} - results: MAP@10 score: 0.026568455329297413
+SearchBayesianSkopt: Config 25 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.5004769797362736, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 26 is suboptimal. Config: {'user_cf_weight': 0.011283389970629833, 'item_cf_weight': 0.7732917336576447, 'user_cbf_weight': 0.9841983026173595} - results: MAP@10 score: 0.032631199677938774
+SearchBayesianSkopt: Config 27 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.5072805036801933, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.031359411117226156
+SearchBayesianSkopt: Config 28 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.5155238453049291, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 29 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.8240660821322189, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.031998379502231965
+SearchBayesianSkopt: Config 30 is suboptimal. Config: {'user_cf_weight': 0.009562352382182728, 'item_cf_weight': 0.29309253999206125, 'user_cbf_weight': 0.02433166501005058} - results: MAP@10 score: 0.032811269593754445
+SearchBayesianSkopt: Config 31 is suboptimal. Config: {'user_cf_weight': 0.001339641418282356, 'item_cf_weight': 0.276989713485068, 'user_cbf_weight': 0.02310564048730746} - results: MAP@10 score: 0.032603479483886665
+SearchBayesianSkopt: Config 32 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.4243039685362542, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 33 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.41906445795781355, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.030827789498359067
+SearchBayesianSkopt: Config 34 is suboptimal. Config: {'user_cf_weight': 0.9865503425288027, 'item_cf_weight': 0.22777156633228218, 'user_cbf_weight': 0.043864097039965196} - results: MAP@10 score: 0.026468980207505283
+SearchBayesianSkopt: Config 35 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.8494503277151529, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 36 is suboptimal. Config: {'user_cf_weight': 0.9765978240394936, 'item_cf_weight': 0.8259152283881935, 'user_cbf_weight': 0.98301471603513} - results: MAP@10 score: 0.027862755050041804
+SearchBayesianSkopt: Config 37 is suboptimal. Config: {'user_cf_weight': 0.028796614225617974, 'item_cf_weight': 0.22308532708086753, 'user_cbf_weight': 0.9711009414954919} - results: MAP@10 score: 0.030177541327789006
+SearchBayesianSkopt: Config 38 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.38215735478134627, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 39 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.8799118139942266, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.0320226625084082
+SearchBayesianSkopt: Config 40 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03210182433396517
+SearchBayesianSkopt: Config 41 is suboptimal. Config: {'user_cf_weight': 0.0004699294752635864, 'item_cf_weight': 0.2558110575360198, 'user_cbf_weight': 0.9796211185599415} - results: MAP@10 score: 0.029425552396094512
+SearchBayesianSkopt: Config 42 is suboptimal. Config: {'user_cf_weight': 0.020879659690333677, 'item_cf_weight': 0.7411752741181757, 'user_cbf_weight': 0.02263634602345033} - results: MAP@10 score: 0.03277123361666561
+SearchBayesianSkopt: Config 43 is suboptimal. Config: {'user_cf_weight': 0.9920214042929975, 'item_cf_weight': 0.36710684123359055, 'user_cbf_weight': 0.9707424036724395} - results: MAP@10 score: 0.02668272488228462
+SearchBayesianSkopt: Config 44 is suboptimal. Config: {'user_cf_weight': 0.9978697775627985, 'item_cf_weight': 0.8455210548919224, 'user_cbf_weight': 0.06174305563739192} - results: MAP@10 score: 0.027904853339856112
+SearchBayesianSkopt: Config 45 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.39611796709676317, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 46 is suboptimal. Config: {'user_cf_weight': 0.03985066308733377, 'item_cf_weight': 0.6749869952603282, 'user_cbf_weight': 0.006564961389380565} - results: MAP@10 score: 0.032795226156260814
+SearchBayesianSkopt: Config 47 is suboptimal. Config: {'user_cf_weight': 0.07552373735002639, 'item_cf_weight': 0.9967920231048161, 'user_cbf_weight': 0.0005680274453875312} - results: MAP@10 score: 0.03278020903402026
+SearchBayesianSkopt: Config 48 is suboptimal. Config: {'user_cf_weight': 0.016499080363937994, 'item_cf_weight': 0.8836259125877365, 'user_cbf_weight': 0.9943071236844916} - results: MAP@10 score: 0.032689612507389026
+SearchBayesianSkopt: Config 49 is suboptimal. Config: {'user_cf_weight': 0.9887106181416205, 'item_cf_weight': 0.19693623268052612, 'user_cbf_weight': 0.03902874570492521} - results: MAP@10 score: 0.026410819115758592
+SearchBayesianSkopt: Config 50 is suboptimal. Config: {'user_cf_weight': 0.02247922410677539, 'item_cf_weight': 0.9952798954420217, 'user_cbf_weight': 0.07921646625534552} - results: MAP@10 score: 0.032865954768747783
+SearchBayesianSkopt: Config 51 is suboptimal. Config: {'user_cf_weight': 0.025041787044123527, 'item_cf_weight': 0.20305473814655345, 'user_cbf_weight': 0.00404521687126136} - results: MAP@10 score: 0.03229118918037464
+SearchBayesianSkopt: Config 52 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.7124506067108092, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 53 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.886026848359325, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 54 is suboptimal. Config: {'user_cf_weight': 0.005385990889012927, 'item_cf_weight': 0.25578612484725144, 'user_cbf_weight': 0.9647636306532344} - results: MAP@10 score: 0.030356226686234958
+SearchBayesianSkopt: Config 55 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 56 is suboptimal. Config: {'user_cf_weight': 0.9503379485644213, 'item_cf_weight': 0.9994374647324935, 'user_cbf_weight': 0.09019412513509185} - results: MAP@10 score: 0.028174173953810753
+SearchBayesianSkopt: Config 57 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 2.168404344971009e-19} - results: MAP@10 score: 0.03206333751197534
+SearchBayesianSkopt: Config 58 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 59 is suboptimal. Config: {'user_cf_weight': 0.9712167035532879, 'item_cf_weight': 0.9965945988737996, 'user_cbf_weight': 0.05566037325576913} - results: MAP@10 score: 0.028136907091461338
+SearchBayesianSkopt: Config 60 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 61 is suboptimal. Config: {'user_cf_weight': 0.03830880044769725, 'item_cf_weight': 0.016648563460630043, 'user_cbf_weight': 0.026948772750694634} - results: MAP@10 score: 0.026865534866181557
+SearchBayesianSkopt: Config 62 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 63 is suboptimal. Config: {'user_cf_weight': 0.9754680983451463, 'item_cf_weight': 0.9919438275253017, 'user_cbf_weight': 0.9812914872706041} - results: MAP@10 score: 0.02807035151552215
+SearchBayesianSkopt: Config 64 is suboptimal. Config: {'user_cf_weight': 0.985984747982154, 'item_cf_weight': 0.01511176924243263, 'user_cbf_weight': 0.02813699562919792} - results: MAP@10 score: 0.02595288886850529
+SearchBayesianSkopt: Config 65 is suboptimal. Config: {'user_cf_weight': 0.01200496449227673, 'item_cf_weight': 0.47420224581135373, 'user_cbf_weight': 0.5272969605025773} - results: MAP@10 score: 0.03265656709268428
+SearchBayesianSkopt: Config 66 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 67 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 68 is suboptimal. Config: {'user_cf_weight': 0.0020184298294062546, 'item_cf_weight': 0.012551054562716994, 'user_cbf_weight': 0.08799908617146858} - results: MAP@10 score: 0.02915980452108688
+SearchBayesianSkopt: Config 69 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 70 is suboptimal. Config: {'user_cf_weight': 0.9563312116246294, 'item_cf_weight': 0.993768018390027, 'user_cbf_weight': 0.9861969516459289} - results: MAP@10 score: 0.02809569956582892
+SearchBayesianSkopt: Config 71 is suboptimal. Config: {'user_cf_weight': 0.005401986321298736, 'item_cf_weight': 0.0012002804163869787, 'user_cbf_weight': 0.04981466365122668} - results: MAP@10 score: 0.025529504779958884
+SearchBayesianSkopt: Config 72 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 73 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.5022123215279367, 'user_cbf_weight': 0.5387115460249218} - results: MAP@10 score: 0.032035810962310646
+SearchBayesianSkopt: Config 74 is suboptimal. Config: {'user_cf_weight': 0.007879271886844232, 'item_cf_weight': 0.7994794120626884, 'user_cbf_weight': 0.5389004922038289} - results: MAP@10 score: 0.03277288927617761
+SearchBayesianSkopt: Config 75 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 0.48197852208262754, 'user_cbf_weight': 0.5381579059347809} - results: MAP@10 score: 0.03201893485395133
+SearchBayesianSkopt: Config 76 is suboptimal. Config: {'user_cf_weight': 0.004808672441265039, 'item_cf_weight': 0.8398183135776311, 'user_cbf_weight': 0.5440175952095769} - results: MAP@10 score: 0.03258656464664991
+SearchBayesianSkopt: Config 77 is suboptimal. Config: {'user_cf_weight': 0.0005547673121343301, 'item_cf_weight': 0.2489427259859856, 'user_cbf_weight': 0.3869668004513639} - results: MAP@10 score: 0.03213849089871375
+SearchBayesianSkopt: Config 78 is suboptimal. Config: {'user_cf_weight': 0.010594739510059294, 'item_cf_weight': 0.9912717786083267, 'user_cbf_weight': 0.9854754791454509} - results: MAP@10 score: 0.03265644122383248
+SearchBayesianSkopt: Config 79 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 0.0} - results: MAP@10 score: 0.031172002079129176
+SearchBayesianSkopt: Config 80 is suboptimal. Config: {'user_cf_weight': 0.9985686833927853, 'item_cf_weight': 0.987866868062753, 'user_cbf_weight': 0.9366461008687977} - results: MAP@10 score: 0.028051451823314814
+SearchBayesianSkopt: Config 81 is suboptimal. Config: {'user_cf_weight': 0.9992081642651948, 'item_cf_weight': 0.9924108715511667, 'user_cbf_weight': 0.057328107002452514} - results: MAP@10 score: 0.028081127825679317
+SearchBayesianSkopt: Config 82 is suboptimal. Config: {'user_cf_weight': 0.9961376364757117, 'item_cf_weight': 0.021002785305384578, 'user_cbf_weight': 0.9464802150424136} - results: MAP@10 score: 0.025828743451762184
+SearchBayesianSkopt: Config 83 is suboptimal. Config: {'user_cf_weight': 0.012547701074880794, 'item_cf_weight': 0.004107852282034586, 'user_cbf_weight': 0.9564218291995141} - results: MAP@10 score: 0.022525983509651695
+SearchBayesianSkopt: Config 84 is suboptimal. Config: {'user_cf_weight': 0.9905295996550157, 'item_cf_weight': 0.0021153829336136858, 'user_cbf_weight': 0.04948538139031124} - results: MAP@10 score: 0.02589753562037549
+SearchBayesianSkopt: Config 85 is suboptimal. Config: {'user_cf_weight': 0.0501712768800623, 'item_cf_weight': 0.9869878072220415, 'user_cbf_weight': 0.9323924036128514} - results: MAP@10 score: 0.03280332049165293
+SearchBayesianSkopt: Config 86 is suboptimal. Config: {'user_cf_weight': 0.07713179470058142, 'item_cf_weight': 0.9983757446374409, 'user_cbf_weight': 0.9890856638956224} - results: MAP@10 score: 0.0325537709696488
+SearchBayesianSkopt: Config 87 is suboptimal. Config: {'user_cf_weight': 0.024580226258375533, 'item_cf_weight': 0.9993209435040659, 'user_cbf_weight': 0.9967864871650026} - results: MAP@10 score: 0.03276381703662935
+SearchBayesianSkopt: Config 88 is suboptimal. Config: {'user_cf_weight': 0.03537108890052843, 'item_cf_weight': 0.9986104369598723, 'user_cbf_weight': 0.9971484963213433} - results: MAP@10 score: 0.03270522992723047
+SearchBayesianSkopt: Config 89 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03210182433396517
+SearchBayesianSkopt: Config 90 is suboptimal. Config: {'user_cf_weight': 0.9971929531544259, 'item_cf_weight': 0.26140364593021775, 'user_cbf_weight': 0.006959119405723248} - results: MAP@10 score: 0.02650784463605051

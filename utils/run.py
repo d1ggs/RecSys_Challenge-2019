@@ -41,7 +41,29 @@ class RunRecommender:
             recommendation_matrix_file_to_submit.write(user + "," + items_recommended + "\n")
         recommendation_matrix_file_to_submit.close()
 
-            
+    @staticmethod
+    def evaluate_on_test_set(recommender_class, fit_parameters):
+
+        MAP_final = 0.0
+        evaluator, helper = Evaluator(), Helper()
+        URM_train, eval_data = helper.URM_train_test, helper.test_data
+
+        recommender = recommender_class(URM_train)
+        recommender.fit(**fit_parameters)
+
+        for user in tqdm(eval_data.keys()):
+            recommended_items = recommender.recommend(int(user), exclude_seen=True)
+            relevant_item = eval_data[int(user)]
+
+            MAP_final += evaluator.MAP(recommended_items, relevant_item)
+
+        MAP_final /= len(eval_data.keys())
+        print("MAP-10 score:", MAP_final)
+        MAP_final *= 0.665
+        # TODO find new conversion factor for test set
+        # print("MAP-10 public approx score:", MAP_final)
+
+        return MAP_final
 
     @staticmethod
     def perform_evaluation(recommender):
@@ -52,15 +74,16 @@ class RunRecommender:
 
         MAP_final = 0.0
         evaluator, helper = Evaluator(),  Helper()
-        URM_train, test_data = helper.get_train_test_data()
+        URM_train, eval_data = helper.URM_train_eval, helper.eval_data
+
         recommender.fit(URM_train)
-        for user in tqdm(test_data.keys()):
+        for user in tqdm(eval_data.keys()):
             recommended_items = recommender.recommend(int(user), exclude_seen=True)
-            relevant_item = test_data[int(user)]
+            relevant_item = eval_data[int(user)]
 
             MAP_final += evaluator.MAP(recommended_items, relevant_item)
 
-        MAP_final /= len(test_data.keys())
+        MAP_final /= len(eval_data.keys())
         print("MAP-10 score:", MAP_final)
         MAP_final *= 0.665
         print("MAP-10 public approx score:", MAP_final)

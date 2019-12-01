@@ -1,3 +1,4 @@
+import pickle
 from collections import defaultdict
 
 import pandas as pd
@@ -14,8 +15,15 @@ from Legacy.Base.IR_feature_weighting import okapi_BM_25
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+EVALUATION_DATA_PATH = ROOT_PROJECT_PATH + "/data/pickled/evaluation_data.pickle"
+TEST_DATA_PATH = ROOT_PROJECT_PATH + "/data/pickled/test_data.pickle"
+URM_TRAIN_EVAL_ONLY_PATH = ROOT_PROJECT_PATH + "/data/pickled/URM_train_eval_only.pickle"
+URM_TRAIN_TEST_EVAL_PATH = ROOT_PROJECT_PATH + "/data/pickled/URM_train_eval_test.pickle"
+URM_TEST_PATH = ROOT_PROJECT_PATH + "/data/pickled/URM_test.pickle"
+
+
 class Helper:
-    def __init__(self):
+    def __init__(self, resplit=False):
         # Put root project dir in a constant
         # Loading of data using pandas, that creates a new object URM_data with the first line values as attributes
         # (playlist_id, track_id) as formatted in the .csv file
@@ -23,15 +31,16 @@ class Helper:
         self.URM_csr = self.convert_URM_to_csr(self.URM_data)
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
-        self.URM_train = None
-        self.test_data = None
+
+        self.URM_train_eval, self.URM_train_test, self.eval_data, self.test_data = self.init_train_evaluation_test_data(resplit=resplit)
+
         self.cold_users = None
 
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
 
     def get_cold_user_ids(self):
-        if self.cold_users == None:
+        if self.cold_users is None:
             # Sum interactions for each user
             interactions = self.URM_csr.sum(1)
 
@@ -41,11 +50,62 @@ class Helper:
 
         return self.cold_users
 
-    def get_train_test_data(self, resplit=False, split_fraction=0, leave_out=1):
-        if self.URM_train is None or self.test_data is None:
-            self.URM_train, _, self.test_data = split_train_test(self.URM_csr, split_fraction=split_fraction,
-                                                                 rewrite=resplit, leave_out=leave_out)
-        return self.URM_train.copy(), self.test_data.copy()
+    def init_train_evaluation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
+
+        if not resplit:
+            # Load serialized Pickle data
+            print("Loading pickled data")
+
+            evaluation_data_in = open(EVALUATION_DATA_PATH, "rb")
+            eval_data = pickle.load(evaluation_data_in)
+            evaluation_data_in.close()
+
+            URM_train_in = open(URM_TRAIN_EVAL_ONLY_PATH, "rb")
+            URM_train_eval = pickle.load(URM_train_in)
+            URM_train_in.close()
+
+            test_data_in = open(TEST_DATA_PATH, "rb")
+            test_data = pickle.load(test_data_in)
+            test_data_in.close()
+
+            URM_train_in = open(URM_TRAIN_TEST_EVAL_PATH, "rb")
+            URM_train_test = pickle.load(URM_train_in)
+            URM_train_in.close()
+
+            # URM_test_in = open(URM_TEST_PATH, "rb")
+            # self.URM_test = pickle.load(URM_test_in)
+            # URM_test_in.close()
+
+        else:
+            URM_train_eval, URM_train_test, eval_data, test_data = split_train_test(self.URM_csr,
+                                                                 split_fraction=split_fraction,
+                                                                 leave_out=leave_out)
+
+            # Serialize the objects with Pickle, for faster loading
+
+            print("Saving Pickle files into /data/pickled")
+
+            test_data_out = open(TEST_DATA_PATH, "wb")
+            pickle.dump(test_data, test_data_out)
+            test_data_out.close()
+
+            URM_train_out = open(URM_TRAIN_TEST_EVAL_PATH, "wb")
+            pickle.dump(URM_train_test, URM_train_out)
+            URM_train_out.close()
+
+            eval_data_out = open(EVALUATION_DATA_PATH, "wb")
+            pickle.dump(eval_data, eval_data_out)
+            eval_data_out.close()
+
+            URM_train_out = open(URM_TRAIN_EVAL_ONLY_PATH, "wb")
+            pickle.dump(URM_train_eval, URM_train_out)
+            URM_train_out.close()
+
+            # URM_test_out = open(URM_TEST_PATH, "wb")
+            # pickle.dump(URM_test, URM_test_out)
+            # URM_test_out.close()
+
+        return URM_train_eval, URM_train_test, eval_data, test_data
 
     def convert_URM_to_csr(self, URM):
         ratings_list = np.ones(len(np.asarray(list(URM.data))))
@@ -56,17 +116,6 @@ class Helper:
     def load_target_users_test(self):
         target_users_test_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "r")
         return list(target_users_test_file)[1:]
-
-    def load_relevant_items(self):
-        relevant_items = defaultdict(list)
-        URM_test = self.load_URM_test()
-        users_list_test = np.asarray(list(URM_test.user_id))
-        items_list_test = np.asarray(list(URM_test.item_list))
-        count = 0
-        for user_id in users_list_test:
-            relevant_items[user_id].append(items_list_test[count])
-            count += 1
-        return relevant_items
 
     def load_icm_asset(self):
         icm_asset = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_asset.csv"))

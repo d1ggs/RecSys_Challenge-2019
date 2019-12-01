@@ -9,7 +9,7 @@ if __name__ == '__main__':
     helper = Helper()
 
     # Train and test data are now loaded by the helper
-    URM_train, test_data = helper.get_train_test_data(resplit=False, split_fraction=0, leave_out=1)
+    URM_train, test_data = helper.get_train_evaluation_data(resplit=False, split_fraction=0, leave_out=1)
 
     evaluator = Evaluator()
 

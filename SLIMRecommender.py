@@ -307,7 +307,7 @@ if __name__ == '__main__':
     helper = Helper()
 
     # Train and test data are now loaded by the helper
-    URM_train, test_data = helper.get_train_test_data()
+    URM_train, test_data = helper.get_train_evaluation_data()
 
     weights_hybrid = {"cbf": 0.3, "cb": 0.7}
 

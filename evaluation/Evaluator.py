@@ -14,9 +14,11 @@ NUMBER_OF_ITEMS_TEST_FILE = 10
 
 
 class Evaluator:
-    def __init__(self, split_size=0.8):
+    def __init__(self, split_size=0.8, test_mode = False):
         self.helper = Helper()
-        _, self.test_data = self.helper.get_train_test_data()
+        self.eval_data = self.helper.eval_data
+        self.test_data = self.helper.test_data
+        self.test_mode = test_mode
 
     # Functions to evaluate a recommender
     def MAP(self, recommended_items, relevant_items):
@@ -34,14 +36,18 @@ class Evaluator:
 
         MAP_final = 0.0
 
-        for user in tqdm(self.test_data.keys()):
+        if self.test_mode:
+            evaluation_data = self.test_data
+        else:
+            evaluation_data = self.eval_data
+
+        for user in tqdm(evaluation_data.keys()):
             recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
-            relevant_item = self.test_data[int(user)]
+            relevant_item = evaluation_data[int(user)]
 
             MAP_final += self.MAP(recommended_items, relevant_item)
 
-        MAP_final /= len(self.test_data.keys())
-        MAP_final *= 0.665
+        MAP_final /= len(evaluation_data.keys())
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string
 
