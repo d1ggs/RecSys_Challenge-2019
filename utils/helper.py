@@ -32,7 +32,7 @@ class Helper:
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
 
-        self.URM_train_eval, self.URM_train_test, self.eval_data, self.test_data = self.init_train_evaluation_test_data(resplit=resplit)
+        self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(resplit=resplit)
 
         self.cold_users = None
 
@@ -50,7 +50,7 @@ class Helper:
 
         return self.cold_users
 
-    def init_train_evaluation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
+    def get_train_validation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
 
         if not resplit:
             # Load serialized Pickle data

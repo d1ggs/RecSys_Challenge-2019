@@ -16,7 +16,7 @@ NUMBER_OF_ITEMS_TEST_FILE = 10
 class Evaluator:
     def __init__(self, split_size=0.8, test_mode = False):
         self.helper = Helper()
-        self.eval_data = self.helper.eval_data
+        self.eval_data = self.helper.validation_data
         self.test_data = self.helper.test_data
         self.test_mode = test_mode
 

@@ -1,0 +1,44 @@
+SearchBayesianSkopt: New best config found. Config 0: {'l1_ratio': 0.5818874447463609, 'topK': 702, 'positive_only': True} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: Best config evaluated with evaluator_test. Config: {'l1_ratio': 0.5818874447463609, 'topK': 702, 'positive_only': True} - results:
+MAP@10 score: 0.0
+SearchBayesianSkopt: New best config found. Config 0: {'l1_ratio': 0.1718078441691662, 'topK': 110, 'positive_only': True} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: New best config found. Config 0: {'l1_ratio': 0.363708013837808, 'topK': 60, 'positive_only': False} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: Best config evaluated with evaluator_test. Config: {'l1_ratio': 0.363708013837808, 'topK': 60, 'positive_only': False} - results:
+MAP@10 score: 1.9485656608170725e-05
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'l1_ratio': 0.5719436247622867, 'topK': 573, 'positive_only': True} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: Config 2 is suboptimal. Config: {'l1_ratio': 0.5088368034772903, 'topK': 246, 'positive_only': True} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: Config 3 is suboptimal. Config: {'l1_ratio': 0.8643681173468433, 'topK': 144, 'positive_only': False} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: Config 4 is suboptimal. Config: {'l1_ratio': 0.22165773845300135, 'topK': 12, 'positive_only': False} - results: MAP@10 score: 1.6816486271632115e-05
+SearchBayesianSkopt: New best config found. Config 5: {'l1_ratio': 0.0, 'topK': 1000, 'positive_only': True} - results: MAP@10 score: 0.025819581669884406
+SearchBayesianSkopt: Best config evaluated with evaluator_test. Config: {'l1_ratio': 0.0, 'topK': 1000, 'positive_only': True} - results:
+MAP@10 score: 0.02741562061166774
+SearchBayesianSkopt: New best config found. Config 0: {'l1_ratio': 0.39971116847867116, 'topK': 449, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Best config evaluated with evaluator_test. Config: {'l1_ratio': 0.39971116847867116, 'topK': 449, 'positive_only': True} - results:
+MAP@10 score: 4.5557390081330645e-05
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'l1_ratio': 0.011288286244490188, 'topK': 416, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 2 is suboptimal. Config: {'l1_ratio': 0.6098997037259206, 'topK': 411, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 3 is suboptimal. Config: {'l1_ratio': 0.06799738067191886, 'topK': 196, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 4 is suboptimal. Config: {'l1_ratio': 0.7453392117148736, 'topK': 507, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 5 is suboptimal. Config: {'l1_ratio': 1.0, 'topK': 1000, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 6 is suboptimal. Config: {'l1_ratio': 0.996106721245836, 'topK': 6, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: New best config found. Config 0: {'l1_ratio': 0.7587140884161994, 'topK': 701, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Best config evaluated with evaluator_test. Config: {'l1_ratio': 0.7587140884161994, 'topK': 701, 'positive_only': True} - results:
+MAP@10 score: 4.5557390081330645e-05
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'l1_ratio': 0.9922044177699239, 'topK': 439, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 2 is suboptimal. Config: {'l1_ratio': 0.6716236542347567, 'topK': 820, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 3 is suboptimal. Config: {'l1_ratio': 0.8858771231153789, 'topK': 996, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 4 is suboptimal. Config: {'l1_ratio': 0.19987255103675822, 'topK': 262, 'positive_only': True} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 5 is suboptimal. Config: {'l1_ratio': 0.0, 'topK': 0, 'positive_only': False} - results: MAP@10 score: 9.79154244560579e-05
+SearchBayesianSkopt: Config 6 Exception. Config: {'l1_ratio': 0.0, 'topK': 1000, 'positive_only': False} - Exception: Traceback (most recent call last):
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\Legacy\ParameterTuning\SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+  File "C:\Users\Diego\Anaconda3\envs\RecSys_Challenge-2019\lib\site-packages\sklearn\utils\testing.py", line 355, in wrapper
+    return fn(*args, **kwargs)
+  File "C:\Users\Diego\Documents\Università\RecSys_Challenge-2019\SLIMElasticNetRecommender.py", line 252, in fit
+    values.extend(values_)
+MemoryError
+

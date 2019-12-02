@@ -182,3 +182,44 @@ SearchBayesianSkopt: Config 87 is suboptimal. Config: {'user_cf_weight': 0.02458
 SearchBayesianSkopt: Config 88 is suboptimal. Config: {'user_cf_weight': 0.03537108890052843, 'item_cf_weight': 0.9986104369598723, 'user_cbf_weight': 0.9971484963213433} - results: MAP@10 score: 0.03270522992723047
 SearchBayesianSkopt: Config 89 is suboptimal. Config: {'user_cf_weight': 0.0, 'item_cf_weight': 1.0, 'user_cbf_weight': 1.0} - results: MAP@10 score: 0.03210182433396517
 SearchBayesianSkopt: Config 90 is suboptimal. Config: {'user_cf_weight': 0.9971929531544259, 'item_cf_weight': 0.26140364593021775, 'user_cbf_weight': 0.006959119405723248} - results: MAP@10 score: 0.02650784463605051
+SearchBayesianSkopt: New best config found. Config 0: {'user_cf_weight': 1, 'item_cf_weight': 25, 'user_cbf_weight': 79} - results: MAP@10 score: 0.04138353818871158
+SearchBayesianSkopt: Config 1 is suboptimal. Config: {'user_cf_weight': 83, 'item_cf_weight': 32, 'user_cbf_weight': 3} - results: MAP@10 score: 0.04022628729838429
+SearchBayesianSkopt: New best config found. Config 2: {'user_cf_weight': 48, 'item_cf_weight': 97, 'user_cbf_weight': 97} - results: MAP@10 score: 0.0437276690166069
+SearchBayesianSkopt: Config 3 is suboptimal. Config: {'user_cf_weight': 47, 'item_cf_weight': 47, 'user_cbf_weight': 46} - results: MAP@10 score: 0.04177370978967031
+SearchBayesianSkopt: Config 4 is suboptimal. Config: {'user_cf_weight': 41, 'item_cf_weight': 1, 'user_cbf_weight': 80} - results: MAP@10 score: 0.038082629370466595
+SearchBayesianSkopt: New best config found. Config 5: {'user_cf_weight': 8, 'item_cf_weight': 100, 'user_cbf_weight': 4} - results: MAP@10 score: 0.04853405374869325
+SearchBayesianSkopt: Config 6 is suboptimal. Config: {'user_cf_weight': 97, 'item_cf_weight': 100, 'user_cbf_weight': 8} - results: MAP@10 score: 0.04230040796358919
+SearchBayesianSkopt: Config 7 is suboptimal. Config: {'user_cf_weight': 2, 'item_cf_weight': 99, 'user_cbf_weight': 89} - results: MAP@10 score: 0.04778386374423791
+SearchBayesianSkopt: New best config found. Config 8: {'user_cf_weight': 3, 'item_cf_weight': 100, 'user_cbf_weight': 11} - results: MAP@10 score: 0.04877565788132653
+SearchBayesianSkopt: Config 9 is suboptimal. Config: {'user_cf_weight': 99, 'item_cf_weight': 100, 'user_cbf_weight': 99} - results: MAP@10 score: 0.041793947812109766
+SearchBayesianSkopt: Config 10 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 11 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 12 is suboptimal. Config: {'user_cf_weight': 3, 'item_cf_weight': 0, 'user_cbf_weight': 17} - results: MAP@10 score: 0.03636870182549887
+SearchBayesianSkopt: Config 13 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 98} - results: MAP@10 score: 0.046904063037799884
+SearchBayesianSkopt: Config 14 is suboptimal. Config: {'user_cf_weight': 98, 'item_cf_weight': 100, 'user_cbf_weight': 6} - results: MAP@10 score: 0.04222896337645942
+SearchBayesianSkopt: Config 15 is suboptimal. Config: {'user_cf_weight': 1, 'item_cf_weight': 99, 'user_cbf_weight': 96} - results: MAP@10 score: 0.04742361238508729
+SearchBayesianSkopt: Config 16 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 17 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 100} - results: MAP@10 score: 0.04681636979380505
+SearchBayesianSkopt: Config 18 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 19 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 100} - results: MAP@10 score: 0.04681636979380505
+SearchBayesianSkopt: Config 20 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 21 is suboptimal. Config: {'user_cf_weight': 100, 'item_cf_weight': 99, 'user_cbf_weight': 93} - results: MAP@10 score: 0.04178394527871702
+SearchBayesianSkopt: Config 22 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 2, 'user_cbf_weight': 95} - results: MAP@10 score: 0.026548820225209917
+SearchBayesianSkopt: Config 23 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 24 is suboptimal. Config: {'user_cf_weight': 99, 'item_cf_weight': 100, 'user_cbf_weight': 2} - results: MAP@10 score: 0.04219856266361511
+SearchBayesianSkopt: Config 25 is suboptimal. Config: {'user_cf_weight': 99, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.041124870054424424
+SearchBayesianSkopt: Config 26 is suboptimal. Config: {'user_cf_weight': 99, 'item_cf_weight': 99, 'user_cbf_weight': 91} - results: MAP@10 score: 0.041824872675175526
+SearchBayesianSkopt: New best config found. Config 27: {'user_cf_weight': 1, 'item_cf_weight': 61, 'user_cbf_weight': 2} - results: MAP@10 score: 0.0488091598163144
+SearchBayesianSkopt: Config 28 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 67, 'user_cbf_weight': 98} - results: MAP@10 score: 0.04449975685253623
+SearchBayesianSkopt: Config 29 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 78, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 30 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 62, 'user_cbf_weight': 7} - results: MAP@10 score: 0.04820164059019312
+SearchBayesianSkopt: Config 31 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 77, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 32 is suboptimal. Config: {'user_cf_weight': 100, 'item_cf_weight': 49, 'user_cbf_weight': 100} - results: MAP@10 score: 0.040140778013645524
+SearchBayesianSkopt: Config 33 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 79, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Config 34 is suboptimal. Config: {'user_cf_weight': 1, 'item_cf_weight': 68, 'user_cbf_weight': 98} - results: MAP@10 score: 0.04568106041413692
+SearchBayesianSkopt: Config 35 is suboptimal. Config: {'user_cf_weight': 95, 'item_cf_weight': 0, 'user_cbf_weight': 14} - results: MAP@10 score: 0.03854564329247888
+SearchBayesianSkopt: Config 36 is suboptimal. Config: {'user_cf_weight': 100, 'item_cf_weight': 0, 'user_cbf_weight': 74} - results: MAP@10 score: 0.03819583125857217
+SearchBayesianSkopt: Config 37 is suboptimal. Config: {'user_cf_weight': 99, 'item_cf_weight': 56, 'user_cbf_weight': 2} - results: MAP@10 score: 0.04089664631216651
+SearchBayesianSkopt: Config 38 is suboptimal. Config: {'user_cf_weight': 97, 'item_cf_weight': 0, 'user_cbf_weight': 6} - results: MAP@10 score: 0.03857300102209308
+SearchBayesianSkopt: Config 39 is suboptimal. Config: {'user_cf_weight': 0, 'item_cf_weight': 100, 'user_cbf_weight': 0} - results: MAP@10 score: 0.04663204363259399
+SearchBayesianSkopt: Search complete. Best config is 27: {'user_cf_weight': 1, 'item_cf_weight': 61, 'user_cbf_weight': 2}

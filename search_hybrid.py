@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     helper = Helper(resplit=False)
 
-    URM_train = helper.URM_train_eval
+    URM_train = helper.URM_train_validation
 
     evaluator_validation = Evaluator()
     evaluator_test = Evaluator(test_mode=True)
@@ -24,12 +24,12 @@ if __name__ == '__main__':
     from skopt.space import Real, Integer, Categorical
 
     hyperparameters_range_dictionary = {}
-    hyperparameters_range_dictionary["user_cf_weight"] = Real(0, 1)
-    hyperparameters_range_dictionary["item_cf_weight"] = Real(0, 1)
-    hyperparameters_range_dictionary["user_cbf_weight"] = Real(0, 1)
+    hyperparameters_range_dictionary["user_cf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["item_cf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["user_cbf_weight"] = Integer(0, 100)
 
     recommender_input_args = SearchInputRecommenderArgs(
-        CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],
+        CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],\
         CONSTRUCTOR_KEYWORD_ARGS={},
         FIT_POSITIONAL_ARGS=[],
         FIT_KEYWORD_ARGS={}

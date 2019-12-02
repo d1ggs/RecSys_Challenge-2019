@@ -7,7 +7,7 @@ if __name__ == '__main__':
 
     helper = Helper()
 
-    URM_train = helper.URM_train_eval
+    URM_train = helper.URM_train_validation
 
     evaluator_validation = Evaluator()
     evaluator_test = Evaluator(test_mode=True)
