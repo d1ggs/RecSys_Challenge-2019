@@ -263,10 +263,10 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
 
 if __name__ == '__main__':
     slim = SLIMElasticNetRecommender
-    parameters = [#{"l1_ratio":0, "positive_only":True, "topK" : 1000},
+    parameters = [{"l1_ratio": 0.001, "positive_only": False, "topK": 1000},
                   {"l1_ratio": 0.001, "positive_only": True, "topK": 1000},
-                  {"l1_ratio": 0.01, "positive_only": True, "topK": 1000},
-                  {"l1_ratio": 0.1, "positive_only": True, "topK": 1000}
+                  {"l1_ratio": 0.001, "positive_only": True, "topK": 2000},
+                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1500}
                   ]
 
     map_10 = []
