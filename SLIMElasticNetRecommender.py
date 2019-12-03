@@ -244,7 +244,9 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
         
         #avvio il pool passando la funzione (con la parte fissa dell'input) 
         #e il rimanente parametro, variabile
+        print("Starting parallelized fit...")
         res = pool.map(_pfit, np.arange(n_items))
+        print("Done!")
 
         # res contains a vector of (values, rows, cols) tuples
         values, rows, cols = [], [], []
@@ -254,9 +256,31 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
             cols.extend(cols_)
 
         # generate the sparse weight matrix
+        print("Now generating W matrix...")
         self.W_sparse = sps.csr_matrix((values, (rows, cols)), shape=(n_items, n_items), dtype=np.float32)
+        print("Done!")
+
 
 if __name__ == '__main__':
-    slim = MultiThreadSLIM_ElasticNet
-    parameters = {"l1_ratio":0.1, "positive_only":True, "topK" : 100}
-    RunRecommender.evaluate_on_test_set(slim, parameters)
+    slim = SLIMElasticNetRecommender
+    parameters = [#{"l1_ratio":0, "positive_only":True, "topK" : 1000},
+                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1000},
+                  {"l1_ratio": 0.01, "positive_only": True, "topK": 1000},
+                  {"l1_ratio": 0.1, "positive_only": True, "topK": 1000}
+                  ]
+
+    map_10 = []
+
+    from utils.helper import Helper
+
+    for param in parameters:
+        map_10.append(RunRecommender.evaluate_on_test_set(slim, param))
+
+    import matplotlib.pyplot as plt
+    plt.plot(map_10)
+    plt.xlabel("Parameter set")
+    plt.ylabel("MAP@10 score")
+    plt.title("l1_ratio")
+
+    print(max(map_10))
+
