@@ -10,11 +10,14 @@ ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class RunRecommender:
 
     @staticmethod
-    def run(recommender):
+    def run(recommender_class, fit_parameters):
 
         # Helper contains methods to convert URM in CSR
         helper = Helper()
         URM_all = helper.URM_csr
+
+        recommender = recommender_class(URM_all)
+        recommender.fit(**fit_parameters)
 
         # Start recommendation
         recommender.fit(URM_all)
