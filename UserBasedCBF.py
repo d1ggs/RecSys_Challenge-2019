@@ -80,7 +80,7 @@ class UserBasedCBF(object):
 if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
-    ubcbf = UserBasedCBF()
+    ubcbf = UserBasedCBF
     #ubcbf.helper.split_ucm_region()
-    RunRecommender.perform_evaluation(ubcbf)
+    RunRecommender.evaluate_on_test_set(ubcbf, {})
     # print('{0:.128f}'.format(map10))

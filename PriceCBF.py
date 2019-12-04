@@ -12,10 +12,9 @@ from utils.run import RunRecommender
 
 class ItemBasedCBF:
 
-    def __init__(self, topK_price=200,shrink_price=0):
+    def __init__(self, URM ):
 
-        self.topK_price = topK_price
-        self.shrink_price = shrink_price
+        self.URM_train = URM
         self.helper = Helper()
 
     def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
@@ -25,10 +24,12 @@ class ItemBasedCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, URM):
+    def fit(self, topK_price=200,shrink_price=0):
 
         # URM Loading
-        self.URM_train = URM
+
+        self.topK_price = topK_price
+        self.shrink_price = shrink_price
 
         # Load ICMs from helper
         self.ICM_price = self.helper.load_icm_price()
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 
     parameters = { "topK_price": 100,
                    "shrink_price": 2}
-    cbf_recommender = ItemBasedCBF(topK_price=parameters["topK_price"], shrink_price=parameters["shrink_price"])
+    cbf_recommender = ItemBasedCBF
 
-    RunRecommender.perform_evaluation(cbf_recommender)
+    RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
     # RunRecommender.run(cbf_recommender)

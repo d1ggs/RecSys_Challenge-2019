@@ -262,7 +262,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
 
 
 if __name__ == '__main__':
-    slim = SLIMElasticNetRecommender
+    slim = MultiThreadSLIM_ElasticNet
     parameters = [{"l1_ratio": 0.001, "positive_only": False, "topK": 1000},
                   {"l1_ratio": 0.001, "positive_only": True, "topK": 1000},
                   {"l1_ratio": 0.001, "positive_only": True, "topK": 2000},
