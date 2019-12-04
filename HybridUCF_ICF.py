@@ -11,7 +11,7 @@ item_cf_parameters = {"topK": 5,
                       "shrink": 8}
 
 
-class HybridUCFICFRecommender():
+class HybridUCFICFRecommender(object):
     def __init__(self, weights):
         self.weights = weights
         self.user_cf = UserCollaborativeFilter(topK=user_cf_parameters["topK"], shrink=user_cf_parameters["shrink"])

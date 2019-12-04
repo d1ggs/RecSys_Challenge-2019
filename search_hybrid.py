@@ -2,7 +2,7 @@ from Hybrid import HybridUCFICFRecommender
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
 from utils.split_URM import split_train_test
-from HybridCBCBF import HybridCBCBFRecommender
+from Hybrid_CF_CBF import HybridUCFICFRecommender
 
 if __name__ == '__main__':
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     from Legacy.ParameterTuning.SearchBayesianSkopt import SearchBayesianSkopt
 
-    recommender_class = HybridCBCBFRecommender
+    recommender_class = HybridUCFICFRecommender
 
     parameterSearch = SearchBayesianSkopt(recommender_class,
                                           evaluator_validation=evaluator_validation,
@@ -25,8 +25,10 @@ if __name__ == '__main__':
     from skopt.space import Real, Integer, Categorical
 
     hyperparameters_range_dictionary = {}
-    hyperparameters_range_dictionary["cf_weight"] = Integer(0, 100)
-    hyperparameters_range_dictionary["cbf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["user_cf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["user_cbf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["item_cf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["item_cbf_weight"] = Integer(0, 100)
 
     recommender_input_args = SearchInputRecommenderArgs(
         CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],\

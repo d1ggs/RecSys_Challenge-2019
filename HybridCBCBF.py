@@ -19,7 +19,7 @@ cb_parameters = {"topK": 210,
                  "shrink": 0}
 
 
-class HybridCBCBFRecommender():
+class HybridCBCBFRecommender(object):
 
     RECOMMENDER_NAME = "HybridCBCBFRecommender"
 
