@@ -9,8 +9,8 @@ from ItemBasedCBF import ItemBasedCBF
 
 user_cf_parameters = {"topK": 410,
                       "shrink": 0}
-item_cf_parameters = {"topK": 5,
-                      "shrink": 8}
+item_cf_parameters = {"topK": 29,
+                      "shrink": 22}
 user_cbf_parameters = {"topK_age": 48,
                        "topK_region": 0,
                        "shrink_age": 8,
@@ -104,10 +104,10 @@ class HybridUCFICFRecommender(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_ucf_icf = {"user_cf": 0.03, "item_cf": 0.88, "user_cbf": 0.07, "item_cbf": 0.02}
+    weights_hybrid_ucf_icf = {"user_cf_weight": 0.03, "item_cf_weight": 0.88, "user_cbf_weight": 0.07, "item_cbf_weight": 0.02}
 
-    hybrid_ucficf = HybridUCFICFRecommender(weights_hybrid_ucf_icf)
+    hybrid_ucficf = HybridUCFICFRecommender
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.run(hybrid_ucficf)
+    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_ucf_icf)
     # RunRecommender.run(hybrid_ucficf)

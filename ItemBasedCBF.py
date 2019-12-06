@@ -8,9 +8,6 @@ import numpy as np
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
-from evaluation.Evaluator import Evaluator
-from tqdm import tqdm
-from copy import deepcopy
 
 
 class ItemBasedCBF:
