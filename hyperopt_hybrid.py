@@ -22,11 +22,11 @@ xgb_space = {
     #    min_child-weight : minimum number of instances required in each node
     #'min_child_weight': hp.hp.quniform('min_child_weight', 100, 1000, 100),
     #    reg_alpha : L1 regularisation term on weights
-    'user_cf_weight': hp.hp.uniform('user_cf', 0.0, 1.0),
+    'user_cf_weight': hp.hp.uniform('user_cf', 0.0, 0.5),
     #    reg_lambda : L2 regularisation term on weights
-    'item_cf_weight': hp.hp.uniform('item_cf', 0.0, 1.0),
-    'user_cbf_weight': hp.hp.uniform('user_cbf', 0.0, 1.0),
-    'item_cbf_weight': hp.hp.uniform('item_cbf', 0.0, 1.0)
+    'item_cf_weight': hp.hp.uniform('item_cf', 0.5, 1.0),
+    'user_cbf_weight': hp.hp.uniform('user_cbf', 0.0, 0.5),
+    'item_cbf_weight': hp.hp.uniform('item_cbf', 0.0, 0.5)
     }
 
 if __name__ == '__main__':
@@ -34,9 +34,11 @@ if __name__ == '__main__':
     bayes_trials = Trials()
     MAX_EVALS = 20
 
+    best_submission = {"user_cf":0.03, "item_cf":0.88, "user_cbf":0.07, "item_cbf":0.02}
+
     # Optimize
     best = fmin(fn=objective, space=xgb_space, algo=hp.tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
+                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[best_submission])
 
     ### best will the return the the best hyperparameter set
 
