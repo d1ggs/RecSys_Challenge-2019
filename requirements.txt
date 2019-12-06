@@ -1,7 +1,7 @@
 scikit-optimize
 scipy
 numpy
-sklearn
+scikit-learn
 theano
 tqdm
 cython
@@ -9,3 +9,5 @@ pandas
 torch
 matplotlib
 graphviz
+scikit-optimize
+hyperopt

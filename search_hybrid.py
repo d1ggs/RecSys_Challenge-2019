@@ -2,6 +2,7 @@ from Hybrid import HybridUCFICFRecommender
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
 from utils.split_URM import split_train_test
+from Hybrid_CF_CBF import HybridUCFICFRecommender
 
 if __name__ == '__main__':
 
@@ -25,8 +26,9 @@ if __name__ == '__main__':
 
     hyperparameters_range_dictionary = {}
     hyperparameters_range_dictionary["user_cf_weight"] = Integer(0, 100)
-    hyperparameters_range_dictionary["item_cf_weight"] = Integer(0, 100)
     hyperparameters_range_dictionary["user_cbf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["item_cf_weight"] = Integer(0, 100)
+    hyperparameters_range_dictionary["item_cbf_weight"] = Integer(0, 100)
 
     recommender_input_args = SearchInputRecommenderArgs(
         CONSTRUCTOR_POSITIONAL_ARGS=[URM_train],\

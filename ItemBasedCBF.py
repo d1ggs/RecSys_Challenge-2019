@@ -8,14 +8,22 @@ import numpy as np
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
-from evaluation.Evaluator import Evaluator
-from tqdm import tqdm
-from copy import deepcopy
 
 
 class ItemBasedCBF:
 
-    def __init__(self, topK_asset=100, topK_price=100, topK_sub_class=200, shrink_asset=2, shrink_price=2,
+    def __init__(self, URM_train):
+        self.URM_train = URM_train
+        self.helper = Helper()
+
+    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
+        # Compute similarities for weighted features recommender
+        similarity_object = Compute_Similarity_Python(ICM.T, shrink=shrink, topK=top_k, normalize=normalize,
+                                                      similarity=similarity)
+        w_sparse = similarity_object.compute_similarity()
+        return w_sparse
+
+    def fit(self, topK_asset=100, topK_price=100, topK_sub_class=200, shrink_asset=2, shrink_price=2,
                  shrink_sub_class=0, weight_asset=0.2, weight_price=0.15, weight_sub_class=0.65):
 
         self.topK_asset = topK_asset
@@ -27,19 +35,6 @@ class ItemBasedCBF:
         self.weight_asset = weight_asset
         self.weight_price = weight_price
         self.weight_sub_class = weight_sub_class
-        self.helper = Helper()
-
-    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
-        # Compute similarities for weighted features recommender
-        similarity_object = Compute_Similarity_Python(ICM.T, shrink=shrink, topK=top_k, normalize=normalize,
-                                                      similarity=similarity)
-        w_sparse = similarity_object.compute_similarity()
-        return w_sparse
-
-    def fit(self, URM):
-
-        # URM Loading
-        self.URM_train = URM
 
         # Load ICMs from helper
         self.ICM_asset = self.helper.load_icm_asset()
@@ -83,35 +78,6 @@ class ItemBasedCBF:
 
         return scores
 
-    def find_best_fit(self, parameter_list):
-        print("Looking for best parameter set over ", len(parameter_list))
-        results = []
-        best = 0
-        best_parameters = None
-        best_model = None
-
-        # Collect MAP scores for each parameter set
-
-        for parameter_set in tqdm(parameter_list):
-            self.__init__(topK_asset=parameter_set["topK_asset"], topK_price=parameter_set["topK_price"],
-                          topK_sub_class=parameter_set["topK_sub_class"], shrink_asset=parameter_set["shrink_asset"],
-                          shrink_price=parameter_set["shrink_price"],
-                          shrink_sub_class=parameter_set["shrink_sub_class"],
-                          weight_asset=parameter_set["weight_asset"], weight_price=parameter_set["weight_price"],
-                          weight_sub_class=parameter_set["weight_sub_class"])
-
-            result = RunRecommender.run_test_recommender(cbf_recommender)
-            results.append(result)
-
-            if result > best:
-                best_parameters = parameter_set
-                best_model = deepcopy(self)
-                best = result
-
-        print("Best MAP score obtained: ", best)
-        return results, best_model, best_parameters
-
-
 if __name__ == "__main__":
 
     # evaluator.split_data_randomly()
@@ -125,11 +91,7 @@ if __name__ == "__main__":
                    "weight_asset": 0.35,
                    "weight_price": 0,
                    "weight_sub_class": 0.65}
-    cbf_recommender = ItemBasedCBF(topK_asset=parameters["topK_asset"], topK_price=parameters["topK_price"],
-                                   topK_sub_class=parameters["topK_sub_class"], shrink_asset=parameters["shrink_asset"],
-                                   shrink_price=parameters["shrink_price"], shrink_sub_class=parameters["shrink_sub_class"],
-                                   weight_asset=parameters["weight_asset"], weight_price=parameters["weight_price"],
-                                   weight_sub_class=parameters["weight_sub_class"])
+    cbf_recommender = ItemBasedCBF
 
-    RunRecommender.perform_evaluation(cbf_recommender)
+    RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
     # RunRecommender.run(cbf_recommender)

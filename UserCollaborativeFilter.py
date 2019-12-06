@@ -7,13 +7,10 @@ from utils.run import RunRecommender
 
 class UserCollaborativeFilter(object):
 
-    def __init__(self, topK=500, shrink=2, normalize=True, similarity = "cosine"):
-        self.URM_train = None
+    def __init__(self, URM_train):
+        self.URM_train = URM_train
         self.W_sparse = None
-        self.topK = topK
-        self.shrink = shrink
-        self.normalize = normalize
-        self.similarity = similarity
+
 
     def compute_similarity_matrix(self, URM_train, shrink, topK, normalize, similarity):
         similarity_object = Compute_Similarity_Python(URM_train.T, shrink=shrink,
@@ -22,8 +19,12 @@ class UserCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, URM_train):
-        self.URM_train = URM_train
+    def fit(self, topK=500, shrink=2, normalize=True, similarity = "cosine"):
+
+        self.topK = topK
+        self.shrink = shrink
+        self.normalize = normalize
+        self.similarity = similarity
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
 
     def compute_scores(self, user_id):
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly()
 
-    helper = Helper()
-    cb = UserCollaborativeFilter(topK=510, shrink=4)
+    parameters = {"topK": 500, "shrink": 2}
+    cb = UserCollaborativeFilter
 
-    map10 = RunRecommender.perform_evaluation(cb)
+    map10 = RunRecommender.evaluate_on_test_set(cb, parameters)

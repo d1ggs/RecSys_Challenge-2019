@@ -1,18 +1,12 @@
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
-from utils.helper import Helper
-from utils.run import RunRecommender
 
 # from evaluation.Evaluator import Evaluator
 class ItemCollaborativeFilter(object):
 
-    def __init__(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
-        self.URM_train = None
+    def __init__(self, URM_train):
+        self.URM_train = URM_train
         self.W_sparse = None
-        self.topK = topK
-        self.shrink = shrink
-        self.normalize = normalize
-        self.similarity = similarity
 
     def compute_similarity_matrix(self, URM_train, shrink, topK, normalize, similarity):
         similarity_object = Compute_Similarity_Python(URM_train, shrink=shrink,
@@ -21,8 +15,11 @@ class ItemCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, URM_train):
-        self.URM_train = URM_train
+    def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
+        self.topK = topK
+        self.shrink = shrink
+        self.normalize = normalize
+        self.similarity = similarity
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize,
                                                        self.similarity)
         self.URM_W_dot = self.URM_train.dot(self.W_sparse)
@@ -55,13 +52,16 @@ class ItemCollaborativeFilter(object):
 
 
 if __name__ == "__main__":
-    # evaluator = Evaluator()
-    # evaluator.split_data_randomly()
+    from utils.run import RunRecommender
 
-    helper = Helper()
-    cb_parameters = {"topK": 2,
-                     "shrink": 20}
-    cb = ItemCollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
+    cb_parameters = {"topK": 5,
+                     "shrink": 8}
+    cb = ItemCollaborativeFilter
 
-    map10 = RunRecommender.perform_evaluation(cb) # THIS GENERATES A CIRCULAR IMPORT
+    map10 = RunRecommender.evaluate_on_test_set(cb, cb_parameters) # THIS GENERATES A CIRCULAR IMPORT
+
+    print(map10)
+    cb_parameters = {"topK": 29,
+                     "shrink": 22}
+    print(RunRecommender.evaluate_on_test_set(cb, cb_parameters))
     # print('{0:.128f}'.format(map10))

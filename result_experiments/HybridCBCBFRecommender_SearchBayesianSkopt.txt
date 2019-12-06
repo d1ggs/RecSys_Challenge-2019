@@ -1,0 +1,19 @@
+SearchBayesianSkopt: Config 0 Exception. Config: {'user_cf_weight': 50, 'user_cbf_weight': 14} - Exception: Traceback (most recent call last):
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'user_cf_weight'
+
+SearchBayesianSkopt: Config 0 Exception. Config: {'cf_weight': 47, 'cbf_weight': 93} - Exception: Traceback (most recent call last):
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 359, in _objective_function
+    result_dict, result_string, recommender_instance, train_time, evaluation_time = self._evaluate_on_validation(current_fit_parameters_dict)
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 267, in _evaluate_on_validation
+    recommender_instance, train_time = self._fit_model(current_fit_parameters)
+  File "/Users/diegopiccinotti/Documents/Università/PoliMi/RecSys_Challenge-2019/Legacy/ParameterTuning/SearchAbstractClass.py", line 257, in _fit_model
+    **current_fit_parameters)
+TypeError: fit() got an unexpected keyword argument 'cf_weight'
+
+SearchBayesianSkopt: New best config found. Config 0: {'cb_weight': 9, 'cbf_weight': 84} - results: MAP@10 score: 0.026288618947592685

@@ -1,20 +1,17 @@
 import numpy as np
 from utils.run import RunRecommender
 from utils.helper import Helper
-from evaluation.Evaluator import Evaluator
 
 
 class TopPopRecommender:
 
-    def __init__(self):
-        self.URM_CSR = None
+    def __init__(self, URM_CSR):
+        self.URM_CSR = URM_CSR
 
-    def fit(self, URM_CSR):
+    def fit(self):
         # --- CSR Matrix Computation ---
         #Training data loading and its conversion to a CSR matrix is done in run.py with the functions provided by Helper
 
-        # self.URM_data = self.helper.URM_data
-        self.URM_CSR = URM_CSR
         # --- Actual Popularity computation ---
         # Calculate item popularity by summing for each item the rating of every use
         # The most popular playlist is the one with more songs in it
@@ -50,7 +47,7 @@ if __name__ == "__main__":
     helper = Helper()
     top_popular = TopPopRecommender(helper)
 
-    map10 = RunRecommender.run_test_recommender(top_popular)
+    map10 = RunRecommender.evaluate_on_test_set(top_popular, {})
 
     #print('{0:.128f}'.format(map10))
     print(map10)

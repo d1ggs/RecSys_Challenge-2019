@@ -6,15 +6,22 @@ from evaluation.Evaluator import Evaluator
 # Put root project dir in a constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# import pyximport
+# pyximport.install()
+# from evaluation.Evaluator_cython import Evaluator
+
 
 class RunRecommender:
 
     @staticmethod
-    def run(recommender):
+    def run(recommender_class, fit_parameters):
 
         # Helper contains methods to convert URM in CSR
         helper = Helper()
         URM_all = helper.URM_csr
+
+        recommender = recommender_class(URM_all)
+        recommender.fit(**fit_parameters)
 
         # Start recommendation
         recommender.fit(URM_all)
@@ -42,7 +49,7 @@ class RunRecommender:
         recommendation_matrix_file_to_submit.close()
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters):
+    def evaluate_on_test_set(recommender_class, fit_parameters, exclude_users=None):
 
         MAP_final = 0.0
         evaluator, helper = Evaluator(test_mode=True), Helper()
@@ -51,7 +58,7 @@ class RunRecommender:
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = evaluator.evaluateRecommender(recommender)
+        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
 
         # for user in tqdm(eval_data.keys()):
         #     recommended_items = recommender.recommend(int(user), exclude_seen=True)
@@ -69,7 +76,7 @@ class RunRecommender:
         return MAP_final
 
     @staticmethod
-    def evaluate_on_eval_set(recommender_class, fit_parameters):
+    def evaluate_on_eval_set(recommender_class, fit_parameters, exclude_users=None):
 
         MAP_final = 0.0
         evaluator, helper = Evaluator(), Helper()
@@ -78,13 +85,8 @@ class RunRecommender:
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
-        for user in tqdm(eval_data.keys()):
-            recommended_items = recommender.recommend(int(user), exclude_seen=True)
-            relevant_item = eval_data[int(user)]
+        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
 
-            MAP_final += evaluator.MAP(recommended_items, relevant_item)
-
-        MAP_final /= len(eval_data.keys())
         print("MAP-10 score:", MAP_final)
         MAP_final *= 0.665
         # TODO find new conversion factor for test set
