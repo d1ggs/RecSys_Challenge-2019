@@ -1,11 +1,13 @@
 from UserCollaborativeFilter import UserCollaborativeFilter
 from ItemCollaborativeFilter import ItemCollaborativeFilter
-import numpy as np
-from utils.run import RunRecommender
-from utils.helper import Helper
+from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 from TopPopularRecommender import TopPopRecommender
 from UserBasedCBF import UserBasedCBF
 from ItemBasedCBF import ItemBasedCBF
+
+import numpy as np
+from utils.run import RunRecommender
+from utils.helper import Helper
 
 user_cf_parameters = {"topK": 410,
                       "shrink": 0}
@@ -25,49 +27,59 @@ item_cbf_parameters = {"topK_asset": 300,
                        "weight_asset": 0.33,
                        "weight_price": 0.33,
                        "weight_sub_class": 0.34}
+SLIM_parameters = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK': 100}
 
 
-class HybridUCFICFRecommender(object):
+class HybridElasticNetICF(object):
 
-    RECOMMENDER_NAME = "HybridUCFICFRecommender"
+    RECOMMENDER_NAME = "HybridElasticNetICF"
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
 
         # Init single recommenders
-        self.user_cf = UserCollaborativeFilter(URM_train)
+        # self.user_cf = UserCollaborativeFilter(URM_train)
         self.item_cf = ItemCollaborativeFilter(URM_train)
         self.top_pop = TopPopRecommender(URM_train)
-        self.user_based_cbf = UserBasedCBF(URM_train)
-        self.item_based_cbf = ItemBasedCBF(URM_train)
+        self.SLIM = MultiThreadSLIM_ElasticNet(URM_train)
+        # self.user_based_cbf = UserBasedCBF(URM_train)
+        # self.item_based_cbf = ItemBasedCBF(URM_train)
 
         # Get the cold users list
-        self.cold_users = Helper().get_cold_user_ids("dataset")
+        self.cold_users = Helper().get_cold_user_ids(mode)
 
-        # Fit the single recommenders
-        self.user_cf.fit(**user_cf_parameters)
+        # Fit the single recommenders, this saves time in case of changing just the relative weights
+
+        # self.user_cf.fit(**user_cf_parameters)
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
-        self.user_based_cbf.fit(**user_cbf_parameters)
-        self.item_based_cbf.fit(**item_cbf_parameters)
+        self.SLIM.fit(**SLIM_parameters)
+        # self.user_based_cbf.fit(**user_cbf_parameters)
+        # self.item_based_cbf.fit(**item_cbf_parameters)
 
-    def fit(self, user_cf_weight=0.03, item_cf_weight=0.88, user_cbf_weight=0.07, item_cbf_weight=0.02):
+    def fit(self, user_cf_weight=0.0, item_cf_weight=0.5, user_cbf_weight=0.0, item_cbf_weight=0.0, SLIM_weight=0.5):
 
         # Normalize the weights, just in case
-        weight_sum = user_cbf_weight + user_cf_weight + item_cbf_weight + item_cf_weight
+        weight_sum = user_cbf_weight + user_cf_weight + item_cbf_weight + item_cf_weight+SLIM_weight
 
-        self.weights = {"user_cf": user_cf_weight/weight_sum,
+        self.weights = {#"user_cf": user_cf_weight/weight_sum,
                         "item_cf": item_cf_weight/weight_sum,
-                        "user_cbf": user_cbf_weight/weight_sum,
-                        "item_cbf": item_cbf_weight/weight_sum}
+                        #"user_cbf": user_cbf_weight/weight_sum,
+                        #"item_cbf": item_cbf_weight/weight_sum
+                        "SLIM": SLIM_weight}
 
     def compute_scores(self, user_id):
-        scores_user_cf = self.user_cf.compute_scores(user_id)
+        #scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_item_cf = self.item_cf.compute_scores(user_id)
-        scores_user_cbf = self.user_based_cbf.compute_scores(user_id)
-        scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
-        scores = (self.weights["user_cf"] * scores_user_cf) + (self.weights["item_cf"] * scores_item_cf) + \
-                 (self.weights["user_cbf"] * scores_user_cbf) + (self.weights["item_cbf"] * scores_item_cbf)
+        #scores_user_cbf = self.user_based_cbf.compute_scores(user_id)
+        #scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
+        scores_SLIM = self.SLIM._compute_item_score(user_id).squeeze()
+
+        scores = (self.weights["item_cf"] * scores_item_cf) + \
+                 (self.weights["SLIM"] * scores_SLIM)  # +\
+                 #(self.weights["user_cf"] * scores_user_cf) + \
+                 #(self.weights["user_cbf"] * scores_user_cbf) + \
+                 #(self.weights["item_cbf"] * scores_item_cbf) + \
 
         return scores
 
@@ -103,10 +115,11 @@ class HybridUCFICFRecommender(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_ucf_icf = {"user_cf_weight": 0.03, "item_cf_weight": 0.88, "user_cbf_weight": 0.07, "item_cbf_weight": 0.02}
+    weights_hybrid_icf_SLIM = {"item_cf_weight": 0.88, "SLIM_weight": 0.12}
 
-    hybrid_ucficf = HybridUCFICFRecommender
+    hybrid_ucficf = HybridElasticNetICF
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_ucf_icf)
+    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_icf_SLIM)
+
     # RunRecommender.run(hybrid_ucficf)

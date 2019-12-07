@@ -21,7 +21,7 @@ class HybridUCFICFRecommender(object):
         self.cold_users = get_cold_user_ids()
 
 
-    def fit(self, URM_train):
+    def fit(self, ):
         self.URM_train = URM_train
         # Fit the URM into single recommenders
         self.user_cf.fit(self.URM_train)
