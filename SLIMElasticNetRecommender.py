@@ -241,6 +241,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
         # e il rimanente parametro, variabile
         print("Starting parallelized fit...")
         res = pool.map(_pfit, np.arange(n_items))
+        pool.close()
         print("Done!")
 
         # res contains a vector of (values, rows, cols) tuples
@@ -257,25 +258,29 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
 
 
 if __name__ == '__main__':
+
+    from utils.helper import Helper
+    helper = Helper()
+
     slim = MultiThreadSLIM_ElasticNet
-    parameters = [{"l1_ratio": 0.001, "positive_only": False, "topK": 1000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 2000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1500}
-                  ]
+    parameters = [{"l1_ratio": 0.001, "positive_only": False, "topK": 1000}]
+
 
     map_10 = []
 
-    from utils.helper import Helper
+    previous_best = {"alpha": 1.0, "l1_ratio": 0.001, "positive_only": False, "fit_intercept": False, "max_iter": 100,
+                     "tol": 1e-4, "selection": "random", "random_state": 1234}
+
+    new_best = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True}
 
     for param in parameters:
-        map_10.append(RunRecommender.evaluate_on_test_set(slim, param))
+        map_10.append(RunRecommender.evaluate_on_eval_set(slim, new_best))
 
-    import matplotlib.pyplot as plt
-
-    plt.plot(map_10)
-    plt.xlabel("Parameter set")
-    plt.ylabel("MAP@10 score")
-    plt.title("l1_ratio")
+    # import matplotlib.pyplot as plt
+    #
+    # plt.plot(map_10)
+    # plt.xlabel("Parameter set")
+    # plt.ylabel("MAP@10 score")
+    # plt.title("l1_ratio")
 
     print(max(map_10))
