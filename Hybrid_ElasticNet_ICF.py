@@ -27,7 +27,8 @@ item_cbf_parameters = {"topK_asset": 300,
                        "weight_asset": 0.33,
                        "weight_price": 0.33,
                        "weight_sub_class": 0.34}
-SLIM_parameters = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK': 100}
+# SLIM_parameters = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK': 100}
+SLIM_parameters = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
 
 
 class HybridElasticNetICF(object):
@@ -57,29 +58,22 @@ class HybridElasticNetICF(object):
         # self.user_based_cbf.fit(**user_cbf_parameters)
         # self.item_based_cbf.fit(**item_cbf_parameters)
 
-    def fit(self, user_cf_weight=0.0, item_cf_weight=0.5, user_cbf_weight=0.0, item_cbf_weight=0.0, SLIM_weight=0.5):
+    def fit(self, SLIM_weight=0.5):
+
+        item_cf_weight = 1-SLIM_weight
 
         # Normalize the weights, just in case
-        weight_sum = user_cbf_weight + user_cf_weight + item_cbf_weight + item_cf_weight+SLIM_weight
+        weight_sum = item_cf_weight + SLIM_weight
 
-        self.weights = {#"user_cf": user_cf_weight/weight_sum,
-                        "item_cf": item_cf_weight/weight_sum,
-                        #"user_cbf": user_cbf_weight/weight_sum,
-                        #"item_cbf": item_cbf_weight/weight_sum
+        self.weights = {"item_cf": item_cf_weight/weight_sum,
                         "SLIM": SLIM_weight}
 
     def compute_scores(self, user_id):
-        #scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_item_cf = self.item_cf.compute_scores(user_id)
-        #scores_user_cbf = self.user_based_cbf.compute_scores(user_id)
-        #scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
         scores_SLIM = self.SLIM._compute_item_score(user_id).squeeze()
 
         scores = (self.weights["item_cf"] * scores_item_cf) + \
-                 (self.weights["SLIM"] * scores_SLIM)  # +\
-                 #(self.weights["user_cf"] * scores_user_cf) + \
-                 #(self.weights["user_cbf"] * scores_user_cbf) + \
-                 #(self.weights["item_cbf"] * scores_item_cbf) + \
+                 (self.weights["SLIM"] * scores_SLIM)
 
         return scores
 
@@ -115,11 +109,11 @@ class HybridElasticNetICF(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights_hybrid_icf_SLIM = {"item_cf_weight": 0.88, "SLIM_weight": 0.12}
+    weights_hybrid_icf_SLIM = {"SLIM_weight": 0.9069700650398081}
 
     hybrid_ucficf = HybridElasticNetICF
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_icf_SLIM)
+    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_icf_SLIM)
 
-    # RunRecommender.run(hybrid_ucficf)
+    RunRecommender.run(hybrid_ucficf, weights_hybrid_icf_SLIM)

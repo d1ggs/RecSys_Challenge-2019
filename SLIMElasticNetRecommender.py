@@ -267,7 +267,8 @@ if __name__ == '__main__':
     previous_best = {"alpha": 1.0, "l1_ratio": 0.001, "positive_only": False, "fit_intercept": False, "max_iter": 100,
                      "tol": 1e-4, "selection": "random", "random_state": 1234}
 
-    new_best = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True}
+    old_best = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK':100}
+    new_best = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
 
     map_10 = RunRecommender.evaluate_on_validation_set(slim, new_best)
 
