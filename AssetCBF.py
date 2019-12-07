@@ -8,27 +8,17 @@ import numpy as np
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
-from AssetCBF import AssetCBF
-from PriceCBF import PriceCBF
-from SubClassCBF import SubClassCBF
+from tqdm import tqdm
+from copy import deepcopy
 
-asset_cbf_parameters = {"topK": 8,
-                        "shrink": 4} # to fit with optimal values
 
-price_cbf_parameters = {"topK": 0,
-                        "shrink": 6}
+class AssetCBF:
 
-sub_class_cbf_parameters = {"topK": 1,
-                            "shrink": 1}
+    def __init__(self, URM):
 
-class ItemBasedCBF:
+        self.URM_train = URM
 
-    def __init__(self, URM_train):
-        self.URM_train = URM_train
         self.helper = Helper()
-        self.asset_cbf = AssetCBF(self.URM_train)
-        self.price_cbf = PriceCBF(self.URM_train)
-        self.sub_class_cbf = SubClassCBF(self.URM_train)
 
     def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
         # Compute similarities for weighted features recommender
@@ -37,23 +27,21 @@ class ItemBasedCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, weight_asset, weight_price, weight_sub_class):
+    def fit(self, topK,shrink):
 
-        self.asset_cbf.fit(**asset_cbf_parameters)
-        self.price_cbf.fit(**price_cbf_parameters)
-        self.sub_class_cbf.fit(**sub_class_cbf_parameters)
-        self.weight_asset = weight_asset
-        self.weight_price = weight_price
-        self.weight_sub_class = weight_sub_class
+        self.topK = topK
+        self.shrink = shrink
 
+        # Load ICMs from helper
+        self.ICM_asset = self.helper.load_icm_asset()
+        # Computing SMs
+        self.SM_asset = self.compute_similarity_cbf(self.ICM_asset, top_k=self.topK, shrink=self.shrink)
 
     def compute_scores(self, user_id):
-        scores_asset = self.asset_cbf.compute_scores(user_id)
-        scores_price = self.price_cbf.compute_scores(user_id)
-        scores_sub_class = self.sub_class_cbf.compute_scores(user_id)
+        users_list_train = self.URM_train[user_id]
+        scores_asset = users_list_train.dot(self.SM_asset).toarray().ravel()
 
-        scores = (scores_asset * self.weight_asset) + (scores_price * self.weight_price) + (scores_sub_class * self.weight_sub_class)
-        return scores
+        return scores_asset
 
     def recommend(self, user_id, at=10, exclude_seen=True):
         # Compute scores of the recommendation
@@ -76,14 +64,14 @@ class ItemBasedCBF:
 
         return scores
 
+
 if __name__ == "__main__":
 
     # evaluator.split_data_randomly()
 
-    parameters = {"weight_asset": 0.41617098566013966,
-                  "weight_price": 0.36833811086509627,
-                  "weight_sub_class": 0.6977028008004889}
-    cbf_recommender = ItemBasedCBF
+    parameters = { "topK": 4,
+                   "shrink": 8}
+    cbf_recommender = AssetCBF
 
     RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
     # RunRecommender.run(cbf_recommender)

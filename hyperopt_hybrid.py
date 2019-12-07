@@ -22,11 +22,11 @@ xgb_space = {
     #    min_child-weight : minimum number of instances required in each node
     #'min_child_weight': hp.hp.quniform('min_child_weight', 100, 1000, 100),
     #    reg_alpha : L1 regularisation term on weights
-    'user_cf_weight': hp.hp.uniform('user_cf', 0.0, 0.5),
+    'user_cf_weight': hp.hp.uniform('user_cf', 0.0, 0.2),
     #    reg_lambda : L2 regularisation term on weights
-    'item_cf_weight': hp.hp.uniform('item_cf', 0.5, 1.0),
-    'user_cbf_weight': hp.hp.uniform('user_cbf', 0.0, 0.5),
-    'item_cbf_weight': hp.hp.uniform('item_cbf', 0.0, 0.5)
+    'item_cf_weight': hp.hp.uniform('item_cf', 0.7, 1.0),
+    'user_cbf_weight': hp.hp.uniform('user_cbf', 0.0, 0.1),
+    'item_cbf_weight': hp.hp.uniform('item_cbf', 0.0, 0.2)
     }
 
 if __name__ == '__main__':
