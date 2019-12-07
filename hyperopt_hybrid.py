@@ -16,7 +16,7 @@ def objective(params):
 
 
 # step 2 : defining the search space
-xgb_space = {
+search_space = {
     #'user_cf_weight': hp.hp.uniform('user_cf', 0.0, 0.5),
     #'item_cf_weight': hp.hp.uniform('item_cf', 0.0, 1.0),
     #'user_cbf_weight': hp.hp.uniform('user_cbf', 0.0, 0.5),
@@ -32,7 +32,7 @@ MAX_EVALS = 20
 best_submission = {'SLIM': 0.9359935612458622, 'item_cf': 0.02700546735599607}
 
 # Optimize
-best = fmin(fn=objective, space=xgb_space, algo=hp.tpe.suggest,
+best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
             max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[best_submission])
 
 # best will the return the the best hyperparameter set
