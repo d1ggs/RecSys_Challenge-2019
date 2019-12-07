@@ -8,7 +8,7 @@ import os
 from utils.helper import Helper
 import numpy as np
 from tqdm import tqdm
-from copy import copy
+import multiprocessing
 
 ROW_INDEX, COL_ID_INDEX = 0, 1
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,8 +18,6 @@ NUMBER_OF_ITEMS_TEST_FILE = 10
 class Evaluator:
     def __init__(self, split_size=0.8, test_mode = False):
         self.helper = Helper()
-        self.eval_data = self.helper.validation_data
-        self.test_data = self.helper.test_data
         self.test_mode = test_mode
 
     # Functions to evaluate a recommender
@@ -50,9 +48,9 @@ class Evaluator:
         MAP_final = 0.0
 
         if self.test_mode:
-            evaluation_data = self.test_data
+            evaluation_data = self.helper.test_data
         else:
-            evaluation_data = self.eval_data
+            evaluation_data = self.helper.validation_data
 
         if exclude_users is not None:
             user_list = exclude_users
@@ -70,12 +68,6 @@ class Evaluator:
 
     def evaluateRecommender(self, recommender, exclude_users: set):
 
-        from joblib import Parallel, delayed
-        import multiprocessing
-
-        # what are your inputs, and what operation do you want to
-        # perform on each input. For example...
-
         num_cores = multiprocessing.cpu_count()
 
         print("Computing MAP...")
@@ -83,9 +75,9 @@ class Evaluator:
         MAP_final = 0.0
 
         if self.test_mode:
-            evaluation_data = self.test_data
+            evaluation_data = self.helper.test_data
         else:
-            evaluation_data = self.eval_data
+            evaluation_data = self.helper.validation_data
 
         if exclude_users is not None:
             user_list = exclude_users
@@ -96,6 +88,7 @@ class Evaluator:
         with multiprocessing.Pool(processes=num_cores) as p:
             results = p.map(Evaluator.compute_MAP_for_user, [(recommender, user, evaluation_data[user]) for user in user_list])
         MAP_final = np.sum(results)
+        p.close()
 
         print("Completed in", datetime.now() - startTime)
 

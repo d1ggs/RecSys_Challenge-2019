@@ -132,3 +132,5 @@ dmypy.json
 *.html
 
 data/recommendation_matrix_to_submit.csv
+
+result_experiments/

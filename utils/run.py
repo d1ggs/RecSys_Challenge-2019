@@ -6,25 +6,17 @@ from evaluation.Evaluator import Evaluator
 # Put root project dir in a constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# import pyximport
-# pyximport.install()
-# from evaluation.Evaluator_cython import Evaluator
-
-
-class RunRecommender:
+class RunRecommender(object):
 
     @staticmethod
     def run(recommender_class, fit_parameters):
 
         # Helper contains methods to convert URM in CSR
-        helper = Helper()
-        URM_all = helper.URM_csr
+
+        URM_all = Helper().URM_csr
 
         recommender = recommender_class(URM_all)
         recommender.fit(**fit_parameters)
-
-        # Start recommendation
-        recommender.fit(URM_all)
 
         RunRecommender.write_submission(recommender)
 
@@ -51,46 +43,29 @@ class RunRecommender:
     @staticmethod
     def evaluate_on_test_set(recommender_class, fit_parameters, exclude_users=None):
 
-        MAP_final = 0.0
-        evaluator, helper = Evaluator(test_mode=True), Helper()
-        URM_train, eval_data = helper.URM_train_test, helper.test_data
+        evaluator = Evaluator(test_mode=True)
+        URM_train = Helper().URM_train_test
 
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
         MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
 
-        # for user in tqdm(eval_data.keys()):
-        #     recommended_items = recommender.recommend(int(user), exclude_seen=True)
-        #     relevant_item = eval_data[int(user)]
-        #
-        #     MAP_final += evaluator.MAP(recommended_items, relevant_item)
-        #
-        # MAP_final /= len(eval_data.keys())
-
         print("MAP-10 score:", MAP_final)
-        MAP_final *= 0.665
-        # TODO find new conversion factor for test set
-        # print("MAP-10 public approx score:", MAP_final)
 
         return MAP_final
 
     @staticmethod
-    def evaluate_on_eval_set(recommender_class, fit_parameters, exclude_users=None):
+    def evaluate_on_validation_set(recommender_class, fit_parameters, exclude_users=None):
 
-        MAP_final = 0.0
-        evaluator, helper = Evaluator(), Helper()
-        URM_train, eval_data = helper.URM_train_test, helper.validation_data
+        URM_train = Helper().URM_train_validation
 
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
+        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
 
         print("MAP-10 score:", MAP_final)
-        MAP_final *= 0.665
-        # TODO find new conversion factor for test set
-        # print("MAP-10 public approx score:", MAP_final)
 
         return MAP_final
 
@@ -142,4 +117,28 @@ class RunRecommender:
         MAP_final /= len(test_data.keys())
         MAP_final *= 0.665
         print("MAP-10 score:", MAP_final)
+        return MAP_final
+
+    @staticmethod
+    def evaluate_hybrid_weights_test(recommender, weights, exclude_users=None):
+
+        evaluator = Evaluator(test_mode=True)
+
+        recommender.fit(**weights)
+
+        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
+
+        print("MAP-10 score:", MAP_final)
+
+        return MAP_final
+
+    @staticmethod
+    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None):
+
+        recommender.fit(**weights)
+
+        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
+
+        print("MAP-10 score:", MAP_final)
+
         return MAP_final
