@@ -32,6 +32,15 @@ class Singleton(type):
         return cls._instances[cls]
 
 
+def compute_cold_user_ids(URM):
+
+    interactions = URM.sum(1)
+
+    # Get the users with no interactions
+    indices = np.argwhere(interactions == 0)[:, 0]
+    return set(indices)
+
+
 class Helper(object, metaclass=Singleton):
     def __init__(self, resplit=False):
         # Put root project dir in a constant
@@ -45,21 +54,22 @@ class Helper(object, metaclass=Singleton):
         self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(
             resplit=resplit)
 
-        self.cold_users = None
+        self.cold_users_dataset = compute_cold_user_ids(self.URM_csr)
+        self.cold_users_validation = compute_cold_user_ids(self.URM_train_validation)
+        self.cold_users_test = compute_cold_user_ids(self.URM_train_test)
 
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
 
-    def get_cold_user_ids(self):
-        if self.cold_users is None:
-            # Sum interactions for each user
-            interactions = self.URM_csr.sum(1)
-
-            # Get the users with enough interactions
-            indices = np.argwhere(interactions == 0)[:, 0]
-            self.cold_users = list(indices)
-
-        return self.cold_users
+    def get_cold_user_ids(self, split: str):
+        if split == "dataset":
+            return self.cold_users_dataset
+        elif split == "test":
+            return self.cold_users_test
+        elif split == "validation":
+            return self.cold_users_validation
+        else:
+            raise AssertionError("The split parameter must be either 'dataset', 'test', or 'validation'")
 
     def get_train_validation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
 

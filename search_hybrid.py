@@ -1,4 +1,4 @@
-from Hybrid import HybridUCFICFRecommender
+from HybridSLIMElasticNet import HybridUCFICFRecommender
 from evaluation.Evaluator import Evaluator
 from utils.helper import Helper
 from utils.split_URM import split_train_test

@@ -42,8 +42,7 @@ class HybridUCFICFRecommender(object):
         self.item_based_cbf = ItemBasedCBF(URM_train)
 
         # Get the cold users list
-        self.helper = Helper()
-        self.cold_users = self.helper.get_cold_user_ids()
+        self.cold_users = Helper().get_cold_user_ids("dataset")
 
     def fit(self, user_cf_weight=0.03, item_cf_weight=0.88, user_cbf_weight=0.07, item_cbf_weight=0.02):
 

@@ -27,9 +27,6 @@ class RunRecommender(object):
         recommender = recommender_class(URM_all)
         recommender.fit(**fit_parameters)
 
-        # Start recommendation
-        recommender.fit(URM_all)
-
         RunRecommender.write_submission(recommender)
 
     @staticmethod
