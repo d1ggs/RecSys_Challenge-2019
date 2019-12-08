@@ -18,10 +18,10 @@ class HybridUCFICFRecommender(object):
         self.item_cf = ItemCollaborativeFilter(topK=item_cf_parameters["topK"], shrink=item_cf_parameters["shrink"])
         self.top_pop = TopPopRecommender()
         self.helper = Helper()
-        self.cold_users = self.helper.get_cold_user_ids()
+        self.cold_users = get_cold_user_ids()
 
 
-    def fit(self, URM_train):
+    def fit(self, ):
         self.URM_train = URM_train
         # Fit the URM into single recommenders
         self.user_cf.fit(self.URM_train)

@@ -12,6 +12,7 @@ from utils.split_URM import split_train_test
 from utils.data_utilities import build_URM
 
 from Legacy.Base.IR_feature_weighting import okapi_BM_25
+
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,7 +23,25 @@ URM_TRAIN_TEST_EVAL_PATH = ROOT_PROJECT_PATH + "/data/pickled/URM_train_eval_tes
 URM_TEST_PATH = ROOT_PROJECT_PATH + "/data/pickled/URM_test.pickle"
 
 
-class Helper:
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+def compute_cold_user_ids(URM):
+
+    interactions = URM.sum(1)
+
+    # Get the users with no interactions
+    indices = np.argwhere(interactions == 0)[:, 0]
+    return set(indices)
+
+
+class Helper(object, metaclass=Singleton):
     def __init__(self, resplit=False):
         # Put root project dir in a constant
         # Loading of data using pandas, that creates a new object URM_data with the first line values as attributes
@@ -32,23 +51,25 @@ class Helper:
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
 
-        self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(resplit=resplit)
+        self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(
+            resplit=resplit)
 
-        self.cold_users = None
+        self.cold_users_dataset = compute_cold_user_ids(self.URM_csr)
+        self.cold_users_validation = compute_cold_user_ids(self.URM_train_validation)
+        self.cold_users_test = compute_cold_user_ids(self.URM_train_test)
 
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
 
-    def get_cold_user_ids(self):
-        if self.cold_users is None:
-            # Sum interactions for each user
-            interactions = self.URM_csr.sum(1)
-
-            # Get the users with enough interactions
-            indices = np.argwhere(interactions == 0)[:, 0]
-            self.cold_users = list(indices)
-
-        return self.cold_users
+    def get_cold_user_ids(self, split: str):
+        if split == "dataset":
+            return self.cold_users_dataset
+        elif split == "test":
+            return self.cold_users_test
+        elif split == "validation":
+            return self.cold_users_validation
+        else:
+            raise AssertionError("The split parameter must be either 'dataset', 'test', or 'validation'")
 
     def get_train_validation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
 
@@ -78,8 +99,8 @@ class Helper:
 
         else:
             URM_train_eval, URM_train_test, eval_data, test_data = split_train_test(self.URM_csr,
-                                                                 split_fraction=split_fraction,
-                                                                 leave_out=leave_out)
+                                                                                    split_fraction=split_fraction,
+                                                                                    leave_out=leave_out)
 
             # Serialize the objects with Pickle, for faster loading
 
@@ -149,7 +170,8 @@ class Helper:
         matrix_BM25 = okapi_BM_25(matrix_BM25)
         matrix_BM25 = matrix_BM25.tocsr()
         return matrix_BM25
-#e
+
+    # e
     def tfidf_normalization(self, matrix):
         matrix_tfidf = feature_extraction.text.TfidfTransformer().fit_transform(matrix)
         return matrix_tfidf.tocsr()
@@ -162,7 +184,7 @@ class Helper:
         row = np.asarray(list(ucm_age.row))
         col = np.asarray(list(ucm_age.col))
         data = np.asarray(list(ucm_age.data))
-        ucm_age = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col)+1))
+        ucm_age = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col) + 1))
         ucm_age = ucm_age.tocsr()
         return ucm_age
 
@@ -171,7 +193,7 @@ class Helper:
         row = np.asarray(list(ucm_region.row))
         col = np.asarray(list(ucm_region.col))
         data = np.asarray(list(ucm_region.data))
-        ucm_region = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col)+1))
+        ucm_region = sps.coo_matrix((data, (row, col)), shape=(self.URM_csr.shape[0], max(col) + 1))
         ucm_region = ucm_region.tocsr()
         return ucm_region
 

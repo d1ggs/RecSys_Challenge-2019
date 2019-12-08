@@ -92,6 +92,8 @@ class BaseItemSimilarityMatrixRecommender(BaseSimilarityMatrixRecommender):
         else:
             item_scores = user_profile_array.dot(self.W_sparse).toarray()
 
+        #print("item scores shape", item_scores.shape)
+
         return item_scores
 
 

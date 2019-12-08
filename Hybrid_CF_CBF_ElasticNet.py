@@ -6,11 +6,11 @@ from utils.helper import Helper
 from TopPopularRecommender import TopPopRecommender
 from UserBasedCBF import UserBasedCBF
 from ItemBasedCBF import ItemBasedCBF
-
+from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 user_cf_parameters = {"topK": 410,
                       "shrink": 0}
-item_cf_parameters = {"topK": 29,
-                      "shrink": 22}
+item_cf_parameters = {"topK": 5,
+                      "shrink": 8}
 user_cbf_parameters = {"topK_age": 48,
                        "topK_region": 0,
                        "shrink_age": 8,
@@ -26,70 +26,58 @@ item_cbf_parameters = {"topK_asset": 300,
                        "weight_price": 0.33,
                        "weight_sub_class": 0.34}
 
+slim_elastic_parameters = {"l1_ratio": 0.001, "positive_only": True, "topK": 1000}
 
-class HybridUCFICFRecommender(object):
 
-    RECOMMENDER_NAME = "HybridUCFICFRecommender"
-
+class HybridUCFICFElasticNetRecommender():
     def __init__(self, URM_train):
         self.URM_train = URM_train
-
-        # Init single recommenders
         self.user_cf = UserCollaborativeFilter(URM_train)
         self.item_cf = ItemCollaborativeFilter(URM_train)
         self.top_pop = TopPopRecommender(URM_train)
         self.user_based_cbf = UserBasedCBF(URM_train)
         self.item_based_cbf = ItemBasedCBF(URM_train)
+        self.slim_elastic = MultiThreadSLIM_ElasticNet(self.URM_train.copy())
+        self.helper = Helper()
+        self.cold_users = self.helper.get_cold_user_ids()
 
-        # Get the cold users list
-        self.cold_users = Helper().get_cold_user_ids("dataset")
+    def fit(self, user_cf=0.03, item_cf=0.71, user_cbf=0.05, item_cbf=0.06, slim_elastic=0.15):
+        self.weights = {"user_cf": user_cf, "item_cf": item_cf, "user_cbf": user_cbf, "item_cbf": item_cbf, "slim_elastic": slim_elastic}
 
-        # Fit the single recommenders
+        # Fit the URM into single recommenders
+        self.slim_elastic.fit(**slim_elastic_parameters)
         self.user_cf.fit(**user_cf_parameters)
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
         self.user_based_cbf.fit(**user_cbf_parameters)
         self.item_based_cbf.fit(**item_cbf_parameters)
 
-    def fit(self, user_cf_weight=0.03, item_cf_weight=0.88, user_cbf_weight=0.07, item_cbf_weight=0.02):
-
-        # Normalize the weights, just in case
-        weight_sum = user_cbf_weight + user_cf_weight + item_cbf_weight + item_cf_weight
-
-        self.weights = {"user_cf": user_cf_weight/weight_sum,
-                        "item_cf": item_cf_weight/weight_sum,
-                        "user_cbf": user_cbf_weight/weight_sum,
-                        "item_cbf": item_cbf_weight/weight_sum}
-
     def compute_scores(self, user_id):
         scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_item_cf = self.item_cf.compute_scores(user_id)
         scores_user_cbf = self.user_based_cbf.compute_scores(user_id)
         scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
-        scores = (self.weights["user_cf"] * scores_user_cf) + (self.weights["item_cf"] * scores_item_cf) + \
-                 (self.weights["user_cbf"] * scores_user_cbf) + (self.weights["item_cbf"] * scores_item_cbf)
+        scores_slim_elastic = self.slim_elastic._compute_item_score(user_id_array=np.asarray(user_id)).squeeze()
+        scores = (self.weights["user_cf"] * scores_user_cf) + (self.weights["item_cf"] * scores_item_cf) +\
+                 (self.weights["user_cbf"] * scores_user_cbf) + (self.weights["item_cbf"] * scores_item_cbf) +\
+                 (self.weights["slim_elastic"] * scores_slim_elastic.squeeze())
 
         return scores
+
 
     def recommend(self, user_id, at=10, exclude_seen=True, enable_toppop=True):
         if user_id in self.cold_users and enable_toppop:
             # If the user has no interactions a TopPopular recommendation is still better than random
             recommended_items = self.top_pop.recommend(user_id)
         else:
-            # Otherwise compute regular recommendations
             scores = self.compute_scores(user_id)
             if exclude_seen:
                 self.filter_seen(user_id, scores)
             recommended_items = np.argsort(scores)
             recommended_items = np.flip(recommended_items, axis=0)
-        return recommended_items[0: at]
+        return recommended_items[0 : at]
 
     def filter_seen(self, user_id, scores):
-        """Remove items that are in the user profile from recommendations
-
-        :param user_id: array of user ids for which to compute recommendations
-        :param scores: array containing the scores for each object"""
-
         start_pos = self.URM_train.indptr[user_id]
         end_pos = self.URM_train.indptr[user_id + 1]
 
@@ -99,14 +87,16 @@ class HybridUCFICFRecommender(object):
 
         return scores
 
-
 if __name__ == "__main__":
+
     # Train and test data are now loaded by the helper
+    hybrid = HybridUCFICFElasticNetRecommender
 
-    weights_hybrid_ucf_icf = {"user_cf_weight": 0.03, "item_cf_weight": 0.88, "user_cbf_weight": 0.07, "item_cbf_weight": 0.02}
+    weights_hybrid_ucf_icf = {"user_cf": 0.03, "item_cf": 0.81, "user_cbf": 0.04, "item_cbf": 0.02, "slim_elastic": 0.1}
 
-    hybrid_ucficf = HybridUCFICFRecommender
+
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights_hybrid_ucf_icf)
-    # RunRecommender.run(hybrid_ucficf)
+    # RunRecommender.evaluate_on_test_set(hybrid, weights_hybrid_ucf_icf)
+
+    RunRecommender.run(hybrid, weights_hybrid_ucf_icf)

@@ -42,8 +42,7 @@ class SLIMElasticNetRecommender(BaseItemSimilarityMatrixRecommender):
         super(SLIMElasticNetRecommender, self).__init__(URM_train)
 
     @ignore_warnings(category=ConvergenceWarning)
-    def fit(self, l1_ratio=0.1, alpha=1.0, positive_only=True, topK=100,
-            verbose=True):
+    def fit(self, l1_ratio=2.2767573538452768e-05, alpha=0.003890771067122292, positive_only=True, topK=100, verbose=True):
 
         assert l1_ratio >= 0 and l1_ratio <= 1, "{}: l1_ratio must be between 0 and 1, provided value was {}".format(
             self.RECOMMENDER_NAME, l1_ratio)
@@ -241,6 +240,7 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
         # e il rimanente parametro, variabile
         print("Starting parallelized fit...")
         res = pool.map(_pfit, np.arange(n_items))
+        pool.close()
         print("Done!")
 
         # res contains a vector of (values, rows, cols) tuples
@@ -257,25 +257,19 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
 
 
 if __name__ == '__main__':
-    slim = MultiThreadSLIM_ElasticNet
-    parameters = [{"l1_ratio": 0.001, "positive_only": False, "topK": 1000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 2000},
-                  {"l1_ratio": 0.001, "positive_only": True, "topK": 1500}
-                  ]
-
-    map_10 = []
 
     from utils.helper import Helper
+    helper = Helper()
 
-    for param in parameters:
-        map_10.append(RunRecommender.evaluate_on_test_set(slim, param))
+    slim = MultiThreadSLIM_ElasticNet
 
-    import matplotlib.pyplot as plt
 
-    plt.plot(map_10)
-    plt.xlabel("Parameter set")
-    plt.ylabel("MAP@10 score")
-    plt.title("l1_ratio")
+    previous_best = {"alpha": 1.0, "l1_ratio": 0.001, "positive_only": False, "fit_intercept": False, "max_iter": 100,
+                     "tol": 1e-4, "selection": "random", "random_state": 1234}
 
-    print(max(map_10))
+    old_best = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK':100}
+    new_best = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
+
+    map_10 = RunRecommender.evaluate_on_validation_set(slim, new_best)
+
+    print(map_10)

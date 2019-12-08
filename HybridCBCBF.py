@@ -1,9 +1,8 @@
 from ItemBasedCBF import ItemBasedCBF
 from UserCollaborativeFilter import UserCollaborativeFilter
 import numpy as np
-
-from TopPopularRecommender import TopPopRecommender
 from utils.helper import Helper
+from TopPopularRecommender import TopPopRecommender
 from utils.run import RunRecommender
 
 item_cbf_parameters = {"topK_asset": 100,
@@ -28,7 +27,7 @@ class HybridCBCBFRecommender(object):
         self.cbf = ItemBasedCBF(URM_train)
         self.cb = UserCollaborativeFilter(URM_train)
         self.toppop = TopPopRecommender(URM_train)
-        self.cold_users = Helper().get_cold_user_ids()
+        self.cold_users = Helper().get_cold_user_ids("dataset")
 
     def fit(self, cbf_weight=0.4, cb_weight=0.6):
         weight_sum = cbf_weight + cb_weight

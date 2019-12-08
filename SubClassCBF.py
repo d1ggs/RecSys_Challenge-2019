@@ -12,7 +12,7 @@ from tqdm import tqdm
 from copy import deepcopy
 
 
-class ItemBasedCBF:
+class SubClassCBF:
 
     def __init__(self, URM):
 
@@ -27,15 +27,15 @@ class ItemBasedCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self,  topK_sub_class=200,shrink_sub_class=0):
+    def fit(self,  topK=200,shrink=0):
 
-        self.topK_sub_class = topK_sub_class
-        self.shrink_sub_class = shrink_sub_class
+        self.topK = topK
+        self.shrink = shrink
 
         # Load ICMs from helper
         self.ICM_sub_class = self.helper.load_icm_sub_class()
         # Computing SMs
-        self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK_sub_class, shrink=self.shrink_sub_class)
+        self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK, shrink=self.shrink)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]
@@ -69,9 +69,9 @@ if __name__ == "__main__":
 
     # evaluator.split_data_randomly()
 
-    parameters = { "topK_sub_class": 800,
-                   "shrink_sub_class": 100}
-    cbf_recommender = ItemBasedCBF
+    parameters = { "topK": 1,
+                   "shrink": 1}
+    cbf_recommender = SubClassCBF
 
     RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
     # RunRecommender.run(cbf_recommender)
