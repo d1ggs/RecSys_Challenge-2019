@@ -66,7 +66,7 @@ class Evaluator:
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string
 
-    def evaluateRecommender(self, recommender, exclude_users: set):
+    def evaluateRecommender(self, recommender, users_to_evaluate: set):
 
         num_cores = multiprocessing.cpu_count()
 
@@ -79,8 +79,8 @@ class Evaluator:
         else:
             evaluation_data = self.helper.validation_data
 
-        if exclude_users is not None:
-            user_list = exclude_users
+        if users_to_evaluate is not None:
+            user_list = users_to_evaluate
         else:
             user_list = evaluation_data.keys()
 

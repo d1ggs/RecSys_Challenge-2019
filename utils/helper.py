@@ -51,8 +51,7 @@ class Helper(object, metaclass=Singleton):
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
 
-        self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(
-            resplit=resplit)
+        self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(resplit=resplit)
 
         self.cold_users_dataset = compute_cold_user_ids(self.URM_csr)
         self.cold_users_validation = compute_cold_user_ids(self.URM_train_validation)

@@ -25,8 +25,8 @@ class TopPopRecommender:
         # Flip order high to lower
         self.popular_items = np.flip(self.popular_items, axis=0)
 
-    def recommend(self, user_id, at=10, remove_seen=True):
-        if remove_seen:
+    def recommend(self, user_id, at=10, exclude_seen=True):
+        if exclude_seen:
             unseen_items_mask = np.in1d(self.popular_items, self.URM_CSR[user_id].indices, assume_unique=True, invert=True)
 
             unseen_items = self.popular_items[unseen_items_mask]

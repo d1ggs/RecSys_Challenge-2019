@@ -41,7 +41,18 @@ class RunRecommender(object):
         recommendation_matrix_file_to_submit.close()
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, exclude_users=None):
+    def evaluate_profile(recommender, users_to_evaluate: set):
+
+        evaluator = Evaluator()
+
+        MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
+
+        print("MAP-10 score:", MAP_final)
+
+        return MAP_final
+
+    @staticmethod
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None):
 
         evaluator = Evaluator(test_mode=True)
         URM_train = Helper().URM_train_test
@@ -49,21 +60,21 @@ class RunRecommender(object):
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
+        MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
 
         print("MAP-10 score:", MAP_final)
 
         return MAP_final
 
     @staticmethod
-    def evaluate_on_validation_set(recommender_class, fit_parameters, exclude_users=None):
+    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None):
 
         URM_train = Helper().URM_train_validation
 
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
+        MAP_final, _ = Evaluator().evaluateRecommender(recommender, users_to_evaluate)
 
         print("MAP-10 score:", MAP_final)
 

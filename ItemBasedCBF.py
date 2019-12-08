@@ -37,14 +37,17 @@ class ItemBasedCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, weight_asset, weight_price, weight_sub_class):
+    def fit(self, weight_asset = 0.41617098566013966,
+                  weight_price = 0.36833811086509627,
+                  weight_sub_class = 0.6977028008004889):
 
         self.asset_cbf.fit(**asset_cbf_parameters)
         self.price_cbf.fit(**price_cbf_parameters)
         self.sub_class_cbf.fit(**sub_class_cbf_parameters)
-        self.weight_asset = weight_asset
-        self.weight_price = weight_price
-        self.weight_sub_class = weight_sub_class
+        sum = weight_asset + weight_price + weight_sub_class
+        self.weight_asset = weight_asset/sum
+        self.weight_price = weight_price/sum
+        self.weight_sub_class = weight_sub_class/sum
 
 
     def compute_scores(self, user_id):

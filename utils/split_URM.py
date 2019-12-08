@@ -41,8 +41,8 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, leave_ou
     print("Splitting data into train and test...")
     sample_size = int((1 - split_fraction) * URM_all.shape[0])
 
-    URM_train_test, test_data = hold_out(URM_all, leave_out, sample_size)
-    URM_train_validation, validation_data = hold_out(URM_train_test, leave_out, sample_size)
+    URM_train_test, test_data = hold_out(URM_all.copy(), leave_out, sample_size)
+    URM_train_validation, validation_data = hold_out(URM_train_test.copy(), leave_out, sample_size)
 
     return URM_train_validation, URM_train_test, validation_data, test_data
 
