@@ -44,8 +44,7 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
 
-    helper = Helper()
-    top_popular = TopPopRecommender(helper)
+    top_popular = TopPopRecommender
 
     map10 = RunRecommender.evaluate_on_test_set(top_popular, {})
 
