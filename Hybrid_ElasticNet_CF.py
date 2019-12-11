@@ -2,8 +2,7 @@ from UserCollaborativeFilter import UserCollaborativeFilter
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 from TopPopularRecommender import TopPopRecommender
-from UserBasedCBF import UserBasedCBF
-from ItemBasedCBF import ItemBasedCBF
+
 
 import numpy as np
 from utils.run import RunRecommender
@@ -27,7 +26,7 @@ item_cbf_parameters = {"topK_asset": 300,
                        "weight_asset": 0.33,
                        "weight_price": 0.33,
                        "weight_sub_class": 0.34}
-# SLIM_parameters = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK': 100}
+
 SLIM_parameters = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
 
 
@@ -35,8 +34,10 @@ class HybridElasticNetICFUCF(object):
 
     RECOMMENDER_NAME = "HybridElasticNetICF"
 
-    def __init__(self, URM_train, mode="dataset"):
+    def __init__(self, URM_train, mode="validation", ):
         self.URM_train = URM_train
+
+
 
         # Init single recommenders
         self.user_cf = UserCollaborativeFilter(URM_train)
@@ -114,6 +115,6 @@ if __name__ == "__main__":
     hybrid_ucficf = HybridElasticNetICFUCF
 
     # Evaluation is performed by RunRecommender
-    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
+    RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
 
-    RunRecommender.run(hybrid_ucficf, weights)
+    # RunRecommender.run(hybrid_ucficf, weights)

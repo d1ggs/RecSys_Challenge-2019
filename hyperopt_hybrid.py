@@ -1,7 +1,7 @@
 import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK
 from Hybrid_CF_CBF import HybridUCFICFRecommender
-from Hybrid_ElasticNet_ICF import HybridElasticNetICFUCF
+from Hybrid_ElasticNet_CF import HybridElasticNetICFUCF
 from Hybrid_CF_CBF_ElasticNet import HybridUCFICFElasticNetRecommender
 from utils.run import RunRecommender
 from utils.helper import Helper

@@ -12,7 +12,7 @@ from utils.split_URM import split_train_test
 from utils.data_utilities import build_URM
 
 from Legacy.Base.IR_feature_weighting import okapi_BM_25
-
+from tqdm import tqdm
 # Put root project dir in a global constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -196,7 +196,27 @@ class Helper(object, metaclass=Singleton):
         ucm_region = ucm_region.tocsr()
         return ucm_region
 
-    def split_ucm_region(self):
-        ucm_region_file = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region.csv"))
-        ucm_region_correct = ucm_region_file.loc[~(ucm_region_file.col == 0)]
-        ucm_region_correct.to_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region_no_zero_cols.csv"), index=False)
+    #
+    # def tail_boost(self, URM, step=1, lastN=4, mode="validation"):
+    #     if mode == "validation":
+    #         target_users = self.validation_data.keys()
+    #     elif mode == "test":
+    #         target_users = self.test_data.keys()
+    #     elif mode == "dataset":
+    #         target_users = self.users_list_data
+    #     else:
+    #         raise AssertionError("Mode selected not supported for tail boosting, choose between validation, test, dataset")
+    #     target_users = set(target_users)
+    #     for row_index in tqdm(range(URM.shape[0])):
+    #         if row_index in target_users:
+    #             items = URM[row_index].indices
+    #             # sorted_items = np.intersect1d(sorted_items, items)
+    #             len_items = len(items)
+    #
+    #             for i in range(len_items):
+    #                 # THE COMMA IS IMPORTANT
+    #
+    #                 if len_items - i <= lastN:
+    #                     additive_score = ((lastN + 1) - (len_items - i)) * step
+    #                     URM.data[URM.indptr[row_index] + i] += additive_score
+    #     return URM
