@@ -60,7 +60,8 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly()
 
-    parameters = {"topK": 500, "shrink": 2}
+    user_cf_parameters = {"topK": 410,
+                          "shrink": 0}
     cb = UserCollaborativeFilter
 
-    map10 = RunRecommender.evaluate_on_test_set(cb, parameters)
+    map10 = RunRecommender.evaluate_on_validation_set(cb, user_cf_parameters)
