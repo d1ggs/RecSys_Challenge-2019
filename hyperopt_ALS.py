@@ -17,7 +17,7 @@ def objective(params):
     return loss
 
 als_space = {
-    "n_factors": hp.hp.choice('n_factors', np.arange(0, 500, 20)),
+    "n_factors": hp.hp.choice('n_factors', np.arange(200, 1000, 30)),
 
     "regularization": hp.hp.uniform('regularization', 0.0001, 0.21),
 }
@@ -26,13 +26,13 @@ als_space = {
 if __name__ == '__main__':
     ### step 3 : storing the results of every iteration
     bayes_trials = Trials()
-    MAX_EVALS = 50
+    MAX_EVALS = 40
 
-    opt_weight = {'n_factors': 21, 'regularization': 0.03744838782749412}
-    opt_eval = {'n_factors': 480, 'regularization': 0.003946413694592164}
+    opt_eval = {'n_factors': 680, 'regularization': 0.08905996811679368}
+
     # Optimize
     best = fmin(fn=objective, space=als_space, algo=hp.tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
+                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=opt_eval)
 
     ### best will the return the the best hyperparameter set
 

@@ -17,7 +17,7 @@ def objective(params):
     return loss
 
 als_space = {
-    "SLIM_weight": hp.hp.uniform('SLIM_weight', 0.3, 1.0),
+    "SLIM_weight": hp.hp.uniform('SLIM_weight', 0.7, 1.0),
 }
 
 
