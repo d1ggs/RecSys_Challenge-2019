@@ -115,6 +115,6 @@ if __name__ == "__main__":
     hybrid_ucficf = HybridElasticNetICFUCF
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
+    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
 
     # RunRecommender.run(hybrid_ucficf, weights)
