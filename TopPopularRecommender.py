@@ -16,6 +16,7 @@ class TopPopRecommender:
         # --- Actual Popularity computation ---
         # Calculate item popularity by summing for each item the rating of every use
         # The most popular playlist is the one with more songs in it
+
         item_popularity = (self.URM_CSR > 0).sum(axis=0)
         # Squeeze term removes single-dimensional entries from the shape of an array.
         self.item_popularity = np.array(item_popularity).squeeze()

@@ -2,8 +2,6 @@ from UserCollaborativeFilter import UserCollaborativeFilter
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 from TopPopularRecommender import TopPopRecommender
-from UserBasedCBF import UserBasedCBF
-from ItemBasedCBF import ItemBasedCBF
 
 import numpy as np
 from utils.run import RunRecommender
@@ -53,8 +51,6 @@ class HybridElasticNetICFUCF(object):
         self.item_cf = ItemCollaborativeFilter(URM_train)
         self.top_pop = TopPopRecommender(URM_train)
         self.SLIM = MultiThreadSLIM_ElasticNet(URM_train)
-        # self.user_based_cbf = UserBasedCBF(URM_train)
-        # self.item_based_cbf = ItemBasedCBF(URM_train)
 
         # Get the cold users list
         self.cold_users = Helper().get_cold_user_ids(mode)
@@ -65,8 +61,6 @@ class HybridElasticNetICFUCF(object):
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
         self.SLIM.fit(**SLIM_parameters)
-        # self.user_based_cbf.fit(**user_cbf_parameters)
-        # self.item_based_cbf.fit(**item_cbf_parameters)
 
     def fit(self, SLIM_weight=0.5, user_cf_weight=0.2, item_cf_weight=0.3):
 
@@ -93,41 +87,41 @@ class HybridElasticNetICFUCF(object):
         if user_id in self.user_data_dict and use_demographic:
             obj = self.user_data_dict[user_id]
             if obj.cluster is not None and obj.age is None and obj.region is None:
-                cluster = self.user_data_dict[user_id].cluster
+                cluster = obj.cluster
                 if cluster in self.cluster_recommendations:
                     scores = self.cluster_recommendations[cluster]
                 else:
                     user_list = self.cluster_dict[cluster]
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
-                        #scores += self.SLIM._compute_item_score(user).squeeze()
-                        scores += self.user_cf.compute_scores(user)
+                        scores += self.SLIM._compute_item_score(user).squeeze()
+                        #scores += self.user_cf.compute_scores(user)
                         #scores += self.item_cf.compute_scores(user)
                     self.cluster_recommendations[cluster] = scores
 
             elif obj.cluster is None and obj.age is not None and obj.region is None:
-                age = self.user_data_dict[user_id].age
+                age = obj.age
                 if age in self.age_recommendations:
                     scores = self.age_recommendations[age]
                 else:
                     user_list = self.age_dict[age]
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
-                        #scores += self.SLIM._compute_item_score(user).squeeze()
-                        scores += self.user_cf.compute_scores(user)
+                        scores += self.SLIM._compute_item_score(user).squeeze()
+                        #scores += self.user_cf.compute_scores(user)
                         #scores += self.item_cf.compute_scores(user)
                     self.age_recommendations[age] = scores
 
             elif obj.cluster is None and obj.age is None and obj.region is not None:
-                region = self.user_data_dict[user_id].region
+                region = obj.region
                 if region in self.region_recommendations:
                     scores = self.region_recommendations[region]
                 else:
                     user_list = self.region_dict[region]
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
-                        #scores += self.SLIM._compute_item_score(user).squeeze()
-                        scores += self.user_cf.compute_scores(user)
+                        scores += self.SLIM._compute_item_score(user).squeeze()
+                        #scores += self.user_cf.compute_scores(user)
                         #scores += self.item_cf.compute_scores(user)
                     self.region_recommendations[region] = scores
             else:

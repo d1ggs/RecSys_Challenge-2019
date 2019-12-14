@@ -40,7 +40,7 @@ class UserCollaborativeFilter(object):
             obj = self.user_data_dict[user_id]
 
             if obj.cluster is not None and obj.age is None and obj.region is None:
-                cluster = self.user_data_dict[user_id].cluster
+                cluster = obj.cluster
                 if cluster in self.cluster_recommendations:
                     scores = self.cluster_recommendations[cluster]
                 else:
@@ -51,7 +51,7 @@ class UserCollaborativeFilter(object):
                     self.cluster_recommendations[cluster] = scores
 
             elif obj.cluster is None and obj.age is not None and obj.region is None:
-                age = self.user_data_dict[user_id].age
+                age = obj.age
                 if age in self.age_recommendations:
                     scores = self.age_recommendations[age]
                 else:
@@ -61,8 +61,8 @@ class UserCollaborativeFilter(object):
                         scores += self.compute_scores(user)
                     self.age_recommendations[age] = scores
 
-            elif obj.cluster is None and obj.age is  None and obj.region is not None:
-                region = self.user_data_dict[user_id].region
+            elif obj.cluster is None and obj.age is None and obj.region is not None:
+                region = obj.region
                 if region in self.region_recommendations:
                     scores = self.region_recommendations[region]
                 else:
