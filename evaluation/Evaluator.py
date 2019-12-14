@@ -57,7 +57,7 @@ class Evaluator:
         else:
             user_list = evaluation_data.keys()
 
-        for user in tqdm(user_list):
+        for user in user_list:
             recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
             relevant_item = evaluation_data[int(user)]
             MAP_final += self.MAP(recommended_items, relevant_item)

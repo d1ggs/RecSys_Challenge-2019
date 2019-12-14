@@ -7,14 +7,16 @@ from utils.run import RunRecommender
 
 class UserCollaborativeFilter(object):
 
-    def __init__(self, URM_train, mode="validation"):
+    def __init__(self, URM_train, mode="validation", use_demographic=False):
         self.URM_train = URM_train
         self.W_sparse = None
-        self.user_data_dict, self.cluster_dict, self.region_dict, self.age_dict = \
-            Helper().get_demographic_info(verbose=False, mode=mode)
-        self.cluster_recommendations = {}
-        self.region_recommendations = {}
-        self.age_recommendations = {}
+        self.use_demographic = use_demographic
+        if use_demographic:
+            self.user_data_dict, self.cluster_dict, self.region_dict, self.age_dict = \
+                Helper().get_demographic_info(verbose=False, mode=mode)
+            self.cluster_recommendations = {}
+            self.region_recommendations = {}
+            self.age_recommendations = {}
 
     def compute_similarity_matrix(self, URM_train, shrink, topK, normalize, similarity):
         similarity_object = Compute_Similarity_Python(URM_train.T, shrink=shrink,
@@ -34,46 +36,47 @@ class UserCollaborativeFilter(object):
     def compute_scores(self, user_id):
         return self.W_sparse[user_id, :].dot(self.URM_train).toarray().ravel()
 
-    def recommend(self, user_id, at=10, exclude_seen=True, use_demographic=True):
+    def recommend(self, user_id, at=10, exclude_seen=True):
 
-        if user_id in self.user_data_dict and use_demographic:
-            obj = self.user_data_dict[user_id]
+        if self.use_demographic:
+            if user_id in self.user_data_dict:
+                obj = self.user_data_dict[user_id]
 
-            if obj.cluster is not None and obj.age is None and obj.region is None:
-                cluster = obj.cluster
-                if cluster in self.cluster_recommendations:
-                    scores = self.cluster_recommendations[cluster]
+                if obj.cluster is not None and obj.age is None and obj.region is None:
+                    cluster = obj.cluster
+                    if cluster in self.cluster_recommendations:
+                        scores = self.cluster_recommendations[cluster]
+                    else:
+                        user_list = self.cluster_dict[cluster]
+                        scores = np.zeros(shape=self.URM_train.shape[1])
+                        for user in user_list:
+                            scores += self.compute_scores(user)
+                        self.cluster_recommendations[cluster] = scores
+
+                elif obj.cluster is None and obj.age is not None and obj.region is None:
+                    age = obj.age
+                    if age in self.age_recommendations:
+                        scores = self.age_recommendations[age]
+                    else:
+                        user_list = self.age_dict[age]
+                        scores = np.zeros(shape=self.URM_train.shape[1])
+                        for user in user_list:
+                            scores += self.compute_scores(user)
+                        self.age_recommendations[age] = scores
+
+                elif obj.cluster is None and obj.age is None and obj.region is not None:
+                    region = obj.region
+                    if region in self.region_recommendations:
+                        scores = self.region_recommendations[region]
+                    else:
+                        user_list = self.region_dict[region]
+                        scores = np.zeros(shape=self.URM_train.shape[1])
+                        for user in user_list:
+                            scores += self.compute_scores(user)
+                        self.region_recommendations[region] = scores
                 else:
-                    user_list = self.cluster_dict[cluster]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.compute_scores(user)
-                    self.cluster_recommendations[cluster] = scores
-
-            elif obj.cluster is None and obj.age is not None and obj.region is None:
-                age = obj.age
-                if age in self.age_recommendations:
-                    scores = self.age_recommendations[age]
-                else:
-                    user_list = self.age_dict[age]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.compute_scores(user)
-                    self.age_recommendations[age] = scores
-
-            elif obj.cluster is None and obj.age is None and obj.region is not None:
-                region = obj.region
-                if region in self.region_recommendations:
-                    scores = self.region_recommendations[region]
-                else:
-                    user_list = self.region_dict[region]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.compute_scores(user)
-                    self.region_recommendations[region] = scores
-            else:
-                print("Something went wrong")
-                exit()
+                    print("Something went wrong")
+                    exit()
 
 
         # compute the scores using the dot product
@@ -86,7 +89,7 @@ class UserCollaborativeFilter(object):
         # rank items
         ranking = scores.argsort()[::-1]
             
-        return ranking[:10]
+        return ranking[:at]
     
     def filter_seen(self, user_id, scores):
 

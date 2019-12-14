@@ -62,7 +62,7 @@ class HybridElasticNetICFUCF(object):
         self.top_pop.fit()
         self.SLIM.fit(**SLIM_parameters)
 
-    def fit(self, SLIM_weight=0.5, user_cf_weight=0.2, item_cf_weight=0.3):
+    def fit(self, SLIM_weight=0.6719606935709935, item_cf_weight=0.08340610330630326, user_cf_weight=0.006456181309865703):
 
         # Normalize the weights, just in case
         weight_sum = item_cf_weight + SLIM_weight + user_cf_weight
@@ -85,6 +85,9 @@ class HybridElasticNetICFUCF(object):
     def recommend(self, user_id, at=10, exclude_seen=True, enable_toppop=True, use_demographic=True):
         # TODO check if elected users are cold users or if something is wrong
         if user_id in self.user_data_dict and use_demographic:
+            print("got it")
+            if user_id not in self.cold_users:
+                print("diocane")
             obj = self.user_data_dict[user_id]
             if obj.cluster is not None and obj.age is None and obj.region is None:
                 cluster = obj.cluster
@@ -95,8 +98,8 @@ class HybridElasticNetICFUCF(object):
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
                         scores += self.SLIM._compute_item_score(user).squeeze()
-                        #scores += self.user_cf.compute_scores(user)
-                        #scores += self.item_cf.compute_scores(user)
+                        # scores += self.user_cf.compute_scores(user)
+                        # scores += self.item_cf.compute_scores(user)
                     self.cluster_recommendations[cluster] = scores
 
             elif obj.cluster is None and obj.age is not None and obj.region is None:
@@ -108,8 +111,8 @@ class HybridElasticNetICFUCF(object):
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
                         scores += self.SLIM._compute_item_score(user).squeeze()
-                        #scores += self.user_cf.compute_scores(user)
-                        #scores += self.item_cf.compute_scores(user)
+                        # scores += self.user_cf.compute_scores(user)
+                        # scores += self.item_cf.compute_scores(user)
                     self.age_recommendations[age] = scores
 
             elif obj.cluster is None and obj.age is None and obj.region is not None:
@@ -121,8 +124,8 @@ class HybridElasticNetICFUCF(object):
                     scores = np.zeros(shape=self.URM_train.shape[1])
                     for user in user_list:
                         scores += self.SLIM._compute_item_score(user).squeeze()
-                        #scores += self.user_cf.compute_scores(user)
-                        #scores += self.item_cf.compute_scores(user)
+                        # scores += self.user_cf.compute_scores(user)
+                        # scores += self.item_cf.compute_scores(user)
                     self.region_recommendations[region] = scores
             else:
                 print("Something went wrong")
@@ -170,6 +173,6 @@ if __name__ == "__main__":
     hybrid_ucficf = HybridElasticNetICFUCF
 
     # Evaluation is performed by RunRecommender
-    #RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
+    # RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
 
     RunRecommender.run(hybrid_ucficf, weights)

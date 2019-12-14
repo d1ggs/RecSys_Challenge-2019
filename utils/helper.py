@@ -266,7 +266,7 @@ class Helper(object, metaclass=Singleton):
     #                     URM.data[URM.indptr[row_index] + i] += additive_score
     #     return URM
 
-    def get_demographic_info(self, verbose=False, mode="dataset"):
+    def get_demographic_info(self, verbose=False, mode="dataset", num_cluster=6):
         ucm_age = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_age.csv"))
         ucm_region = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_UCM_region.csv"))
 
@@ -402,7 +402,7 @@ class Helper(object, metaclass=Singleton):
         # plt.ylabel('WCSS')
         # plt.show()
 
-        kmeans = KMeans(n_clusters=6, init='k-means++', max_iter=300, n_init=10, random_state=0)
+        kmeans = KMeans(n_clusters=num_cluster, init='k-means++', max_iter=300, n_init=10, random_state=0)
         # kmeans.fit(kmeans_data)
         kmeans.fit(kmeans_data)
 
