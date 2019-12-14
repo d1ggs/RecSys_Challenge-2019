@@ -26,7 +26,7 @@ slim_cbr_space = {
     "lambda_i": hp.hp.uniform('lambda_i', 0.00, 0.1),
     "lambda_j": hp.hp.uniform('lambda_j', 0.000, 0.1),
     "learning_rate": hp.hp.uniform('learning_rate', 1e-5, 1e-1),
-    "topK": hp.hp.uniform('topK', np.arange(0, 1000, 50)),
+    "topK": hp.hp.choice('topK', np.arange(0, 1000, 50)),
     "sgd_mode": hp.hp.choice('sgd_mode', ['adagrad']),
     "gamma": hp.hp.uniform('gamma', 0.5, 1.0),
     "beta_1": hp.hp.uniform('beta_1', 0.5, 1.0),

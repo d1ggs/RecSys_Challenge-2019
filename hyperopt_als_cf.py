@@ -35,4 +35,4 @@ best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
 
 print(best)
 
-RunRecommender.evaluate_on_test_set(hybrid, best)
+RunRecommender.evaluate_on_test_set(HybridALSCF, best)

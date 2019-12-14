@@ -52,10 +52,12 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None):
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, use_demographic=False):
 
         evaluator = Evaluator(test_mode=True)
         URM_train = Helper().URM_train_test
+        if use_demographic:
+            URM_train = Helper().inject_demographic_info(URM_train)
 
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)
@@ -67,9 +69,11 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None):
+    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None, use_demographic=False):
 
         URM_train = Helper().URM_train_validation
+        if use_demographic:
+            URM_train = Helper().inject_demographic_info(URM_train)
 
         recommender = recommender_class(URM_train)
         recommender.fit(**fit_parameters)

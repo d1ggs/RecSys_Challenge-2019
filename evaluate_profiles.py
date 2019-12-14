@@ -106,6 +106,8 @@ if __name__ == '__main__':
         print("Top Popular")
         MAP_toppop_per_group.append(RunRecommender.evaluate_profile(top_popular, users_to_evaluate=users_in_group))
 
+    for group in groups:
+        print(group)
 
     import matplotlib.pyplot as pyplot
 
@@ -119,9 +121,6 @@ if __name__ == '__main__':
     pyplot.xlabel('User Group')
     pyplot.legend()
     pyplot.show()
-
-    for group in groups:
-        print(group)
 
 
 

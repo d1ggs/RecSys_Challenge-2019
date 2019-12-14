@@ -7,6 +7,7 @@ class TopPopRecommender:
 
     def __init__(self, URM_CSR):
         self.URM_CSR = URM_CSR
+        self.item_popularity = None
 
     def fit(self):
         # --- CSR Matrix Computation ---
@@ -17,10 +18,10 @@ class TopPopRecommender:
         # The most popular playlist is the one with more songs in it
         item_popularity = (self.URM_CSR > 0).sum(axis=0)
         # Squeeze term removes single-dimensional entries from the shape of an array.
-        item_popularity = np.array(item_popularity).squeeze()
+        self.item_popularity = np.array(item_popularity).squeeze()
 
         # Ordering the items according to the popularity values
-        self.popular_items = np.argsort(item_popularity)
+        self.popular_items = np.argsort(self.item_popularity)
 
         # Flip order high to lower
         self.popular_items = np.flip(self.popular_items, axis=0)
