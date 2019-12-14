@@ -26,7 +26,7 @@ class HybridALSElasticNetCF(object):
 
 
         # Init single recommenders
-        self.user_cf = UserCollaborativeFilter(URM_train)
+        # self.user_cf = UserCollaborativeFilter(URM_train)
         self.item_cf = ItemCollaborativeFilter(URM_train)
         self.top_pop = TopPopRecommender(URM_train)
         self.SLIM = MultiThreadSLIM_ElasticNet(URM_train)
@@ -36,31 +36,28 @@ class HybridALSElasticNetCF(object):
 
         # Fit the single recommenders, this saves time in case of changing just the relative weights
 
-        self.user_cf.fit(**user_cf_parameters)
+        # self.user_cf.fit(**user_cf_parameters)
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
         self.SLIM.fit(**SLIM_parameters)
         self.als.fit(**als_parameters)
 
-    def fit(self, SLIM_weight=0.5, als_weight=0.0, user_cf_weight=0.2, item_cf_weight=0.3):
+    def fit(self, SLIM_weight=0.5, als_weight=0.0, item_cf_weight=0.3):
 
         # Normalize the weights, just in case
-        weight_sum = item_cf_weight + SLIM_weight + user_cf_weight + als_weight
+        weight_sum = item_cf_weight + SLIM_weight + als_weight
 
         self.weights = {"item_cf": item_cf_weight/weight_sum,
                         "SLIM": SLIM_weight/weight_sum,
-                        "user_cf": user_cf_weight/weight_sum,
                         "als": als_weight/weight_sum}
 
     def compute_scores(self, user_id):
         scores_item_cf = self.item_cf.compute_scores(user_id)
         scores_SLIM = self.SLIM._compute_item_score(user_id).squeeze()
-        scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_als = self.als.compute_scores(user_id)
 
         scores = (self.weights["item_cf"] * scores_item_cf) + \
                  (self.weights["SLIM"] * scores_SLIM) + \
-                 (self.weights["user_cf"] * scores_user_cf) + \
                  (self.weights["als"] * scores_als)
 
         return scores
@@ -97,10 +94,10 @@ class HybridALSElasticNetCF(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights = {'SLIM_weight': 0.6719606935709935, 'item_cf_weight': 0.08340610330630326, 'user_cf_weight': 0.006456181309865703}
+    weights = {'SLIM_weight': 0.9313349587356776, 'als_weight': 0.7463720610782647, 'item_cf_weight': 0.335817947135043}
     hybrid_ucficf = HybridALSElasticNetCF
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
+    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
 
     # RunRecommender.run(hybrid_ucficf, weights)

@@ -72,8 +72,9 @@ if __name__ == "__main__":
 
     hybrid_ucficf = AlternatingLeastSquare
 
-    opt_weight = {'n_factors': 140, 'regularization': 0.06160137395385561}
+    als_parameters = {'n_factors': 480, 'regularization': 0.003946413694592164, "iterations": 30}
+
 
 
     # Evaluation is performed by RunRecommender
-    RunRecommender.evaluate_on_test_set(hybrid_ucficf, opt_weight)
+    RunRecommender.evaluate_on_validation_set(hybrid_ucficf, als_parameters)

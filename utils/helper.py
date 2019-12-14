@@ -471,7 +471,7 @@ class Helper(object, metaclass=Singleton):
         # Put info in the dictionaries, to retrieve it quickly
 
         user_data_dict = {}
-        cluster_dict = {}
+        cluster_dict = {} # Contains cluster of each user
         region_dict = {}
         age_dict = {}
 

@@ -17,7 +17,7 @@ def objective(params):
     return loss
 
 slim_cbr_space = {
-    "epoch": hp.hp.choice('epoch', [30]),
+    "epochs": hp.hp.choice('epochs', [30]),
     "positive_threshold_BPR": hp.hp.choice('positive_threshold_BPR', [None]),
     "train_with_sparse_weights": hp.hp.choice('train_with_sparse_weights', [None]),
     "symmetric": hp.hp.choice('symmetric', [True]),

@@ -16,18 +16,18 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'user_cf_weight': hp.hp.uniform('user_cf_weight', 0.0, 1.0),
-    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.0, 1.0),
     'SLIM_weight': hp.hp.uniform('SLIM_weight', 0.0, 1.0),
-    'als_weight': hp.hp.uniform('als_weight', 0.0, 1.0)
+    'als_weight': hp.hp.uniform('als_weight', 0.0, 1.0),
+    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.0, 1.0)
 
 
 }
 
 # step 3 : storing the results of every iteration
 bayes_trials = Trials()
-MAX_EVALS = 50
+MAX_EVALS = 150
 
+opt = {'SLIM_weight': 0.9313349587356776, 'als_weight': 0.7463720610782647, 'item_cf_weight': 0.335817947135043}
 
 
 # Optimize
