@@ -73,8 +73,11 @@ class XGBooster(object):
 
                 count = 0
 
+                # Get recommendations from internal recommender model
+
                 for user_id in target_data.keys():
                     recommendations = self.recommender.recommend(user_id, at=20)
+                    assert recommendations.shape[0] == 20, "Internal recommender is not providing the requested recommendation length"
                     for recommendation in recommendations:
                         if int(recommendation) == target_data[user_id]:
                             self.labels.append(1)
