@@ -25,8 +25,7 @@ class XGBooster(object):
         self.recommender.fit()
         self.already_fitted = False
 
-
-    def train_XGB(self, X, y, params=None, num_round=100, pos_weight=19.0):
+    def train_XGB(self, X, y, params=None, pos_weight=19.0):
 
         #X_train, X_test, y_train, y_test = train_test_split(X, y)
 
@@ -50,7 +49,6 @@ class XGBooster(object):
             params['silent'] = 1
             num_round = params['num_round']
             del params['num_round']
-
 
 
         xgb_model = xgb.train(params,
@@ -111,7 +109,7 @@ class XGBooster(object):
 
                 self.train_dataframe = train_dataframe
 
-                self.pos_weight = len(user_recommendations_items) / count
+                self.pos_weight = (len(user_recommendations_items)-count) / count
 
             self.XGB_model = self.train_XGB(self.train_dataframe, self.labels, pos_weight=self.pos_weight,
                                             params=train_parameters)
