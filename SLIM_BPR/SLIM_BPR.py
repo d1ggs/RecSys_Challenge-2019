@@ -21,18 +21,13 @@ class SLIM_BPR(BaseRecommender):
     The code is identical with no optimizations
     """
 
-    def __init__(self, URM_train, lambda_i = 0.0025, lambda_j = 0.00025, learning_rate = 0.05):
+    def __init__(self, URM_train):
         super(SLIM_BPR, self).__init__()
 
         self.URM_train = URM_train
         self.n_users = URM_train.shape[0]
         self.n_items = URM_train.shape[1]
-        self.lambda_i = lambda_i
-        self.lambda_j = lambda_j
-        self.learning_rate = learning_rate
 
-        self.normalize = False
-        self.sparse_weights = False
 
 
     def updateFactors(self, user_id, pos_item_id, neg_item_id):
@@ -65,12 +60,19 @@ class SLIM_BPR(BaseRecommender):
 
 
 
-    def fit(self, epochs=15):
+    def fit(self,lambda_i = 0.0025, lambda_j = 0.00025, learning_rate = 0.05, epochs=15):
         """
         Train SLIM wit BPR. If the model was already trained, overwrites matrix S
         :param epochs:
         :return: -
         """
+
+        self.lambda_i = lambda_i
+        self.lambda_j = lambda_j
+        self.learning_rate = learning_rate
+
+        self.normalize = False
+        self.sparse_weights = False
 
         # Initialize similarity with random values and zero-out diagonal
         self.S = np.random.random((self.n_items, self.n_items)).astype('float32')

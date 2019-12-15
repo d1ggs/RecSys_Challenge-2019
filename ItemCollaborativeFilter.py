@@ -56,8 +56,8 @@ class ItemCollaborativeFilter(object):
 if __name__ == "__main__":
     from utils.run import RunRecommender
 
-    cb_parameters = {"topK": 5,
-                     "shrink": 8}
+    cb_parameters = {'shrink': 17, 'topK': 3}
+
     cb = ItemCollaborativeFilter
 
     map10 = RunRecommender.evaluate_on_validation_set(cb, cb_parameters) # THIS GENERATES A CIRCULAR IMPORT

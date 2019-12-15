@@ -8,24 +8,9 @@ import numpy as np
 from utils.run import RunRecommender
 from utils.helper import Helper
 
-user_cf_parameters = {"topK": 410,
-                      "shrink": 0}
-item_cf_parameters = {"topK": 29,
-                      "shrink": 22}
-user_cbf_parameters = {"topK_age": 48,
-                       "topK_region": 0,
-                       "shrink_age": 8,
-                       "shrink_region": 1,
-                       "age_weight": 0.3}
-item_cbf_parameters = {"topK_asset": 300,
-                       "topK_price": 100,
-                       "topK_sub_class": 80,
-                       "shrink_asset": 4,
-                       "shrink_price": 20,
-                       "shrink_sub_class": 1,
-                       "weight_asset": 0.33,
-                       "weight_price": 0.33,
-                       "weight_sub_class": 0.34}
+user_cf_parameters = {'shrink': 5, 'topK': 44}
+item_cf_parameters = {'shrink': 17, 'topK': 3}
+
 
 SLIM_parameters = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
 
@@ -44,8 +29,6 @@ class HybridElasticNetICFUCF(object):
         self.item_cf = ItemCollaborativeFilter(URM_train)
         self.top_pop = TopPopRecommender(URM_train)
         self.SLIM = MultiThreadSLIM_ElasticNet(URM_train)
-        # self.user_based_cbf = UserBasedCBF(URM_train)
-        # self.item_based_cbf = ItemBasedCBF(URM_train)
 
         # Get the cold users list
         self.cold_users = Helper().get_cold_user_ids(mode)
@@ -56,10 +39,8 @@ class HybridElasticNetICFUCF(object):
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
         self.SLIM.fit(**SLIM_parameters)
-        # self.user_based_cbf.fit(**user_cbf_parameters)
-        # self.item_based_cbf.fit(**item_cbf_parameters)
 
-    def fit(self, SLIM_weight=0.5, user_cf_weight=0.2, item_cf_weight=0.3):
+    def fit(self, SLIM_weight=0.6719606935709935, user_cf_weight=0.08340610330630326, item_cf_weight=0.006456181309865703):
 
         # Normalize the weights, just in case
         weight_sum = item_cf_weight + SLIM_weight + user_cf_weight

@@ -19,19 +19,20 @@ def objective(params):
 als_space = {
     "topK": hp.hp.choice('topK', np.arange(0, 500, 10)),
 
-    "shrink": hp.hp.choice('shrink', np.arange(0, 200, 4))
+    "shrink": hp.hp.choice('shrink', np.arange(0, 60, 1))
 }
 
 
 if __name__ == '__main__':
     ### step 3 : storing the results of every iteration
     bayes_trials = Trials()
-    MAX_EVALS = 50
+    MAX_EVALS = 100
 
-
+    user_cf_parameters = {"topK": 410,
+                          "shrink": 0}
     # Optimize
     best = fmin(fn=objective, space=als_space, algo=hp.tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
+                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=user_cf_parameters)
 
     ### best will the return the the best hyperparameter set
 

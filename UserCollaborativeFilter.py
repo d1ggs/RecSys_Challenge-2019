@@ -60,8 +60,8 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly()
 
-    user_cf_parameters = {"topK": 410,
-                          "shrink": 0}
+    user_cf_parameters = {"topK": 44,
+                          "shrink": 5}
 
     cb = UserCollaborativeFilter
 
