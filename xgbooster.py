@@ -94,6 +94,8 @@ class XGBooster(object):
                     topPop_score = self.toppop.item_popularity[item_id]
                     topPop_score_list.append(topPop_score)
 
+                # Create dataframe
+
                 train_dataframe = pd.DataFrame(
                     {"user_id": user_recommendations_user_id, "item_id": user_recommendations_items})
 
@@ -121,9 +123,8 @@ class XGBooster(object):
             raise NotImplementedError("Model loading still needs to be implemented")
 
     def recommend(self, user_id, at=10, exclude_seen=True):
-        user_recommendations_items = []
-        user_recommendations_user_id = []
 
+        # Get internal recommender recommendations
         recommendations = self.recommender.recommend(user_id, at=20, exclude_seen=exclude_seen)
 
         user_recommendations_items = recommendations
@@ -136,14 +137,14 @@ class XGBooster(object):
             topPop_score = self.toppop.item_popularity[item_id]
             topPop_score_list.append(topPop_score)
 
-        test_dataframe = pd.DataFrame({"user_id": user_recommendations_user_id, "item_id": user_recommendations_items})
+        # Build the dataframe
 
+        test_dataframe = pd.DataFrame({"user_id": user_recommendations_user_id, "item_id": user_recommendations_items})
         test_dataframe['item_popularity'] = pd.Series(topPop_score_list, index=test_dataframe.index)
 
         # Put the user profile length as feature
 
         user_profile_len = np.ediff1d(self.URM_train.indptr)
-
         user_profile_len_list = []
 
         for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
@@ -153,22 +154,8 @@ class XGBooster(object):
 
         xgb_predictions = self.XGB_model.predict(xgb.DMatrix(test_dataframe))
 
-        count = 1
-        predictions = []
-        predictions_list = []
-
         indices = np.flip(np.argsort(xgb_predictions))[:at]
         sorted_recommendations = user_recommendations_items[indices]
-
-        # for prediction in xgb_predictions:
-        #     predictions_list.append(prediction)
-        #     if count % 20 == 0:
-        #         predictions.append(np.array(predictions_list))
-        #     count += 1
-        #
-        # for xgb_pred, recommendations in zip(predictions, user_recommendations_items_list):
-        #     indices = np.argsort(xgb_pred)[:at]
-        #     sorted_recommendations = recommendations[indices]
 
         assert sorted_recommendations.shape[0] == 10
         return sorted_recommendations

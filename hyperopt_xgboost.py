@@ -22,7 +22,7 @@ def objective(params):
 xgboost_space = {
     'max_depth': hp.hp.choice('max_depth', np.arange(3, 10)),  # the maximum depth of each tree
     'eta': hp.hp.qloguniform('eta', np.log(1e-3), np.log(0.3), 0.0005),  # step for each iteration
-    'num_round': hp.hp.choice('num_round', np.arange(10, 500, 10)),
+    'num_round': hp.hp.choice('num_round', np.arange(10, 350, 10)),
     'alpha': hp.hp.quniform('alpha', 0, 1, 0.05),
     'lambda': hp.hp.quniform('lambda', 0, 1, 0.05),
     #'learning_rate': hp.hp.qloguniform('learning_rate', np.log(1e-5), np.log(1), 0.00005)
