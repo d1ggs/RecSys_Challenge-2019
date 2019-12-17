@@ -33,7 +33,7 @@ class AssetCBF:
         self.shrink = shrink
 
         # Load ICMs from helper
-        self.ICM_asset = self.helper.load_icm_asset()
+        self.ICM_asset = self.helper.bm25_normalization(self.helper.load_icm_asset())
         # Computing SMs
         self.SM_asset = self.compute_similarity_cbf(self.ICM_asset, top_k=self.topK, shrink=self.shrink)
 

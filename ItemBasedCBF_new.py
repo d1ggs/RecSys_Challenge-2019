@@ -1,20 +1,16 @@
-"""
-Created on 09/11/2019
-
-@author: Matteo Carretta
-"""
-
-import numpy as np
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 from utils.helper import Helper
 from utils.run import RunRecommender
+from scipy.sparse import hstack
+import numpy as np
 
 
-class PriceCBF:
+class ItemCBF:
 
-    def __init__(self, URM ):
+    def __init__(self, URM):
 
         self.URM_train = URM
+
         self.helper = Helper()
 
     def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
@@ -24,23 +20,25 @@ class PriceCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=200,shrink=0):
-
-        # URM Loading
+    def fit(self,  topK=200,shrink=5):
 
         self.topK = topK
         self.shrink = shrink
 
         # Load ICMs from helper
-        self.ICM_price = self.helper.bm25_normalization(self.helper.load_icm_price())
+        ICM_sub_class = self.helper.bm25_normalization(self.helper.load_icm_sub_class())
+        ICM_asset = self.helper.bm25_normalization(self.helper.load_icm_asset())
+        ICM_price = self.helper.bm25_normalization(self.helper.load_icm_price())
+        matrices = [ICM_asset, ICM_sub_class, ICM_price]
+        self.ICM = hstack(matrices)
         # Computing SMs
-        self.SM_price = self.compute_similarity_cbf(self.ICM_price, top_k=self.topK, shrink=self.shrink)
+        self.SM = self.compute_similarity_cbf(self.ICM, top_k=self.topK, shrink=self.shrink)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]
-        scores_price = users_list_train.dot(self.SM_price).toarray().ravel()
+        scores_sub_class = users_list_train.dot(self.SM).toarray().ravel()
 
-        return scores_price
+        return scores_sub_class
 
     def recommend(self, user_id, at=10, exclude_seen=True):
         # Compute scores of the recommendation
@@ -66,11 +64,7 @@ class PriceCBF:
 
 if __name__ == "__main__":
 
-    # evaluator.split_data_randomly()
+    cbf_recommender = ItemCBF
 
-    parameters = { "topK": 0,
-                   "shrink": 6}
-    cbf_recommender = PriceCBF
-
-    RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
+    RunRecommender.evaluate_on_test_set(cbf_recommender, {})
     # RunRecommender.run(cbf_recommender)

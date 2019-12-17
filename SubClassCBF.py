@@ -33,7 +33,7 @@ class SubClassCBF:
         self.shrink = shrink
 
         # Load ICMs from helper
-        self.ICM_sub_class = self.helper.load_icm_sub_class()
+        self.ICM_sub_class = self.helper.bm25_normalization(self.helper.load_icm_sub_class())
         # Computing SMs
         self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK, shrink=self.shrink)
 

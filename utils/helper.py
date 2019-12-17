@@ -1,6 +1,6 @@
 import pickle
 from collections import defaultdict
-
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
 import scipy.sparse as sps
@@ -157,11 +157,16 @@ class Helper(object, metaclass=Singleton):
         target_users_test_file = open(os.path.join(ROOT_PROJECT_PATH, "data/target_users_test.csv"), "r")
         return list(target_users_test_file)[1:]
 
-    def load_icm_asset(self, cluster=True):
+    def load_icm_asset(self, cluster=False):
+        le = LabelEncoder()
         icm_asset = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_asset.csv"))
         row = np.asarray(list(icm_asset.row))
-        col = np.asarray(list(icm_asset.col))
-        data = np.asarray(list(icm_asset.data))
+        col = np.asarray(list(icm_asset.data))
+        #col = np.asarray(list(icm_asset.col))
+        data = np.ones_like(col)
+
+        le.fit(col)
+        col = le.transform(col)
 
         if cluster:
             n_clusters = 10
@@ -179,11 +184,16 @@ class Helper(object, metaclass=Singleton):
         icm_asset = icm_asset.tocsr()
         return icm_asset
 
-    def load_icm_price(self, cluster=True):
+    def load_icm_price(self, cluster=False):
+        le = LabelEncoder()
         icm_price = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_price.csv"))
         row = np.asarray(list(icm_price.row))
-        col = np.asarray(list(icm_price.col))
-        data = np.asarray(list(icm_price.data))
+        col = np.asarray(list(icm_price.data))
+        #col = np.asarray(list(icm_price.col))
+        data = np.ones_like(col)
+
+        le.fit(col)
+        col = le.transform(col)
 
         if cluster:
             n_clusters = 10
@@ -215,7 +225,6 @@ class Helper(object, metaclass=Singleton):
         matrix_BM25 = matrix_BM25.tocsr()
         return matrix_BM25
 
-    # e
     def tfidf_normalization(self, matrix):
         matrix_tfidf = feature_extraction.text.TfidfTransformer().fit_transform(matrix)
         return matrix_tfidf.tocsr()

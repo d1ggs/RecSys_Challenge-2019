@@ -12,14 +12,14 @@ from AssetCBF import AssetCBF
 from PriceCBF import PriceCBF
 from SubClassCBF import SubClassCBF
 
-asset_cbf_parameters = {"topK": 8,
-                        "shrink": 4} # to fit with optimal values
+asset_cbf_parameters = {"topK": 200,
+                        "shrink": 5} # to fit with optimal values
 
-price_cbf_parameters = {"topK": 0,
-                        "shrink": 6}
+price_cbf_parameters = {"topK": 200,
+                        "shrink": 5}
 
-sub_class_cbf_parameters = {"topK": 1,
-                            "shrink": 1}
+sub_class_cbf_parameters = {"topK": 200,
+                            "shrink": 5}
 
 class ItemBasedCBF:
 
@@ -83,9 +83,9 @@ if __name__ == "__main__":
 
     # evaluator.split_data_randomly()
 
-    parameters = {"weight_asset": 0.41617098566013966,
-                  "weight_price": 0.36833811086509627,
-                  "weight_sub_class": 0.6977028008004889}
+    parameters = {"weight_asset": 0.3333,
+                  "weight_price": 0.3333,
+                  "weight_sub_class": 0.3333}
     cbf_recommender = ItemBasedCBF
 
     RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)

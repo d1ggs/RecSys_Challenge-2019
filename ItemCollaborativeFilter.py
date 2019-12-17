@@ -60,5 +60,5 @@ if __name__ == "__main__":
 
     cb = ItemCollaborativeFilter
 
-    map10 = RunRecommender.evaluate_on_validation_set(cb, cb_parameters) # THIS GENERATES A CIRCULAR IMPORT
+    map10 = RunRecommender.evaluate_on_validation_set(cb, cb_parameters)
 
