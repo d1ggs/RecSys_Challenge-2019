@@ -20,7 +20,7 @@ class ItemCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self,  topK=200,shrink=5):
+    def fit(self, topK=1,shrink=19):
 
         self.topK = topK
         self.shrink = shrink
@@ -66,5 +66,5 @@ if __name__ == "__main__":
 
     cbf_recommender = ItemCBF
 
-    RunRecommender.evaluate_on_test_set(cbf_recommender, {})
+    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 1, "shrink": 13})
     # RunRecommender.run(cbf_recommender)
