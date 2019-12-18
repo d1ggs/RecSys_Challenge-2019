@@ -17,10 +17,10 @@ def objective(params):
     return loss
 
 als_space = {
-    "alpha": hp.hp.uniform('alpha', 1.0, 4.0),
-    "beta": hp.hp.uniform('beta', 0.0, 1.0),
+    "alpha": hp.hp.uniform('alpha', 1.5, 2.5),
+    "beta": hp.hp.uniform('beta', 0.3, 0.6),
     "min_rating": 0,
-    "topK": hp.hp.choice('topK', np.arange(0, 800, 40)),
+    "topK": hp.hp.choice('topK', np.arange(580, 700, 2)),
     "implicit": False,
     "normalize_similarity": False
 }
@@ -31,10 +31,16 @@ if __name__ == '__main__':
     bayes_trials = Trials()
     MAX_EVALS = 50
 
+    opt = {'alpha': 1.0043111988071665, 'beta': 0.0029837192341647823, 'implicit': False, 'min_rating': 0, 'normalize_similarity': False, 'topK': 680}
+    opt_minor = {'alpha': 1.009077614740585, 'beta': 0.029849929646199647, 'implicit': False, 'min_rating': 0, 'normalize_similarity': False, 'topK': 600}
+
+
+    RunRecommender.evaluate_on_validation_set(RP3betaRecommender, opt)
     # Optimize
     best = fmin(fn=objective, space=als_space, algo=hp.tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, )
+                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[opt_minor, opt])
 
     ### best will the return the the best hyperparameter set
 
     print(best)
+    RunRecommender.evaluate_on_test_set(RP3betaRecommender, best)

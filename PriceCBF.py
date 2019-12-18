@@ -12,7 +12,7 @@ from utils.run import RunRecommender
 
 class PriceCBF:
 
-    def __init__(self, URM ):
+    def __init__(self, URM, mode="validation"):
 
         self.URM_train = URM
         self.helper = Helper()

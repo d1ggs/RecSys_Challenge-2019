@@ -7,6 +7,8 @@ import numpy as np
 
 ### Step 1 : defining the objective function
 def objective(params):
+    print('############################################################')
+    print(params)
     loss = - RunRecommender.evaluate_on_test_set(SubClassCBF, params)
     return loss
 

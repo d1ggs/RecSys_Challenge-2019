@@ -15,7 +15,7 @@ class RunRecommender(object):
 
         URM_all = Helper().URM_csr
 
-        recommender = recommender_class(URM_all)
+        recommender = recommender_class(URM_all, mode="dataset")
         recommender.fit(**fit_parameters)
 
         RunRecommender.write_submission(recommender)
@@ -59,7 +59,7 @@ class RunRecommender(object):
         if use_demographic:
             URM_train = Helper().inject_demographic_info(URM_train)
 
-        recommender = recommender_class(URM_train)
+        recommender = recommender_class(URM_train, mode="test")
         recommender.fit(**fit_parameters)
 
         MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
@@ -75,7 +75,7 @@ class RunRecommender(object):
         if use_demographic:
             URM_train = Helper().inject_demographic_info(URM_train)
 
-        recommender = recommender_class(URM_train)
+        recommender = recommender_class(URM_train, mode="validation")
         recommender.fit(**fit_parameters)
 
         MAP_final, _ = Evaluator().evaluateRecommender(recommender, users_to_evaluate)

@@ -18,7 +18,7 @@ class UserCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=500, shrink=2, normalize=True, similarity = "cosine"):
+    def fit(self, topK=410, shrink=0, normalize=True, similarity = "cosine"):
 
         self.topK = topK
         self.shrink = shrink

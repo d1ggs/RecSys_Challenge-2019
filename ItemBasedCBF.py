@@ -23,7 +23,7 @@ sub_class_cbf_parameters = {"topK": 200,
 
 class ItemBasedCBF:
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
         self.helper = Helper()
         self.asset_cbf = AssetCBF(self.URM_train)

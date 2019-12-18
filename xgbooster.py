@@ -13,24 +13,33 @@ from utils.run import RunRecommender
 
 class XGBooster(object):
 
-    def __init__(self, URM_train, recommender_class=UserCollaborativeFilter):
+    def __init__(self, URM_train, recommender_class=UserCollaborativeFilter, mode="dataset"):
 
         self.URM_train = URM_train
-
+        self.validation = Helper().validation_data
+        if mode == "dataset":
+            self.validation = Helper().test_data
+        elif mode == "test":
+            self.validation = Helper().validation_data
+        else:
+            raise AssertionError("Validation mode is not supported by this recommender, use 'test' or 'dataset'")
         self.toppop = TopPopRecommender(URM_train)
 
         self.recommender = recommender_class(URM_train)
 
         self.toppop.fit()
+        #TODO Check recommender params
+
         self.recommender.fit()
         self.already_fitted = False
 
-    def train_XGB(self, X, y, params=None, pos_weight=19.0):
+    def train_XGB(self, X_train, y_train, X_test, y_test, params=None, pos_weight=19.0):
 
-        #X_train, X_test, y_train, y_test = train_test_split(X, y)
+        # X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-        dtrain = xgb.DMatrix(X, label=y)
-        #dtest = xgb.DMatrix(X_test, label=y_test)
+        dtrain = xgb.DMatrix(X_train, label=y_train)
+
+        deval = xgb.DMatrix(X_test, label=y_test)
 
         if params is None:
             params = {
@@ -42,6 +51,7 @@ class XGBooster(object):
                 'eval_metric': 'map',
                 'scale_pos_weight': pos_weight}  # evaluation metric
             num_round = 500  # the number of training iterations (number of trees)
+
         else:
             params['pos_weight'] = pos_weight
             params['objective'] = 'binary:logistic'
@@ -50,73 +60,82 @@ class XGBooster(object):
             num_round = params['num_round']
             del params['num_round']
 
-
+        early_stopping_rounds = 50
         xgb_model = xgb.train(params,
                               dtrain,
                               num_round,
                               verbose_eval=2,
-                              evals=[(dtrain, 'train')])
+                              evals=[(dtrain, 'train'), (deval, 'eval')], early_stopping_rounds=early_stopping_rounds)
 
         return xgb_model
+
+    def generate_dataframe(self, URM, target_data):
+        assert target_data is not None, "target_data cannot be None if load_XGB is False"
+        # We need to train the model
+        user_recommendations_items = []
+        user_recommendations_user_id = []
+
+        labels = []
+
+        count = 0
+
+        # Get recommendations from internal recommender model
+
+        for user_id in target_data.keys():
+            recommendations = self.recommender.recommend(user_id, at=20)
+            assert recommendations.shape[
+                       0] == 20, "Internal recommender is not providing the requested recommendation length"
+            for recommendation in recommendations:
+                if int(recommendation) == target_data[user_id]:
+                    labels.append(1)
+                    count += 1
+                else:
+                    labels.append(0)
+            user_recommendations_items.extend(recommendations)
+            user_recommendations_user_id.extend([user_id] * len(recommendations))
+
+        # Put the item popularity as feature
+        topPop_score_list = []
+
+        for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
+            topPop_score = self.toppop.item_popularity[item_id]
+            topPop_score_list.append(topPop_score)
+
+        # Create dataframe
+
+        train_dataframe = pd.DataFrame(
+            {"user_id": user_recommendations_user_id, "item_id": user_recommendations_items})
+
+        train_dataframe['item_popularity'] = pd.Series(topPop_score_list, index=train_dataframe.index)
+
+        # Put the user profile length as feature
+
+        user_profile_len = np.ediff1d(URM.indptr)
+
+        user_profile_len_list = []
+
+        for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
+            user_profile_len_list.append(user_profile_len[user_id])
+
+        train_dataframe['user_profile_len'] = pd.Series(user_profile_len_list, index=train_dataframe.index)
+
+
+        pos_weight = (len(user_recommendations_items) - count) / count
+        return train_dataframe, pos_weight, labels
 
     def fit(self, load_XGB=False, target_data=None, train_parameters=None):
 
         if not load_XGB:
             if not self.already_fitted:
+                self.train_dataframe, self.pos_weight_train, self.labels_train = self.generate_dataframe(self.URM_train, self.validation)
                 self.already_fitted = True
-                assert target_data is not None, "target_data cannot be None if load_XGB is False"
-                # We need to train the model
-                user_recommendations_items = []
-                user_recommendations_user_id = []
+                self.test_dataframe, _, self.labels_test = self.generate_dataframe(Helper().URM_train_test, Helper().test_data)
 
-                self.labels = []
-
-                count = 0
-
-                # Get recommendations from internal recommender model
-
-                for user_id in target_data.keys():
-                    recommendations = self.recommender.recommend(user_id, at=20)
-                    assert recommendations.shape[0] == 20, "Internal recommender is not providing the requested recommendation length"
-                    for recommendation in recommendations:
-                        if int(recommendation) == target_data[user_id]:
-                            self.labels.append(1)
-                            count += 1
-                        else:
-                            self.labels.append(0)
-                    user_recommendations_items.extend(recommendations)
-                    user_recommendations_user_id.extend([user_id] * len(recommendations))
-
-                # Put the item popularity as feature
-                topPop_score_list = []
-
-                for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
-                    topPop_score = self.toppop.item_popularity[item_id]
-                    topPop_score_list.append(topPop_score)
-
-                # Create dataframe
-
-                train_dataframe = pd.DataFrame(
-                    {"user_id": user_recommendations_user_id, "item_id": user_recommendations_items})
-
-                train_dataframe['item_popularity'] = pd.Series(topPop_score_list, index=train_dataframe.index)
-
-                # Put the user profile length as feature
-
-                user_profile_len = np.ediff1d(self.URM_train.indptr)
-
-                user_profile_len_list = []
-
-                for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
-                    user_profile_len_list.append(user_profile_len[user_id])
-
-                train_dataframe['user_profile_len'] = pd.Series(user_profile_len_list, index=train_dataframe.index)
-
-                self.train_dataframe = train_dataframe
-
-                self.pos_weight = (len(user_recommendations_items)-count) / count
-
-            self.XGB_model = self.train_XGB(self.train_dataframe, self.labels, pos_weight=self.pos_weight,
+            self.XGB_model = self.train_XGB(self.train_dataframe,
+                                            self.labels_train, 
+                                            self.test_dataframe,
+                                            self.labels_test,
+                                            pos_weight=self.pos_weight_train,
                                             params=train_parameters)
 
         else:

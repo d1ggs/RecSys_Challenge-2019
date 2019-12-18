@@ -94,18 +94,6 @@ class SLIMElasticNetRecommender(BaseItemSimilarityMatrixRecommender):
             # fit one ElasticNet model per column
             self.model.fit(URM_train, y)
 
-            # self.model.coef_ contains the coefficient of the ElasticNet model
-            # let's keep only the non-zero values
-
-            # Select topK values
-            # Sorting is done in three steps. Faster then plain np.argsort for higher number of items
-            # - Partition the data to extract the set of relevant items
-            # - Sort only the relevant items
-            # - Get the original item index
-
-            # nonzero_model_coef_index = self.model.coef_.nonzero()[0]
-            # nonzero_model_coef_value = self.model.coef_[nonzero_model_coef_index]
-
             nonzero_model_coef_index = self.model.sparse_coef_.indices
             nonzero_model_coef_value = self.model.sparse_coef_.data
 
@@ -181,9 +169,6 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
         X_j.data[X_j.indptr[currentItem]:X_j.indptr[currentItem + 1]] = 0.0
         # fit one ElasticNet model per column
         model.fit(X_j, y)
-        # self.model.coef_ contains the coefficient of the ElasticNet model
-        # let's keep only the non-zero values
-        # nnz_idx = model.coef_ > 0.0
 
         relevant_items_partition = (-model.coef_).argpartition(topK)[0:topK]
         relevant_items_partition_sorting = np.argsort(-model.coef_[relevant_items_partition])
