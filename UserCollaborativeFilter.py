@@ -7,7 +7,7 @@ from utils.run import RunRecommender
 
 class UserCollaborativeFilter(object):
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode="tomedra"):
         self.URM_train = URM_train
         self.W_sparse = None
 
@@ -60,9 +60,9 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly()
 
-    user_cf_parameters = {"topK": 44,
-                          "shrink": 5}
+    user_cf_parameters = {"topK": 410,
+                          "shrink": 0}
 
     cb = UserCollaborativeFilter
 
-    map10 = RunRecommender.evaluate_on_validation_set(cb, user_cf_parameters)
+    map10 = RunRecommender.run(cb, user_cf_parameters)
