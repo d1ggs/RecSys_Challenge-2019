@@ -52,33 +52,37 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, use_demographic=False):
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False):
 
         evaluator = Evaluator(test_mode=True)
         URM_train = Helper().URM_train_test
-        if use_demographic:
-            URM_train = Helper().inject_demographic_info(URM_train)
 
         recommender = recommender_class(URM_train, mode="test")
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
+        if Kfold > 0:
+            MAP_final, _ = evaluator.evaluate_recommender_kfold(recommender, k=Kfold, sequential=sequential)
+        else:
+            MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
 
         print("MAP-10 score:", MAP_final)
 
         return MAP_final
 
     @staticmethod
-    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None, use_demographic=False):
+    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False):
+
+        evaluator = Evaluator()
 
         URM_train = Helper().URM_train_validation
-        if use_demographic:
-            URM_train = Helper().inject_demographic_info(URM_train)
 
         recommender = recommender_class(URM_train, mode="validation")
         recommender.fit(**fit_parameters)
 
-        MAP_final, _ = Evaluator().evaluateRecommender(recommender, users_to_evaluate)
+        if Kfold > 0:
+            MAP_final, _ = evaluator.evaluate_recommender_kfold(recommender, k=Kfold, sequential=sequential)
+        else:
+            MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
 
         print("MAP-10 score:", MAP_final)
 
