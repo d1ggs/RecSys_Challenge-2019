@@ -72,14 +72,13 @@ class Evaluator:
 
                 print("Completed in", datetime.now() - startTime)
 
-            MAP /= len(evaluation_data.keys)
+            MAP /= len(evaluation_data.keys())
             MAP_final += MAP
 
         MAP_final /= k
         result_string = "MAP@10 score: " + str(MAP_final)
 
         return MAP_final, result_string
-
 
     def evaluateRecommender_old(self, recommender, exclude_users: set):
 
@@ -106,7 +105,7 @@ class Evaluator:
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string
 
-    def evaluateRecommender(self, recommender, users_to_evaluate: set):
+    def evaluateRecommender(self, recommender, users_to_evaluate: set, sequential=False):
 
         num_cores = multiprocessing.cpu_count()
 
@@ -124,11 +123,17 @@ class Evaluator:
         else:
             user_list = evaluation_data.keys()
 
-        startTime = datetime.now()
-        with multiprocessing.Pool(processes=num_cores) as p:
-            results = p.map(Evaluator.compute_MAP_for_user, [(recommender, user, evaluation_data[user]) for user in user_list])
-        MAP_final = np.sum(results)
-        p.close()
+        if sequential:
+            for user in user_list:
+                recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
+                relevant_item = evaluation_data[int(user)]
+                MAP_final += self.MAP(recommended_items, relevant_item)
+        else:
+            startTime = datetime.now()
+            with multiprocessing.Pool(processes=num_cores) as p:
+                results = p.map(Evaluator.compute_MAP_for_user, [(recommender, user, evaluation_data[user]) for user in user_list])
+            MAP_final = np.sum(results)
+            p.close()
 
         print("Completed in", datetime.now() - startTime)
 
