@@ -132,7 +132,7 @@ class XGBooster(object):
                 self.test_dataframe, _, self.labels_test = self.generate_dataframe(Helper().URM_train_test, Helper().test_data)
 
             self.XGB_model = self.train_XGB(self.train_dataframe,
-                                            self.labels_train, 
+                                            self.labels_train,
                                             self.test_dataframe,
                                             self.labels_test,
                                             pos_weight=self.pos_weight_train,
@@ -180,19 +180,21 @@ class XGBooster(object):
         return sorted_recommendations
 
 if __name__ == '__main__':
+    params={'alpha': 0.9, 'eta': 0.2975, 'lambda': 0.15000000000000002, 'max_depth': 5, 'num_round': 32}
+
+    booster = XGBooster(Helper().URM_train_test)
+    booster.fit(load_XGB=False, target_data=Helper().test_data, train_parameters=params)
+
+
     # booster = XGBooster(Helper().URM_train_validation)
     # booster.fit(load_XGB=False, target_data=Helper().validation_data)
+    # MAP_final, _ = Evaluator(test_mode=True).evaluateRecommender_old(booster, None)
 
-    booster = XGBooster(Helper().URM_train_validation)
-    booster.fit(load_XGB=False, target_data=Helper().validation_data)
-    MAP_final, _ = Evaluator(test_mode=True).evaluateRecommender_old(booster, None)
+    booster.toppop = TopPopRecommender(Helper().URM_csr)
+    booster.user_cf = UserCollaborativeFilter(Helper().URM_csr)
+    booster.toppop.fit()
+    booster.user_cf.fit()
 
-    # booster.toppop = TopPopRecommender(Helper().URM_csr)
-    # booster.user_cf = UserCollaborativeFilter(Helper().URM_csr)
-    # booster.toppop.fit()
-    # booster.user_cf.fit()
+    RunRecommender.write_submission(booster)
 
-    # RunRecommender.write_submission(booster)
-
-    print("MAP@10:", MAP_final)
 

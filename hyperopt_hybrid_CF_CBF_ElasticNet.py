@@ -16,23 +16,27 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'user_cf_weight': hp.hp.uniform('user_cf_weight', 0.0, 1.0),
-    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.0, 1.0),
-    'slim_elastic_weight': hp.hp.uniform('slim_elastic_weight', 0.0, 1.0),
-    'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0.0, 1.0)}
+    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.3, 0.45),
+    'slim_elastic_weight': hp.hp.uniform('slim_elastic_weight', 0.7, 0.85),
+    'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0.02, 0.045)}
 
 # step 3 : storing the results of every iteration
 bayes_trials = Trials()
 MAX_EVALS = 50
 
 
+opt = {'item_cbf_weight': 0.0381705753809474, 'item_cf_weight': 0.3588187238528404, 'slim_elastic_weight': 0.7995537607731212}
 
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
-            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
+            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=opt)
 
 # best will the return the the best hyperparameter set
 
 print(best)
 
 RunRecommender.evaluate_on_test_set(HybridCFCBFElasticNet, best)
+
+"""
+MAP-10 score to beat on test: 0.05103293992947268
+"""

@@ -4,7 +4,6 @@ import numpy as np
 from utils.run import RunRecommender
 from utils.helper import Helper
 from TopPopularRecommender import TopPopRecommender
-from UserBasedCBF import UserBasedCBF
 from ItemBasedCBF_new import ItemCBF
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 
@@ -12,13 +11,10 @@ user_cf_parameters = {"topK": 410,
                       "shrink": 0}
 item_cf_parameters = {"topK": 29,
                       "shrink": 22}
-user_cbf_parameters = {"topK_age": 48,
-                       "topK_region": 0,
-                       "shrink_age": 8,
-                       "shrink_region": 1,
-                       "age_weight": 0.3}
-item_cbf_parameters = {"topK": 1,
-                       "shrink": 12}
+# item_cbf_parameters = {"topK": 1,
+#                        "shrink": 12}
+item_cbf_parameters = {"topK": 200,
+                       "shrink": 5}
 
 SLIM_parameters = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25,
                    'random_state': 1234}
@@ -37,27 +33,24 @@ class HybridCFCBFElasticNet():
 
         # Fit the URM into single recommenders, save time in case weights should be changed
         self.slim_elastic.fit(**SLIM_parameters)
-        self.user_cf.fit(**user_cf_parameters)
         self.item_cf.fit(**item_cf_parameters)
         self.top_pop.fit()
         self.item_based_cbf.fit(**item_cbf_parameters)
 
-    def fit(self, user_cf_weight=0.03, item_cf_weight=0.71, item_cbf_weight=0.06, slim_elastic_weight=0.15):
+    def fit(self, item_cf_weight=0.71, item_cbf_weight=0.06, slim_elastic_weight=0.15):
 
-        weight_sum = user_cf_weight + item_cbf_weight + item_cf_weight + slim_elastic_weight
+        weight_sum = item_cbf_weight + item_cf_weight + slim_elastic_weight
 
-        self.weights = {"user_cf": user_cf_weight / weight_sum,
-                        "item_cf": item_cf_weight / weight_sum,
+        self.weights = {"item_cf": item_cf_weight / weight_sum,
                         "item_cbf": item_cbf_weight / weight_sum,
                         "slim_elastic": slim_elastic_weight / weight_sum}
 
     def compute_scores(self, user_id):
-        scores_user_cf = self.user_cf.compute_scores(user_id)
         scores_item_cf = self.item_cf.compute_scores(user_id)
         scores_item_cbf = self.item_based_cbf.compute_scores(user_id)
         scores_slim_elastic = self.slim_elastic._compute_item_score(user_id_array=np.asarray(user_id)).squeeze()
-        scores = (self.weights["user_cf"] * scores_user_cf) + (self.weights["item_cf"] * scores_item_cf) + \
-                 + (self.weights["item_cbf"] * scores_item_cbf) + (self.weights["slim_elastic"] * scores_slim_elastic.squeeze())
+        scores = (self.weights["item_cf"] * scores_item_cf) + (self.weights["item_cbf"] * scores_item_cbf) +\
+                 (self.weights["slim_elastic"] * scores_slim_elastic.squeeze())
 
         return scores
 
@@ -86,9 +79,11 @@ class HybridCFCBFElasticNet():
 
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
-    hybrid = HybridUCFICFElasticNetRecommender
+    hybrid = HybridCFCBFElasticNet
 
-    weights_hybrid_ucf_icf = {'item_cbf': 0.10488998974023717, 'item_cf': 0.17954977518976983, 'slim_elastic': 0.9760537879950291, 'user_cf': 0.015905291203392107}
+    weights_hybrid_ucf_icf = {'item_cbf_weight': 0.033099412622983986, 'item_cf_weight': 0.31062121622263944, 'slim_elastic_weight': 0.7264945269296246}
+
+
 
     # Evaluation is performed by RunRecommender
     # RunRecommender.evaluate_on_test_set(hybrid, weights_hybrid_ucf_icf)
