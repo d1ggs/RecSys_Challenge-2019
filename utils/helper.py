@@ -90,7 +90,7 @@ class Helper(object, metaclass=Singleton):
         else:
             raise AssertionError("The split parameter must be either 'dataset', 'test', or 'validation'")
 
-    def get_train_validation_test_data(self, resplit=False, split_fraction=0, leave_out=1):
+    def get_train_validation_test_data(self, resplit=False, save_pickle=True, split_fraction=0, leave_out=1):
 
         if not resplit:
             # Load serialized Pickle data
@@ -123,27 +123,29 @@ class Helper(object, metaclass=Singleton):
 
             # Serialize the objects with Pickle, for faster loading
 
-            print("Saving Pickle files into /data/pickled")
+            if save_pickle:
 
-            test_data_out = open(TEST_DATA_PATH, "wb")
-            pickle.dump(test_data, test_data_out)
-            test_data_out.close()
+                print("Saving Pickle files into /data/pickled")
 
-            URM_train_out = open(URM_TRAIN_TEST_EVAL_PATH, "wb")
-            pickle.dump(URM_train_test, URM_train_out)
-            URM_train_out.close()
+                test_data_out = open(TEST_DATA_PATH, "wb")
+                pickle.dump(test_data, test_data_out)
+                test_data_out.close()
 
-            eval_data_out = open(EVALUATION_DATA_PATH, "wb")
-            pickle.dump(eval_data, eval_data_out)
-            eval_data_out.close()
+                URM_train_out = open(URM_TRAIN_TEST_EVAL_PATH, "wb")
+                pickle.dump(URM_train_test, URM_train_out)
+                URM_train_out.close()
 
-            URM_train_out = open(URM_TRAIN_EVAL_ONLY_PATH, "wb")
-            pickle.dump(URM_train_eval, URM_train_out)
-            URM_train_out.close()
+                eval_data_out = open(EVALUATION_DATA_PATH, "wb")
+                pickle.dump(eval_data, eval_data_out)
+                eval_data_out.close()
 
-            # URM_test_out = open(URM_TEST_PATH, "wb")
-            # pickle.dump(URM_test, URM_test_out)
-            # URM_test_out.close()
+                URM_train_out = open(URM_TRAIN_EVAL_ONLY_PATH, "wb")
+                pickle.dump(URM_train_eval, URM_train_out)
+                URM_train_out.close()
+
+                # URM_test_out = open(URM_TEST_PATH, "wb")
+                # pickle.dump(URM_test, URM_test_out)
+                # URM_test_out.close()
 
         return URM_train_eval, URM_train_test, eval_data, test_data
 
