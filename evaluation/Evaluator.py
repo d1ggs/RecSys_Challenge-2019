@@ -14,8 +14,15 @@ ROW_INDEX, COL_ID_INDEX = 0, 1
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NUMBER_OF_ITEMS_TEST_FILE = 10
 
+class Singleton(type):
+    _instances = {}
 
-class Evaluator:
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class Evaluator(object, metaclass=Singleton):
     def __init__(self, test_mode = False):
         self.helper = Helper()
         self.test_mode = test_mode
@@ -48,6 +55,7 @@ class Evaluator:
             for _ in range(k):
                 self.kfold_splits.append(self.helper.get_train_validation_test_data(resplit=True, save_pickle=False))
 
+        print("Computing MAP...")
         MAP_final = 0.0
         for split in self.kfold_splits:
             MAP = 0.0
@@ -70,7 +78,7 @@ class Evaluator:
                 MAP = np.sum(results)
                 p.close()
 
-                print("Completed in", datetime.now() - startTime)
+                print("Fold completed in", datetime.now() - startTime)
 
             MAP /= len(evaluation_data.keys())
             MAP_final += MAP
