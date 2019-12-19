@@ -16,9 +16,11 @@ NUMBER_OF_ITEMS_TEST_FILE = 10
 
 
 class Evaluator:
-    def __init__(self, split_size=0.8, test_mode = False):
+    def __init__(self, test_mode = False):
         self.helper = Helper()
         self.test_mode = test_mode
+        self.helper.get_train_validation_test_data()
+        self.kfold_splits = []
 
     # Functions to evaluate a recommender
     @staticmethod
@@ -40,6 +42,44 @@ class Evaluator:
         relevant_item = params[2]
         recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
         return Evaluator.MAP(recommended_items, relevant_item)
+
+    def evaluate_recommender_kfold(self, recommender, k=4, sequential=True):
+        if len(self.kfold_splits) == 0:
+            for _ in range(k):
+                self.kfold_splits.append(self.helper.get_train_validation_test_data(resplit=True, save_pickle=False))
+
+        MAP_final = 0.0
+        for split in self.kfold_splits:
+            MAP = 0.0
+            if self.test_mode:
+                evaluation_data = split[2]
+            else:
+                evaluation_data = split[3]
+
+            if sequential:
+                for user in evaluation_data.keys:
+                    recommended_items = recommender.recommend(int(user), exclude_seen=True)[:10]
+                    relevant_item = evaluation_data[int(user)]
+                    MAP += self.MAP(recommended_items, relevant_item)
+
+            else:
+                startTime = datetime.now()
+                with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as p:
+                    results = p.map(Evaluator.compute_MAP_for_user,
+                                    [(recommender, user, evaluation_data[user]) for user in evaluation_data.keys()])
+                MAP = np.sum(results)
+                p.close()
+
+                print("Completed in", datetime.now() - startTime)
+
+            MAP /= len(evaluation_data.keys)
+            MAP_final += MAP
+
+        MAP_final /= k
+        result_string = "MAP@10 score: " + str(MAP_final)
+
+        return MAP_final, result_string
+
 
     def evaluateRecommender_old(self, recommender, exclude_users: set):
 
