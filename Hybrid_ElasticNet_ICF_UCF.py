@@ -20,17 +20,10 @@ SLIM_parameters = {'alpha': 0.0023512567548654,
 
 
 class HybridElasticNetICFUCF(object):
-    RECOMMENDER_NAME = "HybridElasticNetICF"
+    RECOMMENDER_NAME = "HybridElasticNetICFUCF"
 
-    def __init__(self, URM_train, mode="dataset", use_demographic=False):
+    def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
-        self.use_demographic = use_demographic
-        if self.use_demographic:
-            self.user_data_dict, self.cluster_dict, self.region_dict, self.age_dict = Helper().get_demographic_info(verbose=False, mode=mode)
-
-            self.cluster_recommendations = {}
-            self.region_recommendations = {}
-            self.age_recommendations = {}
         # Init single recommenders
         self.user_cf = UserCollaborativeFilter(URM_train)
         self.item_cf = ItemCollaborativeFilter(URM_train)
@@ -68,56 +61,8 @@ class HybridElasticNetICFUCF(object):
         return scores
 
     def recommend(self, user_id, at=10, exclude_seen=True, enable_toppop=True):
-        if user_id in self.user_data_dict and self.use_demographic:
-            obj = self.user_data_dict[user_id]
-            if obj.cluster is not None and obj.age is None and obj.region is None:
-                cluster = obj.cluster
-                if cluster in self.cluster_recommendations:
-                    scores = self.cluster_recommendations[cluster]
-                else:
-                    user_list = self.cluster_dict[cluster]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.SLIM._compute_item_score(user).squeeze()
-                        # scores += self.user_cf.compute_scores(user)
-                        # scores += self.item_cf.compute_scores(user)
-                    self.cluster_recommendations[cluster] = scores
 
-            elif obj.cluster is None and obj.age is not None and obj.region is None:
-                age = obj.age
-                if age in self.age_recommendations:
-                    scores = self.age_recommendations[age]
-                else:
-                    user_list = self.age_dict[age]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.SLIM._compute_item_score(user).squeeze()
-                        # scores += self.user_cf.compute_scores(user)
-                        # scores += self.item_cf.compute_scores(user)
-                    self.age_recommendations[age] = scores
-
-            elif obj.cluster is None and obj.age is None and obj.region is not None:
-                region = obj.region
-                if region in self.region_recommendations:
-                    scores = self.region_recommendations[region]
-                else:
-                    user_list = self.region_dict[region]
-                    scores = np.zeros(shape=self.URM_train.shape[1])
-                    for user in user_list:
-                        scores += self.SLIM._compute_item_score(user).squeeze()
-                        # scores += self.user_cf.compute_scores(user)
-                        # scores += self.item_cf.compute_scores(user)
-                    self.region_recommendations[region] = scores
-            else:
-                print("Something went wrong")
-                exit()
-
-            if exclude_seen:
-                self.filter_seen(user_id, scores)
-            recommended_items = np.argsort(scores)
-            recommended_items = np.flip(recommended_items, axis=0)
-
-        elif user_id in self.cold_users and enable_toppop:
+        if user_id in self.cold_users and enable_toppop:
             # If the user has no interactions a TopPopular recommendation is still better than random
             recommended_items = self.top_pop.recommend(user_id)
         else:
