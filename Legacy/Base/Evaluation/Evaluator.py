@@ -296,7 +296,7 @@ class EvaluatorHoldout(Evaluator):
             # Compute predictions for a batch of users using vectorization, much more efficient than computing it one at a time
             recommended_items_batch_list, scores_batch = recommender_object.recommend(test_user_batch_array,
                                                                                       exclude_seen=self.exclude_seen,
-                                                                                      cutoff = self.max_cutoff,
+                                                                                      at= self.max_cutoff,
                                                                                       remove_top_pop_flag=False,
                                                                                       remove_custom_items_flag=self.ignore_items_flag,
                                                                                       return_scores = True
@@ -519,7 +519,7 @@ class EvaluatorNegativeItemSample(Evaluator):
 
             recommended_items, all_items_predicted_ratings = recommender_object.recommend(np.atleast_1d(test_user),
                                                                                           exclude_seen=self.exclude_seen,
-                                                                                          cutoff = self.max_cutoff,
+                                                                                          at= self.max_cutoff,
                                                                                           remove_top_pop_flag=False,
                                                                                           items_to_compute = items_to_compute,
                                                                                           remove_custom_items_flag=self.ignore_items_flag,

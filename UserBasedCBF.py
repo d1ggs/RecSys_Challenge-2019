@@ -68,7 +68,7 @@ class UserBasedCBF(object):
 
         return self.SM[user_id].dot(self.URM_train).toarray().ravel()
 
-    def recommend(self, user_id, cutoff=10, exclude_seen=True, remove_top_pop_flag=False,
+    def recommend(self, user_id, at=10, exclude_seen=True, remove_top_pop_flag=False,
                   remove_custom_items_flag=False, return_scores = False):
         # Compute scores of the recommendation
         scores = self.compute_scores(user_id)
@@ -78,7 +78,7 @@ class UserBasedCBF(object):
             scores = self.filter_seen(user_id, scores)
         recommended_items = np.argsort(scores)
         recommended_items = np.flip(recommended_items, axis=0)
-        return recommended_items[:cutoff]
+        return recommended_items[:at]
 
     def filter_seen(self, user_id, scores):
         start_pos = self.URM_train.indptr[user_id]
