@@ -9,7 +9,7 @@ ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class RunRecommender(object):
 
     @staticmethod
-    def run(recommender_class, fit_parameters):
+    def run(recommender_class, fit_parameters, at=10, submission_path="data/recommendation_matrix_to_submit.csv"):
 
         # Helper contains methods to convert URM in CSR
 
@@ -18,11 +18,11 @@ class RunRecommender(object):
         recommender = recommender_class(URM_all, mode="dataset")
         recommender.fit(**fit_parameters)
 
-        RunRecommender.write_submission(recommender)
+        RunRecommender.write_submission(recommender, submission_path=submission_path, at=at)
 
     @staticmethod
-    def write_submission(recommender):
-        submission_target = os.path.join(ROOT_PROJECT_PATH, "data/recommendation_matrix_to_submit.csv")
+    def write_submission(recommender, submission_path: str, at: int):
+        submission_target = os.path.join(ROOT_PROJECT_PATH, submission_path)
         print("Writing submission in", submission_target)
 
         # Open up target_users file
@@ -33,7 +33,7 @@ class RunRecommender(object):
         recommendation_matrix_file_to_submit = open(submission_target, 'w')
         recommendation_matrix_file_to_submit.write("user_id,item_list\n")
         for user in tqdm(target_users):
-            items_recommended = recommender.recommend(int(user), exclude_seen=True)[:10]
+            items_recommended = recommender.recommend(int(user), exclude_seen=True, at=at)
 
             items_recommended = " ".join(str(x) for x in items_recommended)
             user = user.replace("\n", "")  # remove \n from user file
@@ -52,18 +52,33 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False):
-
-        evaluator = Evaluator(test_mode=True)
-        URM_train = Helper().URM_train_test
-
-        recommender = recommender_class(URM_train, mode="test")
-        recommender.fit(**fit_parameters)
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False, user_group="all"):
 
         if Kfold > 0:
-            MAP_final, _ = evaluator.evaluate_recommender_kfold(recommender, k=Kfold, sequential=sequential)
+            MAP_final = 0
+            for i in range(Kfold):
+                _, URM_test, _, test_data = Helper().get_kfold_data(Kfold)[i]
+
+                evaluator = Evaluator(test_mode=True)
+
+                recommender = recommender_class(URM_test, mode="test")
+                recommender.fit(**fit_parameters)
+
+                MAP, _ = evaluator.evaluate_recommender_kfold(recommender, test_data, sequential=sequential)
+
+                MAP_final += MAP
+
+            MAP_final /= Kfold
         else:
-            MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
+            evaluator = Evaluator(test_mode=True)
+            URM_train = Helper().URM_train_test
+
+            recommender = recommender_class(URM_train, mode="test")
+            recommender.fit(**fit_parameters)
+            if user_group == "cold":
+                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential)
+            else:
+                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
 
         print("MAP-10 score:", MAP_final)
 
