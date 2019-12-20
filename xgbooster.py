@@ -13,10 +13,10 @@ from utils.run import RunRecommender
 
 class XGBooster(object):
 
-    def __init__(self, URM_train, recommender_class=UserCollaborativeFilter, mode="dataset"):
+    def __init__(self, URM_train, validation_data, recommender_class=UserCollaborativeFilter, mode="dataset"):
 
         self.URM_train = URM_train
-        self.validation = Helper().validation_data
+        self.validation = validation_data
         if mode == "dataset":
             self.validation = Helper().test_data
         elif mode == "test":
@@ -33,6 +33,8 @@ class XGBooster(object):
         self.recommender.fit()
         self.already_fitted = False
 
+        self.URM_test = None
+
     def train_XGB(self, X_train, y_train, X_test, y_test, params=None, pos_weight=19.0):
 
         # X_train, X_test, y_train, y_test = train_test_split(X, y)
@@ -41,31 +43,20 @@ class XGBooster(object):
 
         deval = xgb.DMatrix(X_test, label=y_test)
 
-        if params is None:
-            params = {
-                'max_depth': 5,  # the maximum depth of each tree
-                'eta': 0.3,  # step for each iteration
-                'silent': 1,  # keep it quiet
-                'objective': 'binary:logistic',  # 0/1 output for each sample
-                # 'num_class': 2,  # the number of classes
-                'eval_metric': 'map',
-                'scale_pos_weight': pos_weight}  # evaluation metric
-            num_round = 500  # the number of training iterations (number of trees)
-
-        else:
-            params['pos_weight'] = pos_weight
-            params['objective'] = 'binary:logistic'
-            params['eval_metric'] = 'map'
-            params['silent'] = 1
-            num_round = params['num_round']
-            del params['num_round']
+        params['pos_weight'] = pos_weight
+        params['objective'] = 'binary:logistic'
+        params['eval_metric'] = 'map'
+        params['silent'] = 1
+        num_round = params['num_round']
+        del params['num_round']
 
         early_stopping_rounds = 50
         xgb_model = xgb.train(params,
                               dtrain,
                               num_round,
                               verbose_eval=2,
-                              evals=[(dtrain, 'train'), (deval, 'eval')], early_stopping_rounds=early_stopping_rounds)
+                              evals=[(dtrain, 'train'), (deval, 'eval')],
+                              early_stopping_rounds=early_stopping_rounds)
 
         return xgb_model
 
@@ -123,12 +114,12 @@ class XGBooster(object):
         pos_weight = (len(user_recommendations_items) - count) / count
         return train_dataframe, pos_weight, labels
 
-    def fit(self, load_XGB=False, target_data=None, train_parameters=None):
+    def fit(self, load_XGB=False, train_parameters=None):
 
         if not load_XGB:
             if not self.already_fitted:
                 self.train_dataframe, self.pos_weight_train, self.labels_train = self.generate_dataframe(self.URM_train, self.validation)
-                self.already_fitted = True
+                #self.already_fitted = True
                 self.test_dataframe, _, self.labels_test = self.generate_dataframe(Helper().URM_train_test, Helper().test_data)
 
             self.XGB_model = self.train_XGB(self.train_dataframe,
@@ -163,7 +154,7 @@ class XGBooster(object):
 
         # Put the user profile length as feature
 
-        user_profile_len = np.ediff1d(self.URM_train.indptr)
+        user_profile_len = np.ediff1d(self.URM_test.indptr)
         user_profile_len_list = []
 
         for user_id, item_id in zip(user_recommendations_user_id, user_recommendations_items):
@@ -183,13 +174,13 @@ if __name__ == '__main__':
     params={'alpha': 0.9, 'eta': 0.2975, 'lambda': 0.15000000000000002, 'max_depth': 5, 'num_round': 32}
 
     booster = XGBooster(Helper().URM_train_test)
-    booster.fit(load_XGB=False, target_data=Helper().test_data, train_parameters=params)
+    #booster.fit(load_XGB=False, target_data=Helper().test_data, train_parameters=params)
 
 
     # booster = XGBooster(Helper().URM_train_validation)
     # booster.fit(load_XGB=False, target_data=Helper().validation_data)
     # MAP_final, _ = Evaluator(test_mode=True).evaluateRecommender_old(booster, None)
-
+    booster.URM_train = Helper().URM_csr
     booster.toppop = TopPopRecommender(Helper().URM_csr)
     booster.user_cf = UserCollaborativeFilter(Helper().URM_csr)
     booster.toppop.fit()

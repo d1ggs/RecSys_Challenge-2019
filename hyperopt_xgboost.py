@@ -6,17 +6,28 @@ from xgbooster import XGBooster
 from utils.helper import Helper
 from Hybrid_ElasticNet_ICF_UCF import HybridElasticNetICFUCF
 from UserCollaborativeFilter import UserCollaborativeFilter
-
-booster = XGBooster(Helper().URM_train_validation, recommender_class=UserCollaborativeFilter)
-
+from copy import deepcopy
 
 ### Step 1 : defining the objective function
 def objective(params):
     print(params)
-    booster.fit(target_data=Helper().validation_data, train_parameters=params)
-    loss, _ = Evaluator(test_mode=True).evaluateRecommender_old(booster, None)
-    print("Map@10 score:", loss)
-    return -loss
+    total_loss = 0
+    for k in range(4):
+
+        URM_train, URM_test, validation_data, test_data = Helper().get_kfold_data(4)[k]
+
+        booster = XGBooster(URM_train, validation_data, HybridElasticNetICFUCF)
+
+        booster.URM_test = URM_test
+
+        booster.fit(train_parameters=deepcopy(params))
+        loss, _ = Evaluator(test_mode=True).evaluate_recommender_kfold(booster, test_data, sequential=True)
+        total_loss += loss
+
+    total_loss /= 4
+
+    print("Map@10 k-fold score:", total_loss)
+    return -total_loss
 
 
 xgboost_space = {
