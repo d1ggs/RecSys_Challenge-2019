@@ -1,3 +1,5 @@
+import multiprocessing
+
 from tqdm import tqdm
 from utils.helper import Helper
 import os
@@ -5,6 +7,33 @@ from evaluation.Evaluator import Evaluator
 
 # Put root project dir in a constant
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def prepare_cold_users(URM_train, evaluation_data):
+    cold_users, _ = Helper().compute_cold_warm_user_ids(URM_train)
+    cold_users = list(cold_users)
+
+    ok_users = []
+    for user in cold_users:
+        if user in evaluation_data.keys():
+            ok_users.append(user)
+
+    cold_users = set(ok_users)
+
+    return cold_users
+
+
+def fit_recommender(params):
+    recommender_class = params[0]
+    URM = params[1]
+    id = params[2]
+    fit_parameters = params[3]
+    mode = params[4]
+    recommender = recommender_class(URM, mode=mode)
+    recommender.fit(**fit_parameters)
+
+    return recommender, id
+
 
 class RunRecommender(object):
 
@@ -52,25 +81,68 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False, user_group="all"):
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False,
+                             user_group="all"):
+        evaluator = Evaluator(test_mode=True)
 
         if Kfold > 0:
             MAP_final = 0
-            for i in range(Kfold):
-                _, URM_test, _, test_data = Helper().get_kfold_data(Kfold)[i]
 
-                evaluator = Evaluator(test_mode=True)
+            num_cores = multiprocessing.cpu_count()
 
-                recommender = recommender_class(URM_test, mode="test")
-                recommender.fit(**fit_parameters)
+            if not sequential and Kfold <= num_cores:
 
-                MAP, _ = evaluator.evaluate_recommender_kfold(recommender, test_data, sequential=sequential)
+                kfold_data = Helper().get_kfold_data(Kfold)
+                URMs = [data[1] for data in kfold_data]
+                test_data_list = [data[3] for data in kfold_data]
+                users_to_evaluate_list = []
+                for data in kfold_data:
+                    if user_group == "cold":
+                        users_to_evaluate_list.append(prepare_cold_users(data[1], data[3]))
+                    elif user_group == "warm":
+                        raise NotImplementedError
+                    else:
+                        users_to_evaluate_list.append(data[3].keys())
 
-                MAP_final += MAP
+                print("Parallelize fitting recommenders...")
 
-            MAP_final /= Kfold
+                with multiprocessing.Pool(processes=num_cores) as p:
+                    fitted_recommenders = p.map(fit_recommender,
+                                                [(recommender_class, URM, recommender_id, fit_parameters, "test") for URM, recommender_id in
+                                                 zip(URMs, range(len(URMs)))])
+                p.close()
+
+                print("Done!")
+
+                for recommender, recommender_id in fitted_recommenders:
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
+                                                                  test_data_list[recommender_id],
+                                                                  sequential=sequential)
+                    MAP_final += MAP
+
+                    MAP_final /= Kfold
+
+            else:
+                for i in range(Kfold):
+                    _, URM_test, _, test_data = Helper().get_kfold_data(Kfold)[i]
+
+                    if user_group == "cold":
+                        users_to_evaluate = prepare_cold_users(URM_test, test_data)
+                    elif user_group == "warm":
+                        raise NotImplementedError
+                    else:
+                        users_to_evaluate = test_data.keys()
+
+                    recommender = recommender_class(URM_test, mode="test")
+                    recommender.fit(**fit_parameters)
+
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, test_data,
+                                                                  sequential=sequential)
+
+                    MAP_final += MAP
+
+                MAP_final /= Kfold
         else:
-            evaluator = Evaluator(test_mode=True)
             URM_train = Helper().URM_train_test
 
             recommender = recommender_class(URM_train, mode="test")
@@ -85,19 +157,76 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_validation_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False):
+    def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
+                                   sequential=False):
 
-        evaluator = Evaluator()
-
-        URM_train = Helper().URM_train_validation
-
-        recommender = recommender_class(URM_train, mode="validation")
-        recommender.fit(**fit_parameters)
+        evaluator = Evaluator(test_mode=False)
 
         if Kfold > 0:
-            MAP_final, _ = evaluator.evaluate_recommender_kfold(recommender, k=Kfold, sequential=sequential)
+            MAP_final = 0
+
+            num_cores = multiprocessing.cpu_count()
+            if not sequential and Kfold <= num_cores:
+
+                kfold_data = Helper().get_kfold_data(Kfold)
+                URMs = [data[0] for data in kfold_data]
+                validation_data_list = [data[2] for data in kfold_data]
+                users_to_evaluate_list = []
+                for data in kfold_data:
+                    if user_group == "cold":
+                        users_to_evaluate_list.append(prepare_cold_users(data[0], data[2]))
+                    elif user_group == "warm":
+                        raise NotImplementedError
+                    else:
+                        users_to_evaluate_list.append(data[3].keys())
+
+                print("Parallelize fitting recommenders...")
+
+                with multiprocessing.Pool(processes=num_cores) as p:
+                    fitted_recommenders = p.map(fit_recommender,
+                                                [(recommender_class, URM, recommender_id, fit_parameters, "validation") for
+                                                 URM, recommender_id in
+                                                 zip(URMs, range(len(URMs)))])
+                p.close()
+
+                print("Done!")
+
+                for recommender, recommender_id in fitted_recommenders:
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
+                                                                  validation_data_list[recommender_id],
+                                                                  sequential=sequential)
+                    MAP_final += MAP
+
+                    MAP_final /= Kfold
+            else:
+                for i in range(Kfold):
+                    URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
+
+                    if user_group == "cold":
+                        users_to_evaluate = prepare_cold_users(URM_validation, validation_data)
+                    elif user_group == "warm":
+                        raise NotImplementedError
+                    else:
+                        users_to_evaluate = validation_data.keys()
+
+                    recommender = recommender_class(URM_validation, mode="test")
+                    recommender.fit(**fit_parameters)
+
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data,
+                                                                  sequential=sequential)
+
+                    MAP_final += MAP
+
+                MAP_final /= Kfold
         else:
-            MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
+            URM_train = Helper().URM_train_validation
+
+            recommender = recommender_class(URM_train, mode="test")
+            recommender.fit(**fit_parameters)
+            if user_group == "cold":
+                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential)
+            else:
+                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
 
         print("MAP-10 score:", MAP_final)
 
@@ -111,7 +240,7 @@ class RunRecommender(object):
         print("Performing evaluation on test set...")
 
         MAP_final = 0.0
-        evaluator, helper = Evaluator(),  Helper()
+        evaluator, helper = Evaluator(), Helper()
         URM_train, eval_data = helper.URM_train_validation, helper.validation_data
 
         recommender.fit(URM_train)
