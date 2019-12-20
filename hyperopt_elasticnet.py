@@ -6,20 +6,17 @@ import numpy as np
 from utils.helper import Helper
 
 helper = Helper()
-import gc
-
 
 ### Step 1 : defining the objective function
 def objective(params):
     print("Current parameters:")
     print(params)
-    loss = - RunRecommender.evaluate_on_test_set(MultiThreadSLIM_ElasticNet, params)
+    loss = - RunRecommender.evaluate_on_validation_set(MultiThreadSLIM_ElasticNet, params, Kfold=4, sequential=False)
     return loss
 
 elasticnet_space = {
     "alpha": hp.hp.uniform('alpha', 0.001, 0.01),
-    "l1_ratio": hp.hp.uniform('l1_ratio', 1e-5, 1e-3
-                              ),
+    "l1_ratio": hp.hp.uniform('l1_ratio', 1e-5, 1e-3),
     "positive_only": hp.hp.choice('positive_only', [True, False]),
     "topK": hp.hp.choice('topK', np.arange(0, 100, 5)),
     #"fit_intercept": hp.hp.choice('fit_intercept', [True, False]),
