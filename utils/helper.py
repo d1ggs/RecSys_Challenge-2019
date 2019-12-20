@@ -60,6 +60,8 @@ class Helper(object, metaclass=Singleton):
         self.users_list_data = np.asarray(list(self.URM_data.row))
         self.items_list_data = np.asarray(list(self.URM_data.col))
 
+        self.kfold_times = 1
+        self.kfold_split = None
         self.URM_train_validation, self.URM_train_test, self.validation_data, self.test_data = self.get_train_validation_test_data(
             resplit=resplit)
 
@@ -67,8 +69,84 @@ class Helper(object, metaclass=Singleton):
         self.cold_users_validation, self.warm_users_validation = compute_cold_warm_user_ids(self.URM_train_validation)
         self.cold_users_test, self.warm_users_test = compute_cold_warm_user_ids(self.URM_train_test)
 
+    @staticmethod
+    def load_predictions(file_path):
+        return pd.read_csv(ROOT_PROJECT_PATH + file_path)
+
+    @staticmethod
+    def load_user_df(file_path="/data/dataframes/user.csv"):
+        return pd.read_csv(ROOT_PROJECT_PATH + file_path)
+
+    @staticmethod
+    def load_item_df(file_path="/data/dataframes/item.csv"):
+        return pd.read_csv(ROOT_PROJECT_PATH + file_path)
+
+    @staticmethod
+    def build_user_dataframe(file_path="/data/dataframes/user.csv"):
+        user_region = pd.read_csv(ROOT_PROJECT_PATH + "data/data_UCM_region.csv")
+        user_age = pd.read_csv(ROOT_PROJECT_PATH + "data/data_UCM_age.csv")
+
+        user_region.drop(columns=["data"])
+        user_region.rename(columns={"col": "region", "row": "user_id"}, inplace=True)
+        user_age.drop(columns=["data"])
+        user_age.rename(columns={"col": "age", "row": "user_id"}, inplace=True)
+
+        user_df = pd.merge(user_age, user_region, on="user_id", how='outer')
+        user_df.to_csv(path_or_buf=ROOT_PROJECT_PATH + file_path)
+
+    @staticmethod
+    def build_item_dataframe(file_path="/data/dataframes/item.csv"):
+        item_price = pd.read_csv(ROOT_PROJECT_PATH + "data/data_ICM_price.csv")
+        item_asset = pd.read_csv(ROOT_PROJECT_PATH + "data/data_ICM_asset.csv")
+        item_sub_class = pd.read_csv(ROOT_PROJECT_PATH + "data/data_ICM_sub_class.csv")
+
+        data = np.array(list(item_price.col))
+
+        le = LabelEncoder()
+        le.fit(data)
+        data = le.transform(data)
+
+        data_list = []
+        for el in data:
+            data_list.append(el)
+
+        item_price.drop(columns=["data"])
+        item_price.insert(1, "price", data_list, True)
+
+        data = np.array(list(item_asset.col))
+
+        le = LabelEncoder()
+        le.fit(data)
+        data = le.transform(data)
+
+        data_list = []
+        for el in data:
+            data_list.append(el)
+
+        item_asset.drop(columns=["data"])
+        item_asset.insert(1, "asset", data_list, True)
+
+        item_sub_class.drop(columns=["data"])
+        item_sub_class.rename(columns={"col": "sub_class", "row": "item_id"}, inplace=True)
+        item_asset.drop(columns=["col"])
+        item_asset.rename(columns={"row": "item_id"}, inplace=True)
+        item_price.drop(columns=["col"])
+        item_asset.rename(columns={"row": "item_id"}, inplace=True)
+
+        user_df = pd.merge(item_price, item_asset, item_sub_class, on="item_id", how='outer')
+        user_df.to_csv(path_or_buf=ROOT_PROJECT_PATH + file_path)
+
+
     def get_number_of_users(self):
         return self.URM_csr.shape[0]
+
+    def get_kfold_data(self, k):
+        if not (k == self.kfold_times and self.kfold_split):
+            self.kfold_times = k
+            self.kfold_split = []
+            for _ in range(k):
+                self.kfold_split.append(self.get_train_validation_test_data(resplit=True, save_pickle=False))
+        return self.kfold_split
 
     def get_cold_user_ids(self, split: str):
         if split == "dataset":
@@ -124,7 +202,6 @@ class Helper(object, metaclass=Singleton):
             # Serialize the objects with Pickle, for faster loading
 
             if save_pickle:
-
                 print("Saving Pickle files into /data/pickled")
 
                 test_data_out = open(TEST_DATA_PATH, "wb")
@@ -164,7 +241,7 @@ class Helper(object, metaclass=Singleton):
         icm_asset = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_asset.csv"))
         row = np.asarray(list(icm_asset.row))
         col = np.asarray(list(icm_asset.data))
-        #col = np.asarray(list(icm_asset.col))
+        # col = np.asarray(list(icm_asset.col))
         data = np.ones_like(col)
 
         le.fit(col)
@@ -191,7 +268,7 @@ class Helper(object, metaclass=Singleton):
         icm_price = pd.read_csv(os.path.join(ROOT_PROJECT_PATH, "data/data_ICM_price.csv"))
         row = np.asarray(list(icm_price.row))
         col = np.asarray(list(icm_price.data))
-        #col = np.asarray(list(icm_price.col))
+        # col = np.asarray(list(icm_price.col))
         data = np.ones_like(col)
 
         le.fit(col)
@@ -482,7 +559,7 @@ class Helper(object, metaclass=Singleton):
         # Put info in the dictionaries, to retrieve it quickly
 
         user_data_dict = {}
-        cluster_dict = {} # Contains cluster of each user
+        cluster_dict = {}  # Contains cluster of each user
         region_dict = {}
         age_dict = {}
 
