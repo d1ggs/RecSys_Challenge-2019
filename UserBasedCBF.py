@@ -1,22 +1,31 @@
+from tqdm import tqdm
+
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
 from utils.run import RunRecommender
+from scipy.sparse import hstack, lil_matrix, csc_matrix
+
+def csc_col_set_nz_to_val(csc, column, value=0):
+    """Set all nonzero elements (elements currently in the sparsity pattern)
+    to the given value. Useful to set to 0 mostly.
+    """
+    if not isinstance(csc, csc_matrix):
+        raise ValueError('Matrix given must be of CSR format.')
+    csc.data[csc.indptr[column]:csc.indptr[column+1]] = value
 
 
 class UserBasedCBF(object):
     RECOMMENDER_NAME = "UserBasedCBF"
 
-    def __init__(self, URM_train) :
+    def __init__(self, URM_train, mode="dataset") :
         self.URM_train = URM_train
         self.W_sparse = None
         self.helper = Helper()
+        self.mode = mode
         # UCMs loading
-        self.UCM_age = self.helper.load_ucm_age()
-        self.UCM_region = self.helper.load_ucm_region()
-        self.UCM_region = self.helper.sklearn_normalization(self.UCM_region, axis=0)
-        self.SM_age = None
-        self.SM_region = None
+        self.UCM = hstack([self.helper.load_ucm_age(), self.helper.load_ucm_region()])
+        self.SM = None
 
     def get_URM_train(self):
         return self.URM_train
@@ -26,33 +35,38 @@ class UserBasedCBF(object):
                                                       normalize=True, similarity="cosine")
         return similarity_object.compute_similarity()
 
-    def fit(self, topK_age=300, topK_region=300, shrink_age=1, shrink_region=1, age_weight=0.3, normalize=True, similarity="cosine"):
-        self.topK_age = topK_age
-        self.topK_region = topK_region
-        self.shrink_age = shrink_age
-        self.shrink_region = shrink_region
-        self.normalize = normalize
+    def fit(self, topK=300, shrink=1, normalize=True, similarity="cosine", suppress_interactions=True):
+        self.topK = topK
+        self.shrink = shrink
         self.similarity = similarity
-        self.age_weight = age_weight
 
-        # UCMs loading
-        self.UCM_age = self.helper.load_ucm_age()
-        self.UCM_region = self.helper.load_ucm_region()
-        #self.UCM_region = self.helper.sklearn_normalization(self.UCM_region, axis=0)
+        if normalize:
+            self.UCM = self.helper.bm25_normalization(self.UCM)
 
         # Compute similarities
-        self.SM_age = self.compute_similarity(self.UCM_age, self.topK_age, self.shrink_age)
-        self.SM_region = self.compute_similarity(self.UCM_region, self.topK_region, self.shrink_region)
+        self.SM = self.compute_similarity(self.UCM, self.topK, self.shrink)
 
+        if suppress_interactions:
+            print("Suppressing similarity with cold users...")
+            cold_users = Helper().get_cold_user_ids(split=self.mode)
+            # warm_users = Helper().get_warm_user_ids(split=self.mode)
+            self.SM = self.SM.tocsc()
+
+            # Now you can just do:
+            for cold in cold_users:
+                csc_col_set_nz_to_val(self.SM, cold, 0)
+
+            # And to remove zeros from the sparsity pattern:
+            self.SM.eliminate_zeros()
+
+            self.SM.tocsr()
+
+            print("Done!")
 
     def compute_scores(self, user_id):
 
-        scores_age = self.SM_age[user_id].dot(self.URM_train).toarray().ravel()
-        scores_region = self.SM_region[user_id].dot(self.URM_train).toarray().ravel()
-        region_weight = 1 - self.age_weight
 
-        scores = (scores_age * self.age_weight) + (scores_region * region_weight)
-        return scores
+        return self.SM[user_id].dot(self.URM_train).toarray().ravel()
 
     def recommend(self, user_id, cutoff=10, exclude_seen=True, remove_top_pop_flag=False,
                   remove_custom_items_flag=False, return_scores = False):
@@ -82,5 +96,5 @@ if __name__ == "__main__":
     # evaluator.split_data_randomly_2()
     ubcbf = UserBasedCBF
     #ubcbf.helper.split_ucm_region()
-    RunRecommender.evaluate_on_test_set(ubcbf, {})
+    RunRecommender.evaluate_on_test_set(ubcbf, {}, user_group="cold")
     # print('{0:.128f}'.format(map10))
