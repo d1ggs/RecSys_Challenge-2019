@@ -5,7 +5,7 @@ from utils.helper import Helper
 
 class TopPopRecommender:
 
-    def __init__(self, URM_CSR):
+    def __init__(self, URM_CSR, mode=""):
         self.URM_CSR = URM_CSR
         self.item_popularity = None
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     top_popular = TopPopRecommender
 
-    map10 = RunRecommender.evaluate_on_test_set(top_popular, {})
+    map10 = RunRecommender.run(top_popular, {})
 
     #print('{0:.128f}'.format(map10))
     print(map10)

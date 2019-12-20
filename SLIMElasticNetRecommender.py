@@ -144,7 +144,7 @@ from functools import partial
 
 class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMatrixRecommender):
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode=None):
         super(MultiThreadSLIM_ElasticNet, self).__init__(URM_train)
 
     @ignore_warnings(category=ConvergenceWarning)
