@@ -14,7 +14,7 @@ item_cf_parameters = {"topK": 29,
 # SLIM_parameters = {'alpha': 0.003890771067122292, 'l1_ratio': 2.2767573538452768e-05, 'positive_only': True, 'topK': 100}
 SLIM_parameters = {'alpha': 0.0023512567548654,
                    'l1_ratio': 0.0004093694334328875,
-                   'positive_only': True, 'topK': 25,
+                   'positive_only': True, 'topK': 125,
                    'random_state': 1234
                    }
 

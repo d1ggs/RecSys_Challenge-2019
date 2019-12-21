@@ -20,7 +20,7 @@ class ItemCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=1,shrink=19):
+    def fit(self, topK=1,shrink=95):
 
         self.topK = topK
         self.shrink = shrink

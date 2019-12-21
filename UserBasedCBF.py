@@ -35,7 +35,7 @@ class UserBasedCBF(object):
                                                       normalize=True, similarity="cosine")
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=300, shrink=1, normalize=True, similarity="cosine", suppress_interactions=True):
+    def fit(self, topK=93*5, shrink=1, normalize=True, similarity="dice", suppress_interactions=True):
         self.topK = topK
         self.shrink = shrink
         self.similarity = similarity
@@ -64,8 +64,7 @@ class UserBasedCBF(object):
     def compute_scores(self, user_id):
         return self.SM[user_id].dot(self.URM_train).toarray().ravel()
 
-    def recommend(self, user_id, at=10, exclude_seen=True, remove_top_pop_flag=False,
-                  remove_custom_items_flag=False, return_scores = False):
+    def recommend(self, user_id, at=10, exclude_seen=True):
         # Compute scores of the recommendation
         scores = self.compute_scores(user_id)
 
@@ -91,6 +90,7 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
     ubcbf = UserBasedCBF
+    params = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93*5}
     #ubcbf.helper.split_ucm_region()
-    RunRecommender.evaluate_on_test_set(ubcbf, {}, user_group="cold")
+    RunRecommender.evaluate_on_test_set(ubcbf, params, user_group="cold", parallel_fit=True, sequential=False, Kfold=4)
     # print('{0:.128f}'.format(map10))

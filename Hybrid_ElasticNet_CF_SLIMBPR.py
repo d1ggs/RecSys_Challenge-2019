@@ -2,7 +2,6 @@ from UserCollaborativeFilter import UserCollaborativeFilter
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 from TopPopularRecommender import TopPopRecommender
-from S
 
 import numpy as np
 from utils.run import RunRecommender
