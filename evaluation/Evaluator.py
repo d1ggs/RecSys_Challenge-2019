@@ -15,19 +15,10 @@ ROW_INDEX, COL_ID_INDEX = 0, 1
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NUMBER_OF_ITEMS_TEST_FILE = 10
 
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-class Evaluator(object, metaclass=Singleton):
+class Evaluator(object):
     def __init__(self, test_mode=False):
         self.helper = Helper()
         self.test_mode = test_mode
-        self.helper.get_train_validation_test_data()
         self.evaluation_data = self.helper.test_data if self.test_mode else self.helper.validation_data
 
     def change_mode(self, mode):
@@ -64,7 +55,6 @@ class Evaluator(object, metaclass=Singleton):
 
     def evaluate_recommender_kfold(self, recommender, users_to_evaluate, evaluation_data, sequential=True):
         num_cores = multiprocessing.cpu_count()
-
 
         MAP_final = 0.0
 

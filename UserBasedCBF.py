@@ -46,13 +46,13 @@ class UserBasedCBF(object):
         # Compute similarities
         self.SM = self.compute_similarity(self.UCM, self.topK, self.shrink)
 
+        # If necessary remove similarity with cold users
         if suppress_interactions:
-            print("Suppressing similarity with cold users...")
             cold_users = Helper().get_cold_user_ids(split=self.mode)
             # warm_users = Helper().get_warm_user_ids(split=self.mode)
             self.SM = self.SM.tocsc()
 
-            # Now you can just do:
+            # Set to zero all similarities with cold users
             for cold in cold_users:
                 csc_col_set_nz_to_val(self.SM, cold, 0)
 
@@ -61,11 +61,7 @@ class UserBasedCBF(object):
 
             self.SM.tocsr()
 
-            print("Done!")
-
     def compute_scores(self, user_id):
-
-
         return self.SM[user_id].dot(self.URM_train).toarray().ravel()
 
     def recommend(self, user_id, at=10, exclude_seen=True, remove_top_pop_flag=False,
