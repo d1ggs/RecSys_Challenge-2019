@@ -81,7 +81,7 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False,
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential=False, parallel_fit=False,
                              user_group="all"):
         evaluator = Evaluator(test_mode=True)
 
@@ -90,7 +90,7 @@ class RunRecommender(object):
 
             num_cores = multiprocessing.cpu_count()
 
-            if not sequential and Kfold <= num_cores:
+            if parallel_fit and Kfold <= num_cores:
 
                 kfold_data = Helper().get_kfold_data(Kfold)
                 URMs = [data[1] for data in kfold_data]
@@ -158,7 +158,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
-                                   sequential=False):
+                                   parallel_fit=False, sequential=False):
 
         evaluator = Evaluator(test_mode=False)
 
@@ -166,7 +166,7 @@ class RunRecommender(object):
             MAP_final = 0
 
             num_cores = multiprocessing.cpu_count()
-            if not sequential and Kfold <= num_cores:
+            if parallel_fit and Kfold <= num_cores:
 
                 kfold_data = Helper().get_kfold_data(Kfold)
                 URMs = [data[0] for data in kfold_data]
