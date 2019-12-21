@@ -9,6 +9,7 @@ Created on 16/09/2017
 from Legacy.Base.BaseRecommender import BaseRecommender
 from Legacy.Base.DataIO import DataIO
 import numpy as np
+from Legacy.Base.Recommender_utils import check_matrix
 
 
 
@@ -29,6 +30,8 @@ class BaseSimilarityMatrixRecommender(BaseRecommender):
     def _check_format(self):
 
         if not self._URM_train_format_checked:
+
+            self.URM_train = check_matrix(self.URM_train, 'csr', dtype=np.float32)
 
             if self.URM_train.getformat() != "csr":
                 self._print("PERFORMANCE ALERT compute_item_score: {} is not {}, this will significantly slow down the computation.".format("URM_train", "csr"))
@@ -88,6 +91,8 @@ class BaseItemSimilarityMatrixRecommender(BaseSimilarityMatrixRecommender):
             item_scores[:, items_to_compute] = item_scores_all[:, items_to_compute]
         else:
             item_scores = user_profile_array.dot(self.W_sparse).toarray()
+
+        #print("item scores shape", item_scores.shape)
 
         return item_scores
 

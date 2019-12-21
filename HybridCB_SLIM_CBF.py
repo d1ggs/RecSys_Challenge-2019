@@ -1,11 +1,10 @@
 from ItemBasedCBF import ItemBasedCBF
-from HybridUCB_ICB import HybridUCBICBRecommender
 from UserCollaborativeFilter import UserCollaborativeFilter
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from TopPopularRecommender import TopPopRecommender
 import numpy as np
 
-from utils.helper import Helper
+from utils.helper import Helper, get_cold_user_ids
 from utils.run import RunRecommender
 
 item_cbf_parameters = {"topK_asset": 100,
@@ -38,7 +37,7 @@ class HybridCBCBFSLIMRecommender():
                                 weight_sub_class=item_cbf_parameters["weight_sub_class"])
         self.cb = UserCollaborativeFilter(topK=cb_parameters["topK"], shrink=cb_parameters["shrink"])
         self.toppop = TopPopRecommender()
-        self.cold_users = Helper().get_cold_user_ids()
+        self.cold_users = get_cold_user_ids()
 
     def set_weights(self, weights):
         self.weights = weights
@@ -86,7 +85,6 @@ class HybridCBCBFSLIMRecommender():
 
 
 if __name__ == "__main__":
-    from matplotlib import pyplot as plt
 
     # Train and test data are now loaded by the helper
     map10 = []
@@ -102,7 +100,7 @@ if __name__ == "__main__":
     #            {"cbf": 0.2, "cb": 0.5, "slim": 0.3}]
 
     helper = Helper()
-    URM_train, _ = helper.get_train_test_data()
+    URM_train, _ = helper.get_train_evaluation_data()
     hybrid_cbcbf = HybridCBCBFSLIMRecommender(weights[0])
     # hybrid_cbcbf.fit(URM_train)
 

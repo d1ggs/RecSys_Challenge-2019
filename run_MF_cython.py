@@ -4,7 +4,7 @@ from utils.run import RunRecommender
 import matplotlib.pyplot as plt
 from MatrixFactorization.PyTorch.MF_MSE_PyTorch import MF_MSE_PyTorch
 
-pset = [{"lr": 0.1, "epochs": 20, "nf": 5},
+pset = [{"lr": 0.1, "epochs": 1000, "nf": 5},
         {"lr": 0.1, "epochs": 20, "nf": 10},
         {"lr": 0.1, "epochs": 20, "nf": 50},
         {"lr": 0.1, "epochs": 20, "nf": 100},
@@ -15,7 +15,7 @@ pset = [{"lr": 0.1, "epochs": 20, "nf": 5},
 helper = Helper()
 
 # Train and test data are now loaded by the helper
-URM_train, test_data = helper.get_train_test_data(resplit=False, split_fraction=0, leave_out=1)
+#URM_train, test_data = helper.get_train_evaluation_data(resplit=False, split_fraction=0, leave_out=1)
 num_users = helper.get_number_of_users()
 
 map = []
@@ -25,9 +25,9 @@ for params in pset:
     i += 1
     print("Parameter set", i)
 
-    recommender = MF_MSE_PyTorch(URM_train)
+    recommender = MF_MSE_PyTorch(helper.URM_train_validation)
     recommender.fit(num_factors=params["nf"])
-    map.append(RunRecommender.perform_evaluation_slim(recommender, test_data, num_users))
+    #map.append(RunRecommender.perform_evaluation_slim(recommender, test_data, num_users))
 
 plt.plot(map)
 plt.ylabel('MAP-10 score')

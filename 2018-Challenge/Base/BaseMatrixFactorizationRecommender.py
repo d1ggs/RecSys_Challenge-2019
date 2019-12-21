@@ -7,7 +7,7 @@ Created on 16/09/2017
 """
 
 from Legacy.Base.BaseRecommender import BaseRecommender
-from KNN.ItemKNNCustomSimilarityRecommender import ItemKNNCustomSimilarityRecommender
+from Legacy.KNN.ItemKNNCustomSimilarityRecommender import ItemKNNCustomSimilarityRecommender
 from Legacy.Base.Recommender_utils import check_matrix
 from Legacy.Base.DataIO import DataIO
 import numpy as np

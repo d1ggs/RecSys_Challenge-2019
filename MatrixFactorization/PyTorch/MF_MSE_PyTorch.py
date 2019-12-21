@@ -102,7 +102,7 @@ class MF_MSE_PyTorch(BaseRecommender, Incremental_Training_Early_Stopping):
         #Choose loss
         self.lossFunction = torch.nn.MSELoss(size_average=False)
         #self.lossFunction = torch.nn.BCELoss(size_average=False)
-        self.optimizer = torch.optim.Adagrad(self.pyTorchModel.parameters(), lr=self.learning_rate)
+        self.optimizer = torch.optim.Adam(self.pyTorchModel.parameters(), lr=self.learning_rate)
 
 
         dataset_iterator = DatasetIterator_URM(self.URM_train)

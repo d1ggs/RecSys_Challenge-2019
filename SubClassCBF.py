@@ -12,12 +12,12 @@ from tqdm import tqdm
 from copy import deepcopy
 
 
-class ItemBasedCBF:
+class SubClassCBF:
 
-    def __init__(self, topK_sub_class=200,shrink_sub_class=0):
+    def __init__(self, URM):
 
-        self.topK_sub_class = topK_sub_class
-        self.shrink_sub_class = shrink_sub_class
+        self.URM_train = URM
+
         self.helper = Helper()
 
     def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
@@ -27,15 +27,15 @@ class ItemBasedCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, URM):
+    def fit(self,  topK=200,shrink=0):
 
-        # URM Loading
-        self.URM_train = URM
+        self.topK = topK
+        self.shrink = shrink
 
         # Load ICMs from helper
-        self.ICM_sub_class = self.helper.load_icm_sub_class()
+        self.ICM_sub_class = self.helper.bm25_normalization(self.helper.load_icm_sub_class())
         # Computing SMs
-        self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK_sub_class, shrink=self.shrink_sub_class)
+        self.SM_sub_class = self.compute_similarity_cbf(self.ICM_sub_class, top_k=self.topK, shrink=self.shrink)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]
@@ -64,42 +64,14 @@ class ItemBasedCBF:
 
         return scores
 
-    def find_best_fit(self, parameter_list):
-        print("Looking for best parameter set over ", len(parameter_list))
-        results = []
-        best = 0
-        best_parameters = None
-        best_model = None
-
-        # Collect MAP scores for each parameter set
-
-        for parameter_set in tqdm(parameter_list):
-            self.__init__(topK_asset=parameter_set["topK_asset"], topK_price=parameter_set["topK_price"],
-                          topK_sub_class=parameter_set["topK_sub_class"], shrink_asset=parameter_set["shrink_asset"],
-                          shrink_price=parameter_set["shrink_price"],
-                          shrink_sub_class=parameter_set["shrink_sub_class"],
-                          weight_asset=parameter_set["weight_asset"], weight_price=parameter_set["weight_price"],
-                          weight_sub_class=parameter_set["weight_sub_class"])
-
-            result = RunRecommender.run_test_recommender(cbf_recommender)
-            results.append(result)
-
-            if result > best:
-                best_parameters = parameter_set
-                best_model = deepcopy(self)
-                best = result
-
-        print("Best MAP score obtained: ", best)
-        return results, best_model, best_parameters
-
 
 if __name__ == "__main__":
 
     # evaluator.split_data_randomly()
 
-    parameters = { "topK_sub_class": 800,
-                   "shrink_sub_class": 100}
-    cbf_recommender = ItemBasedCBF(topK_sub_class=parameters["topK_sub_class"], shrink_sub_class=parameters["shrink_sub_class"])
+    parameters = { "topK": 1,
+                   "shrink": 1}
+    cbf_recommender = SubClassCBF
 
-    RunRecommender.perform_evaluation(cbf_recommender)
+    RunRecommender.evaluate_on_test_set(cbf_recommender, parameters)
     # RunRecommender.run(cbf_recommender)
