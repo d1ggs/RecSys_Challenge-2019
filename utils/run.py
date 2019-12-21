@@ -120,7 +120,7 @@ class RunRecommender(object):
                                                                   sequential=sequential)
                     MAP_final += MAP
 
-                    MAP_final /= Kfold
+                MAP_final /= Kfold
 
             else:
                 for i in range(Kfold):
@@ -197,7 +197,7 @@ class RunRecommender(object):
                                                                   sequential=sequential)
                     MAP_final += MAP
 
-                    MAP_final /= Kfold
+                MAP_final /= Kfold
             else:
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]

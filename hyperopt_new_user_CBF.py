@@ -27,12 +27,17 @@ if __name__ == '__main__':
     bayes_trials = Trials()
     MAX_EVALS = 100
 
+    previous = {'normalize': True, 'shrink': 5, 'similarity': "cosine", 'suppress_interactions': False, 'topK': 200}
+    last = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93*5}
+
     # Optimize
     best = fmin(fn=objective, space=user_cbf_space, algo=hp.tpe.suggest,
-                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate={'topK': 200, 'shrink':5 })
+                max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[previous, last])
 
     ### best will the return the the best hyperparameter set
 
     print(best)
+
+
 
     MAP = RunRecommender.evaluate_on_test_set(UserBasedCBF, best, Kfold=4, sequential=False, user_group="cold")
