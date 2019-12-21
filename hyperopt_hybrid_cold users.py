@@ -1,9 +1,7 @@
-import pickle
-
 import hyperopt as hp
-from hyperopt import Trials, fmin
+from hyperopt import Trials, fmin, space_eval
 from utils.run import RunRecommender
-from UserBasedCBF import UserBasedCBF
+from Hybrid_User_CBF_Regional_TopPop import HybridUserCBFRegionalTopPop
 import numpy as np
 
 
@@ -11,15 +9,16 @@ import numpy as np
 def objective(params):
     print('###########################################')
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(UserBasedCBF, params, Kfold=4, user_group="cold", sequential=False)
+    loss = - RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, params, Kfold=4, user_group="cold", sequential=False, parallel_fit=True)
     return loss
 
 user_cbf_space = {
-    "topK": hp.hp.choice('topK', np.arange(0, 500, 5)),
+    "topK": hp.hp.choice('topK', np.arange(0, 800, 5)),
     "shrink": hp.hp.uniformint('shrink', 0, 50),
     "similarity": hp.hp.choice('similarity', ["cosine", "adjusted", "asymmetric", "pearson", "jaccard", "dice", "tversky", "tanimoto"]),
     "suppress_interactions": hp.hp.choice('suppress_interactions', [True, False]),
-    "normalize": hp.hp.choice('normalize', [True, False])
+    "normalize": hp.hp.choice('normalize', [True, False]),
+    "top_pop_weight": hp.hp.uniform('top_pop_weight', 0, 1)
 }
 
 if __name__ == '__main__':
@@ -37,7 +36,8 @@ if __name__ == '__main__':
     ### best will the return the the best hyperparameter set
 
     print(best)
+    params = space_eval(user_cbf_space, best)
+    print(params)
 
-
-
-    MAP = RunRecommender.evaluate_on_test_set(UserBasedCBF, best, Kfold=4, sequential=False, user_group="cold")
+    print("############### Performance on test set #################")
+    MAP = RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, params, Kfold=4, sequential=False, user_group="cold", parallel_fit=True)
