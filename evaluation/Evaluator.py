@@ -24,11 +24,20 @@ class Singleton(type):
         return cls._instances[cls]
 
 class Evaluator(object, metaclass=Singleton):
-    def __init__(self, test_mode = False):
+    def __init__(self, test_mode=False):
         self.helper = Helper()
         self.test_mode = test_mode
         self.helper.get_train_validation_test_data()
-        self.kfold_splits = []
+        self.evaluation_data = self.helper.test_data if self.test_mode else self.helper.validation_data
+
+    def change_mode(self, mode):
+        if mode == "test":
+            self.test_mode = True
+        if mode == "validation":
+            self.test_mode = False
+        else:
+            raise AssertionError("Mode can be either test or validation, no other modes are supported")
+
         self.evaluation_data = self.helper.test_data if self.test_mode else self.helper.validation_data
 
 
