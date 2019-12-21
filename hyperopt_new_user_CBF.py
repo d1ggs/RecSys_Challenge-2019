@@ -11,7 +11,7 @@ import numpy as np
 def objective(params):
     print('###########################################')
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(UserBasedCBF, params, Kfold=4, user_group="cold", sequential=False)
+    loss = - RunRecommender.evaluate_on_validation_set(UserBasedCBF, params, Kfold=4, user_group="cold", sequential_MAP=False)
     return loss
 
 user_cbf_space = {

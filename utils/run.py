@@ -158,7 +158,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
-                                   parallel_fit=False, sequential=False):
+                                   parallel_fit=False, sequential_MAP=False):
 
         evaluator = Evaluator(test_mode=False)
 
@@ -194,7 +194,7 @@ class RunRecommender(object):
                 for recommender, recommender_id in fitted_recommenders:
                     MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
                                                                   validation_data_list[recommender_id],
-                                                                  sequential=sequential)
+                                                                  sequential=sequential_MAP)
                     MAP_final += MAP
 
                 MAP_final /= Kfold
@@ -213,7 +213,7 @@ class RunRecommender(object):
                     recommender.fit(**fit_parameters)
 
                     MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data,
-                                                                  sequential=sequential)
+                                                                  sequential=sequential_MAP)
 
                     MAP_final += MAP
 
@@ -224,9 +224,9 @@ class RunRecommender(object):
             recommender = recommender_class(URM_train, mode="test")
             recommender.fit(**fit_parameters)
             if user_group == "cold":
-                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential)
+                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential_MAP)
             else:
-                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential)
+                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential_MAP)
 
         print("MAP-10 score:", MAP_final)
 

@@ -9,7 +9,7 @@ import numpy as np
 def objective(params):
     print('###########################################')
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, params, Kfold=4, user_group="cold", sequential=False, parallel_fit=True)
+    loss = - RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, params, Kfold=4, user_group="cold", sequential_MAP=False, parallel_fit=True)
     return loss
 
 user_cbf_space = {

@@ -2,6 +2,7 @@ import numpy as np
 
 from RegionalTopPopRecommender import RegionalTopPopRecommender
 from UserBasedCBF import UserBasedCBF
+from utils.run import RunRecommender
 
 
 class HybridUserCBFRegionalTopPop(object):
@@ -13,10 +14,11 @@ class HybridUserCBFRegionalTopPop(object):
         self.user_cbf = UserBasedCBF(URM_train)
         self.toppop_weight = 0.5
 
-    def fit(self, top_pop_weight=0.5, topK=93 * 5, shrink=1, normalize=True, similarity="dice",
+    def fit(self, top_pop_weight=0.5, topK=465, shrink=1, normalize=True, similarity="dice",
             suppress_interactions=True):
         self.user_cbf.fit(topK=topK, shrink=shrink, normalize=normalize, similarity=similarity,
                           suppress_interactions=suppress_interactions)
+        self.toppop.fit()
         self.toppop_weight = top_pop_weight
 
     def recommend(self, user_id, at=10, exclude_seen=True):
@@ -39,3 +41,7 @@ class HybridUserCBFRegionalTopPop(object):
         scores[user_profile] = -np.inf
 
         return scores
+
+
+if __name__ == '__main__':
+    RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, {}, user_group="cold", sequential_MAP=False)
