@@ -66,5 +66,7 @@ if __name__ == "__main__":
 
     cbf_recommender = ItemCBF
 
+    params = {'normalize': True, 'shrink': 18, 'similarity': 'asymmetric', 'topK': 15}
+
     RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 1, "shrink": 13})
     # RunRecommender.run(cbf_recommender)

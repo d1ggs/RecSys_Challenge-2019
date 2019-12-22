@@ -40,4 +40,4 @@ if __name__ == '__main__':
     print(params)
 
     print("############### Performance on test set #################")
-    MAP = RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, params, Kfold=4, sequential=False, user_group="cold", parallel_fit=True)
+    MAP = RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, params, Kfold=4, sequential_MAP=False, user_group="cold", parallel_fit=True)

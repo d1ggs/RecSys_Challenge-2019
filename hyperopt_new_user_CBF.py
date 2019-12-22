@@ -40,4 +40,4 @@ if __name__ == '__main__':
 
 
 
-    MAP = RunRecommender.evaluate_on_test_set(UserBasedCBF, best, Kfold=4, sequential=False, user_group="cold")
+    MAP = RunRecommender.evaluate_on_test_set(UserBasedCBF, best, Kfold=4, sequential_MAP=False, user_group="cold")
