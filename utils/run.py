@@ -178,7 +178,7 @@ class RunRecommender(object):
                     elif user_group == "warm":
                         raise NotImplementedError
                     else:
-                        users_to_evaluate_list.append(data[3].keys())
+                        users_to_evaluate_list.append(data[2].keys())
 
                 print("Parallelize fitting recommenders...")
 
