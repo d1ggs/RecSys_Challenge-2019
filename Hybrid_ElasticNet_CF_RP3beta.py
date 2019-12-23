@@ -1,4 +1,4 @@
-from ItemBasedCBF_new import ItemCBF
+from ItemBasedCBF import ItemCBF
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 from Hybrid_User_CBF_Regional_TopPop import HybridUserCBFRegionalTopPop
@@ -10,11 +10,22 @@ from utils.helper import Helper
 
 item_cf_parameters = {"topK": 29,
                       "shrink": 22}
-rp3_parameters = {'alpha': 0.31932803725825626, 'beta': 0.19051435359666555, 'implicit': True, 'min_rating': 0, 'normalize_similarity': True, 'topK': 56}
-item_cbf_parameters = {"topK": 200,
-                       "shrink": 5}
 
-SLIM_parameters = {'alpha': 0.0023512567548654, 'l1_ratio': 0.0004093694334328875, 'positive_only': True, 'topK': 25}
+rp3_parameters = {'alpha': 0.31932803725825626,
+                  'beta': 0.19051435359666555,
+                  'implicit': True, 'min_rating': 0,
+                  'normalize_similarity': True,
+                  'topK': 56}
+
+item_cbf_parameters = {'normalize': True,
+                       'shrink': 18,
+                       'similarity': 'asymmetric',
+                       'topK': 15}
+
+SLIM_parameters = {'alpha': 0.0023512567548654,
+                   'l1_ratio': 0.0004093694334328875,
+                   'positive_only': True,
+                   'topK': 25}
 
 
 class HybridElasticNetICFUCFRP3Beta(object):

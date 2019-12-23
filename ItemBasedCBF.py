@@ -7,7 +7,7 @@ import numpy as np
 
 class ItemCBF:
 
-    def __init__(self, URM):
+    def __init__(self, URM, mode="dataset"):
 
         self.URM_train = URM
 
@@ -20,19 +20,24 @@ class ItemCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=15, shrink=18):
+    def fit(self, topK=15, shrink=18, similarity="asymmetric", normalize=True):
 
         self.topK = topK
         self.shrink = shrink
+        self.similarity = similarity
 
         # Load ICMs from helper
-        ICM_sub_class = self.helper.bm25_normalization(self.helper.load_icm_sub_class())
-        ICM_asset = self.helper.bm25_normalization(self.helper.load_icm_asset())
-        ICM_price = self.helper.bm25_normalization(self.helper.load_icm_price())
+        ICM_sub_class = self.helper.load_icm_sub_class()
+        ICM_asset = self.helper.load_icm_asset()
+        ICM_price = self.helper.load_icm_price()
         matrices = [ICM_asset, ICM_sub_class, ICM_price]
         self.ICM = hstack(matrices)
+
+        if normalize:
+            self.ICM = Helper().bm25_normalization(self.ICM)
+
         # Computing SMs
-        self.SM = self.compute_similarity_cbf(self.ICM, top_k=self.topK, shrink=self.shrink)
+        self.SM = self.compute_similarity_cbf(self.ICM, top_k=self.topK, shrink=self.shrink, similarity=self.similarity)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]
@@ -68,5 +73,6 @@ if __name__ == "__main__":
 
     params = {'normalize': True, 'shrink': 18, 'similarity': 'asymmetric', 'topK': 15}
 
-    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 1, "shrink": 13})
+    RunRecommender.evaluate_on_validation_set(cbf_recommender, params, sequential_MAP=True)
+    RunRecommender.evaluate_on_validation_set(cbf_recommender, params, sequential_MAP=False)
     # RunRecommender.run(cbf_recommender)

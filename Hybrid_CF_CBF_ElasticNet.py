@@ -4,7 +4,7 @@ import numpy as np
 from utils.run import RunRecommender
 from utils.helper import Helper
 from TopPopularRecommender import TopPopRecommender
-from ItemBasedCBF_new import ItemCBF
+from ItemBasedCBF import ItemCBF
 from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 
 user_cf_parameters = {"topK": 410,

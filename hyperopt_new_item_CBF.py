@@ -2,7 +2,7 @@ import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK
 from AssetCBF import AssetCBF
 from utils.run import RunRecommender
-from ItemBasedCBF_new import ItemCBF
+from ItemBasedCBF import ItemCBF
 import numpy as np
 
 

@@ -1,7 +1,7 @@
 import hyperopt as hp
 from hyperopt import Trials, fmin, space_eval
 from utils.run import RunRecommender
-from ItemBasedCBF_new import ItemCBF
+from ItemBasedCBF import ItemCBF
 import numpy as np
 
 

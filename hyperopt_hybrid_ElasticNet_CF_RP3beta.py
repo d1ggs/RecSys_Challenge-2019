@@ -1,16 +1,30 @@
 import hyperopt as hp
-from hyperopt import Trials, fmin, STATUS_OK
+from hyperopt import Trials, fmin, STATUS_OK, space_eval
 from Hybrid_ElasticNet_CF_RP3beta import HybridElasticNetICFUCFRP3Beta
 from utils.run import RunRecommender
 from utils.helper import Helper
 
 # HybridUCFICFRecommender = HybridUCFICFRecommender(Helper().URM_train_test)
-hybrid = HybridElasticNetICFUCFRP3Beta(Helper().URM_train_validation, mode="validation")
+
+N_KFOLD = 4
+
+kfold = True
+
+if kfold:
+    kfold_data = Helper().get_kfold_data(N_KFOLD)
+    recommender_list = []
+    for i in range(4):
+        recommender_list.append(HybridElasticNetICFUCFRP3Beta(kfold_data[i][0], mode="validation"))
+else:
+    hybrid = HybridElasticNetICFUCFRP3Beta(Helper().URM_train_validation, mode="validation")
 
 # Step 1 : defining the objective function
 def objective(params):
     print(params)
-    loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
+    if kfold:
+        loss = - RunRecommender.evaluate_hybrid_weights_test_kfold(recommender_list, params, kfold=N_KFOLD, )
+    else:
+        loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
     return loss
 
 
@@ -35,11 +49,13 @@ opt = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.03423472766326310
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
             max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=opt)
 
+best = space_eval(search_space, best)
+
 # best will the return the the best hyperparameter set
 
 print(best)
 
-RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best)
+RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best, Kfold=N_KFOLD, sequential_MAP=False)
 
 
 ##########################################
