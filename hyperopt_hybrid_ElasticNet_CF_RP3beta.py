@@ -18,8 +18,7 @@ def objective(params):
 search_space = {
     'SLIM_weight': hp.hp.uniform('SLIM_weight', 0.85, 0.95),
     'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0.03, 0.07),
-    # 'item_cf_weight': hp.hp.uniform('item_cf_weight', 0, 0.1),
-    'item_cf_weight': 0,
+    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.005, 0.015),
     'rp3_weight': hp.hp.uniform('rp3_weight', 0.85, 0.95)
 }
 

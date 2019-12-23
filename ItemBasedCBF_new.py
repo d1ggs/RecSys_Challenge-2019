@@ -7,20 +7,20 @@ import numpy as np
 
 class ItemCBF:
 
-    def __init__(self, URM, mode="dataset"):
+    def __init__(self, URM):
 
         self.URM_train = URM
 
         self.helper = Helper()
 
-    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
+    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="asymmetric"):
         # Compute similarities for weighted features recommender
         similarity_object = Compute_Similarity_Python(ICM.T, shrink=shrink, topK=top_k, normalize=normalize,
                                                       similarity=similarity)
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=1,shrink=95):
+    def fit(self, topK=15, shrink=18):
 
         self.topK = topK
         self.shrink = shrink
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     cbf_recommender = ItemCBF
 
-    RunRecommender.evaluate_on_test_set(cbf_recommender, {'shrink': 56, 'topK': 480}
-)
-    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 200, "shrink": 5})
+    params = {'normalize': True, 'shrink': 18, 'similarity': 'asymmetric', 'topK': 15}
+
+    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 1, "shrink": 13})
     # RunRecommender.run(cbf_recommender)
