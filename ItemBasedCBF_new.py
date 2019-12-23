@@ -13,14 +13,14 @@ class ItemCBF:
 
         self.helper = Helper()
 
-    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="cosine"):
+    def compute_similarity_cbf(self, ICM, top_k, shrink, normalize=True, similarity="asymmetric"):
         # Compute similarities for weighted features recommender
         similarity_object = Compute_Similarity_Python(ICM.T, shrink=shrink, topK=top_k, normalize=normalize,
                                                       similarity=similarity)
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=1,shrink=95):
+    def fit(self, topK=15, shrink=18):
 
         self.topK = topK
         self.shrink = shrink

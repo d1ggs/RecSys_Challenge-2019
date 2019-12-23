@@ -14,8 +14,8 @@ class HybridUserCBFRegionalTopPop(object):
         self.user_cbf = UserBasedCBF(URM_train)
         self.toppop_weight = 0.5
 
-    def fit(self, top_pop_weight=0.5, topK=465, shrink=1, normalize=True, similarity="dice",
-            suppress_interactions=True):
+    def fit(self, top_pop_weight=0.02139131367609725, topK=765, shrink=6, normalize=True, similarity="jaccard",
+            suppress_interactions=False):
         self.user_cbf.fit(topK=topK, shrink=shrink, normalize=normalize, similarity=similarity,
                           suppress_interactions=suppress_interactions)
         self.toppop.fit()
@@ -30,7 +30,7 @@ class HybridUserCBFRegionalTopPop(object):
             scores = self.filter_seen(user_id, scores)
         recommended_items = np.argsort(scores)
         recommended_items = np.flip(recommended_items, axis=0)
-        return recommended_items[:at]
+        return recommended_items[0:at]
 
     def filter_seen(self, user_id, scores):
         start_pos = self.URM_train.indptr[user_id]
