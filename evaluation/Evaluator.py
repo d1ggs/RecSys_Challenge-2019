@@ -46,11 +46,11 @@ class Evaluator(object):
         return map_score
 
     @staticmethod
-    def compute_MAP_for_user(params, at=10):
+    def compute_MAP_for_user(params):
         recommender = params[0]
         user = params[1]
         relevant_item = params[2]
-        recommended_items = recommender.recommend(int(user), exclude_seen=True, at=at)
+        recommended_items = recommender.recommend(int(user), exclude_seen=True)
         return Evaluator.MAP(recommended_items, relevant_item)
 
     def evaluate_recommender_kfold(self, recommender, users_to_evaluate, evaluation_data, sequential=True):

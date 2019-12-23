@@ -7,7 +7,7 @@ import numpy as np
 
 class ItemCBF:
 
-    def __init__(self, URM):
+    def __init__(self, URM, mode="dataset"):
 
         self.URM_train = URM
 
@@ -66,5 +66,7 @@ if __name__ == "__main__":
 
     cbf_recommender = ItemCBF
 
-    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 1, "shrink": 13})
+    RunRecommender.evaluate_on_test_set(cbf_recommender, {'shrink': 56, 'topK': 480}
+)
+    RunRecommender.evaluate_on_test_set(cbf_recommender, {"topK": 200, "shrink": 5})
     # RunRecommender.run(cbf_recommender)

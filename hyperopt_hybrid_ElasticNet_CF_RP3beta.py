@@ -16,10 +16,11 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'SLIM_weight': hp.hp.uniform('SLIM_weight', 0.0, 1.0),
-    'user_cf_weight': hp.hp.uniform('user_cf_weight', 0.0, 1.0),
-    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0.0, 1.0),
-    'rp3_weight': hp.hp.uniform('rp3_weight', 0.0, 1.0)
+    'SLIM_weight': hp.hp.uniform('SLIM_weight', 0.85, 0.95),
+    'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0.03, 0.07),
+    # 'item_cf_weight': hp.hp.uniform('item_cf_weight', 0, 0.1),
+    'item_cf_weight': 0,
+    'rp3_weight': hp.hp.uniform('rp3_weight', 0.85, 0.95)
 }
 
 
@@ -27,11 +28,9 @@ search_space = {
 bayes_trials = Trials()
 MAX_EVALS = 100
 
-# old_best = {'SLIM_weight': 0.6719606935709935, 'item_cf_weight': 0.08340610330630326, 'user_cf_weight': 0.006456181309865703}
-# new_best = {'SLIM_weight': 0.758796302775681, 'item_cf_weight': 0.22014675773559156, 'user_cf_weight': 0.011064696091994793}
 
-opt = {'SLIM_weight': 0.6719606935709935, 'item_cf_weight': 0.08340610330630326, 'user_cf_weight': 0.006456181309865703, 'rp3_weight': 0.0}
-opt2 =  {'SLIM_weight': 0.8048223770755749, 'item_cf_weight': 0.21238894307574496, 'rp3_weight': 0.12587087079797205, 'user_cf_weight': 0.040353203361717556}
+opt = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
+
 
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
@@ -42,3 +41,8 @@ best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
 print(best)
 
 RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best)
+
+
+##########################################
+# Test Map to beat 0.05112213282549001   #
+##########################################
