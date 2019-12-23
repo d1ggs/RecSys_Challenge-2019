@@ -81,7 +81,8 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential_MAP=False, parallel_fit=False,
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential_MAP=False,
+                             parallel_fit=False,
                              user_group="all"):
         evaluator = Evaluator(test_mode=True)
 
@@ -108,7 +109,8 @@ class RunRecommender(object):
 
                 with multiprocessing.Pool(processes=num_cores) as p:
                     fitted_recommenders = p.map(fit_recommender,
-                                                [(recommender_class, URM, recommender_id, fit_parameters, "test") for URM, recommender_id in
+                                                [(recommender_class, URM, recommender_id, fit_parameters, "test") for
+                                                 URM, recommender_id in
                                                  zip(URMs, range(len(URMs)))])
                 p.close()
 
@@ -184,7 +186,8 @@ class RunRecommender(object):
 
                 with multiprocessing.Pool(processes=num_cores) as p:
                     fitted_recommenders = p.map(fit_recommender,
-                                                [(recommender_class, URM, recommender_id, fit_parameters, "validation") for
+                                                [(recommender_class, URM, recommender_id, fit_parameters, "validation")
+                                                 for
                                                  URM, recommender_id in
                                                  zip(URMs, range(len(URMs)))])
                 p.close()
@@ -296,11 +299,72 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None):
+    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None, kfold=4):
 
-        recommender.fit(**weights)
+        for k in range(kfold):
+            recommender.fit(**weights)
 
         MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
+
+        print("MAP-10 score:", MAP_final)
+
+        return MAP_final
+
+    @staticmethod
+    def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
+                                           sequential_MAP=False, user_group="all"):
+
+        MAP_final = 0
+
+        for i in range(kfold):
+            _, URM_test, _, test_data = Helper().get_kfold_data(kfold)[i]
+
+            if user_group == "cold":
+                users_to_evaluate = prepare_cold_users(URM_test, test_data)
+            elif user_group == "warm":
+                raise NotImplementedError
+            else:
+                users_to_evaluate = test_data.keys()
+
+            recommender = recommender_list[i]
+            recommender.fit(**weights)
+
+            MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate, test_data,
+                                                            sequential=sequential_MAP)
+
+            MAP_final += MAP
+
+        MAP_final /= kfold
+
+        print("MAP-10 score:", MAP_final)
+
+        return MAP_final
+
+    @staticmethod
+    def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
+                                           sequential_MAP=False, user_group="all"):
+
+        MAP_final = 0
+
+        for i in range(kfold):
+            URM_validation, _, validation_data, _ = Helper().get_kfold_data(kfold)[i]
+
+            if user_group == "cold":
+                users_to_evaluate = prepare_cold_users(URM_validation, validation_data)
+            elif user_group == "warm":
+                raise NotImplementedError
+            else:
+                users_to_evaluate = validation_data.keys()
+
+            recommender = recommender_list[i]
+            recommender.fit(**weights)
+
+            MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data,
+                                                            sequential=sequential_MAP)
+
+            MAP_final += MAP
+
+        MAP_final /= kfold
 
         print("MAP-10 score:", MAP_final)
 
