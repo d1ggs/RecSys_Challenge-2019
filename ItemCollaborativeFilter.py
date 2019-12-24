@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
@@ -60,8 +62,20 @@ class ItemCollaborativeFilter(object):
 if __name__ == "__main__":
     from utils.run import RunRecommender
 
-    cb_parameters = {'shrink': 17, 'topK': 3}
+    cb_parameters = [{"topK": i} for i in range(1,20)]
 
     cb = ItemCollaborativeFilter
 
-    map10 = RunRecommender.evaluate_on_validation_set(cb, cb_parameters)
+    max_map = 0
+
+    best_params = None
+
+    for params in tqdm(cb_parameters):
+        map10 = RunRecommender.evaluate_on_test_set(cb, params, Kfold=4, sequential_MAP=True)
+        if map10 > max_map:
+            best_params = params
+            max_map = map10
+
+    print("Best map:", max_map)
+    print(best_params)
+
