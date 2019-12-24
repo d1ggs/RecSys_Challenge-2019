@@ -57,6 +57,7 @@ class Evaluator(object):
         num_cores = multiprocessing.cpu_count()
 
         MAP_final = 0.0
+        startTime = datetime.now()
 
         if sequential:
             print("Computing MAP sequentially...")
@@ -66,13 +67,12 @@ class Evaluator(object):
                 MAP_final += self.MAP(recommended_items, relevant_item)
         else:
             print("Computing MAP in parallel...")
-            startTime = datetime.now()
             with multiprocessing.Pool(processes=num_cores) as p:
                 results = p.map(Evaluator.compute_MAP_for_user,
                                 [(recommender, user, evaluation_data[user]) for user in users_to_evaluate])
             MAP_final = np.sum(results)
             p.close()
-            print("Completed in", datetime.now() - startTime)
+        print("Completed in", datetime.now() - startTime, "\n")
 
         MAP_final /= len(users_to_evaluate)
         result_string = "MAP@10 score: " + str(MAP_final)
@@ -120,7 +120,7 @@ class Evaluator(object):
                                 [(recommender, user, self.evaluation_data[user]) for user in user_list])
             MAP_final = np.sum(results)
             p.close()
-        print("Completed in", datetime.now() - startTime)
+        print("Completed in", datetime.now() - startTime, "\n")
         MAP_final /= len(user_list)
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string

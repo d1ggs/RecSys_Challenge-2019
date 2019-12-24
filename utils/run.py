@@ -81,7 +81,7 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential_MAP=False,
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential_MAP=True,
                              parallel_fit=False,
                              user_group="all"):
         evaluator = Evaluator(test_mode=True)
@@ -160,7 +160,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
-                                   parallel_fit=False, sequential_MAP=False):
+                                   parallel_fit=False, sequential_MAP=True):
 
         evaluator = Evaluator(test_mode=False)
 
@@ -299,12 +299,12 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None, kfold=4):
+    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None, kfold=4, sequential_MAP=True):
 
         for k in range(kfold):
             recommender.fit(**weights)
 
-        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
+        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users, sequential=sequential_MAP)
 
         print("MAP-10 score:", MAP_final)
 
@@ -312,7 +312,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                           sequential_MAP=False, user_group="all"):
+                                           sequential_MAP=True, user_group="all"):
 
         MAP_final = 0
 
@@ -342,7 +342,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                           sequential_MAP=False, user_group="all"):
+                                           sequential_MAP=True, user_group="all"):
 
         MAP_final = 0
 

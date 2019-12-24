@@ -8,8 +8,12 @@ import numpy as np
 from utils.run import RunRecommender
 from utils.helper import Helper
 
-item_cf_parameters = {"topK": 29,
-                      "shrink": 22}
+# item_cf_parameters = {"topK": 29,
+#                       "shrink": 22}
+
+# New best parameters
+# TODO refine topK (granularity was 10)
+item_cf_parameters = {'shrink': 46.0, 'similarity': "jaccard", 'topK': 10}
 
 rp3_parameters = {'alpha': 0.31932803725825626,
                   'beta': 0.19051435359666555,
@@ -17,10 +21,15 @@ rp3_parameters = {'alpha': 0.31932803725825626,
                   'normalize_similarity': True,
                   'topK': 56}
 
+# item_cbf_parameters = {'normalize': True,
+#                        'shrink': 18,
+#                        'similarity': 'asymmetric',
+#                        'topK': 15}
+
 item_cbf_parameters = {'normalize': True,
-                       'shrink': 18,
-                       'similarity': 'asymmetric',
-                       'topK': 15}
+                       'shrink': 5,
+                       'similarity': 'cosine',
+                       'topK': 200}
 
 SLIM_parameters = {'alpha': 0.0023512567548654,
                    'l1_ratio': 0.0004093694334328875,
@@ -30,7 +39,7 @@ SLIM_parameters = {'alpha': 0.0023512567548654,
 
 class HybridElasticNetICFUCFRP3Beta(object):
 
-    RECOMMENDER_NAME = "HybridElasticNetICF"
+    RECOMMENDER_NAME = "HybridElasticNetCFRP3Beta"
 
     def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
@@ -108,12 +117,16 @@ class HybridElasticNetICFUCFRP3Beta(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
+    #weights = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
 
+    weights = {'SLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112}
 
     hybrid_ucficf = HybridElasticNetICFUCFRP3Beta
 
     # Evaluation is performed by RunRecommender
     # RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
+
+    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, sequential_MAP=True, Kfold=4)
+    #RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights, sequential_MAP=True)
 
     RunRecommender.run(hybrid_ucficf, weights)

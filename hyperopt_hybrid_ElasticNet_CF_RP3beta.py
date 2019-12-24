@@ -22,9 +22,9 @@ else:
 def objective(params):
     print(params)
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_test_kfold(recommender_list, params, kfold=N_KFOLD, )
+        loss = - RunRecommender.evaluate_hybrid_weights_test_kfold(recommender_list, params, kfold=N_KFOLD, sequential_MAP=True)
     else:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params, sequential_MAP=True)
     return loss
 
 
@@ -44,6 +44,8 @@ MAX_EVALS = 100
 
 opt = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
 
+new_opt = {'SLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112}
+
 
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
@@ -58,6 +60,7 @@ print(best)
 RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best, Kfold=N_KFOLD, sequential_MAP=False)
 
 
-##########################################
-# Test Map to beat 0.05112213282549001   #
-##########################################
+####################################################
+# Test Map to beat 0.05112213282549001             #
+# MAP-10 score: 0.05107393648464094 on kfold, k = 4#
+####################################################

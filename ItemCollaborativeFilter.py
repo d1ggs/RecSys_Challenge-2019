@@ -1,15 +1,15 @@
 from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_Python
 import numpy as np
 from utils.helper import Helper
-import similaripy as sim
-# from evaluation.Evaluator import Evaluator
+
+
+
+
 class ItemCollaborativeFilter(object):
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode=""):
         self.URM_train = URM_train
         self.W_sparse = None
-
-
 
     def compute_similarity_matrix(self, URM_train, shrink, topK, normalize, similarity):
         similarity_object = Compute_Similarity_Python(URM_train, shrink=shrink,
@@ -18,11 +18,15 @@ class ItemCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=500, shrink=2, normalize=True, similarity="cosine"):
+    def fit(self, topK=10, shrink=46, normalize=True, similarity="jaccard"):
         self.topK = topK
         self.shrink = shrink
         self.normalize = normalize
         self.similarity = similarity
+
+        if normalize:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
+
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize,
                                                        self.similarity)
         self.URM_W_dot = self.URM_train.dot(self.W_sparse)
@@ -61,4 +65,3 @@ if __name__ == "__main__":
     cb = ItemCollaborativeFilter
 
     map10 = RunRecommender.evaluate_on_validation_set(cb, cb_parameters)
-
