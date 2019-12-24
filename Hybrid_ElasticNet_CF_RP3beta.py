@@ -12,8 +12,7 @@ from utils.helper import Helper
 #                       "shrink": 22}
 
 # New best parameters
-# TODO refine topK (granularity was 10)
-item_cf_parameters = {'shrink': 46.0, 'similarity': "jaccard", 'topK': 10}
+item_cf_parameters = {'shrink': 46.0, 'similarity': "jaccard", 'topK': 8}
 
 rp3_parameters = {'alpha': 0.31932803725825626,
                   'beta': 0.19051435359666555,

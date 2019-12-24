@@ -20,7 +20,7 @@ class ItemCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=10, shrink=46, normalize=True, similarity="jaccard"):
+    def fit(self, topK=8, shrink=46, normalize=True, similarity="jaccard"):
         self.topK = topK
         self.shrink = shrink
         self.normalize = normalize
@@ -46,7 +46,7 @@ class ItemCollaborativeFilter(object):
         # rank items
         ranking = scores.argsort()[::-1]
 
-        return ranking[:10]
+        return ranking[:at]
 
     def filter_seen(self, user_id, scores):
         start_pos = self.URM_train.indptr[user_id]
@@ -62,20 +62,6 @@ class ItemCollaborativeFilter(object):
 if __name__ == "__main__":
     from utils.run import RunRecommender
 
-    cb_parameters = [{"topK": i} for i in range(1,20)]
-
     cb = ItemCollaborativeFilter
 
-    max_map = 0
-
-    best_params = None
-
-    for params in tqdm(cb_parameters):
-        map10 = RunRecommender.evaluate_on_test_set(cb, params, Kfold=4, sequential_MAP=True)
-        if map10 > max_map:
-            best_params = params
-            max_map = map10
-
-    print("Best map:", max_map)
-    print(best_params)
-
+    map10 = RunRecommender.evaluate_on_test_set(cb, {}, sequential_MAP=True)
