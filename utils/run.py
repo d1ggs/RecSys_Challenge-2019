@@ -81,7 +81,7 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, sequential_MAP=True,
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, parallelize_evaluation=False,
                              parallel_fit=False,
                              user_group="all"):
         evaluator = Evaluator(test_mode=True)
@@ -103,7 +103,7 @@ class RunRecommender(object):
                     elif user_group == "warm":
                         raise NotImplementedError
                     else:
-                        users_to_evaluate_list.append(data[3].keys())
+                        users_to_evaluate_list.append(list(data[3].keys()))
 
                 print("Parallelize fitting recommenders...")
 
@@ -116,13 +116,25 @@ class RunRecommender(object):
 
                 print("Done!")
 
-                for recommender, recommender_id in fitted_recommenders:
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
-                                                                  test_data_list[recommender_id],
-                                                                  sequential=sequential_MAP)
-                    MAP_final += MAP
+                if parallelize_evaluation and Kfold < num_cores:
 
-                MAP_final /= Kfold
+                    with multiprocessing.Pool(processes=Kfold) as p:
+                        results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                            [(recommender, users_to_evaluate_list[recommender_id],
+                                              test_data_list[recommender_id])
+                                             for recommender, recommender_id in fitted_recommenders])
+                        for i in range(Kfold):
+                            MAP_final += results[i][0]
+                        MAP_final /= Kfold
+                    p.close()
+                else:
+                    for recommender, recommender_id in fitted_recommenders:
+                        MAP, _ = evaluator.evaluate_recommender_kfold(recommender,
+                                                                      users_to_evaluate_list[recommender_id],
+                                                                      test_data_list[recommender_id])
+                        MAP_final += MAP
+
+                    MAP_final /= Kfold
 
             else:
                 for i in range(Kfold):
@@ -138,8 +150,7 @@ class RunRecommender(object):
                     recommender = recommender_class(URM_test, mode="test")
                     recommender.fit(**fit_parameters)
 
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, test_data,
-                                                                  sequential=sequential_MAP)
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, test_data)
 
                     MAP_final += MAP
 
@@ -150,9 +161,9 @@ class RunRecommender(object):
             recommender = recommender_class(URM_train, mode="test")
             recommender.fit(**fit_parameters)
             if user_group == "cold":
-                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential_MAP)
+                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
             else:
-                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential_MAP)
+                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
 
         print("MAP-10 score:", MAP_final)
 
@@ -160,7 +171,7 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
-                                   parallel_fit=False, sequential_MAP=True):
+                                   parallel_fit=False, parallelize_evaluation=False):
 
         evaluator = Evaluator(test_mode=False)
 
@@ -180,7 +191,7 @@ class RunRecommender(object):
                     elif user_group == "warm":
                         raise NotImplementedError
                     else:
-                        users_to_evaluate_list.append(data[2].keys())
+                        users_to_evaluate_list.append(list(data[2].keys()))
 
                 print("Parallelize fitting recommenders...")
 
@@ -194,13 +205,23 @@ class RunRecommender(object):
 
                 print("Done!")
 
-                for recommender, recommender_id in fitted_recommenders:
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
-                                                                  validation_data_list[recommender_id],
-                                                                  sequential=sequential_MAP)
-                    MAP_final += MAP
+                if parallelize_evaluation and Kfold < num_cores:
 
-                MAP_final /= Kfold
+                    with multiprocessing.Pool(processes=Kfold) as p:
+                        results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                            [(recommender, users_to_evaluate_list[recommender_id], validation_data_list[recommender_id])
+                                             for recommender, recommender_id in fitted_recommenders])
+                        for i in range(Kfold):
+                            MAP_final += results[i][0]
+                        MAP_final /= Kfold
+                    p.close()
+                else:
+                    for recommender, recommender_id in fitted_recommenders:
+                        MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
+                                                                      validation_data_list[recommender_id])
+                        MAP_final += MAP
+
+                    MAP_final /= Kfold
             else:
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
@@ -215,8 +236,7 @@ class RunRecommender(object):
                     recommender = recommender_class(URM_validation, mode="test")
                     recommender.fit(**fit_parameters)
 
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data,
-                                                                  sequential=sequential_MAP)
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data)
 
                     MAP_final += MAP
 
@@ -227,9 +247,9 @@ class RunRecommender(object):
             recommender = recommender_class(URM_train, mode="test")
             recommender.fit(**fit_parameters)
             if user_group == "cold":
-                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender, sequential=sequential_MAP)
+                MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
             else:
-                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate, sequential=sequential_MAP)
+                MAP_final, _ = evaluator.evaluateRecommender(recommender, users_to_evaluate)
 
         print("MAP-10 score:", MAP_final)
 
@@ -288,31 +308,27 @@ class RunRecommender(object):
     @staticmethod
     def evaluate_hybrid_weights_test(recommender, weights, exclude_users=None):
 
-        evaluator = Evaluator(test_mode=True)
+        recommender.fit(**weights)
+
+        MAP_final, _ = Evaluator(test_mode=True).evaluateRecommender(recommender, exclude_users)
+
+        print("MAP-10 score:", MAP_final)
+
+        return MAP_final
+
+    @staticmethod
+    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None):
 
         recommender.fit(**weights)
 
-        MAP_final, _ = evaluator.evaluateRecommender(recommender, exclude_users)
+        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users)
 
         print("MAP-10 score:", MAP_final)
 
         return MAP_final
 
     @staticmethod
-    def evaluate_hybrid_weights_validation(recommender, weights, exclude_users=None, kfold=4, sequential_MAP=True):
-
-        for k in range(kfold):
-            recommender.fit(**weights)
-
-        MAP_final, _ = Evaluator().evaluateRecommender(recommender, exclude_users, sequential=sequential_MAP)
-
-        print("MAP-10 score:", MAP_final)
-
-        return MAP_final
-
-    @staticmethod
-    def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                           sequential_MAP=True, user_group="all", parallelize_evaluation=False):
+    def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False, user_group="all", parallelize_evaluation=False):
 
         MAP_final = 0
 
@@ -349,8 +365,7 @@ class RunRecommender(object):
                 # recommender.fit(**weights)
 
                 MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
-                                                                test_data_list[i],
-                                                                sequential=sequential_MAP)
+                                                                test_data_list[i])
 
                 MAP_final += MAP
 
@@ -362,8 +377,7 @@ class RunRecommender(object):
 
 
     @staticmethod
-    def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                                 sequential_MAP=True, user_group="all", parallelize_evaluation=False):
+    def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False, user_group="all", parallelize_evaluation=False):
 
         MAP_final = 0
 
@@ -400,8 +414,7 @@ class RunRecommender(object):
                 # recommender.fit(**weights)
 
                 MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
-                                                                validation_data_list[i],
-                                                                sequential=sequential_MAP)
+                                                                validation_data_list[i])
 
                 MAP_final += MAP
 

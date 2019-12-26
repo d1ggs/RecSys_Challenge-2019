@@ -78,7 +78,7 @@ class Evaluator(object):
         result_string = "MAP@10 score: " + str(MAP_final)
         return MAP_final, result_string
 
-    def evaluate_recommender_on_cold_users(self, recommender, sequential=False):
+    def evaluate_recommender_on_cold_users(self, recommender, sequential=True):
         cold_users = Helper().get_cold_user_ids("test" if self.test_mode else "validation")
         cold_users = list(cold_users)
 
