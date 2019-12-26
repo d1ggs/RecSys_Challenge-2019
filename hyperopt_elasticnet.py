@@ -11,7 +11,7 @@ helper = Helper()
 def objective(params):
     print("Current parameters:")
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(MultiThreadSLIM_ElasticNet, params, Kfold=4, sequential_MAP=False)
+    loss = - RunRecommender.evaluate_on_validation_set(MultiThreadSLIM_ElasticNet, params, Kfold=4)
     return loss
 
 elasticnet_space = {

@@ -44,4 +44,4 @@ class HybridUserCBFRegionalTopPop(object):
 
 
 if __name__ == '__main__':
-    RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, {}, user_group="cold", sequential_MAP=False)
+    RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, {}, user_group="cold")

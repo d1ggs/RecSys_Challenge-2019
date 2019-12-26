@@ -9,7 +9,7 @@ import numpy as np
 def objective(params):
     print('###########################################')
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(ItemCBF, params, Kfold=4, parallel_fit=True, sequential_MAP=False)
+    loss = - RunRecommender.evaluate_on_validation_set(ItemCBF, params, Kfold=4, parallel_fit=True)
     return loss
 
 item_cbf_space = {
@@ -36,4 +36,4 @@ if __name__ == '__main__':
     params = space_eval(item_cbf_space, best)
 
     print("Best parameters:", params)
-    RunRecommender.evaluate_on_test_set(ItemCBF, params, Kfold=4, parallel_fit=True, sequential_MAP=False)
+    RunRecommender.evaluate_on_test_set(ItemCBF, params, Kfold=4, parallel_fit=True)

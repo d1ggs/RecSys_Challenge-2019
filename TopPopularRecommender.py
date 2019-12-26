@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     top_popular = TopPopRecommender
 
-    map10 = RunRecommender.evaluate_on_test_set(top_popular, {}, Kfold=4, parallel_fit=True, sequential_MAP=False, user_group="cold")
+    map10 = RunRecommender.evaluate_on_test_set(top_popular, {}, Kfold=4, parallel_fit=True, user_group="cold")
 
     #print('{0:.128f}'.format(map10))
     print(map10)

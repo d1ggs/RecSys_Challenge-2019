@@ -64,4 +64,4 @@ if __name__ == "__main__":
 
     cb = ItemCollaborativeFilter
 
-    map10 = RunRecommender.evaluate_on_test_set(cb, {}, sequential_MAP=True)
+    map10 = RunRecommender.evaluate_on_test_set(cb, {})

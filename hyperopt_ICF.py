@@ -12,7 +12,7 @@ helper = Helper()
 def objective(params):
     print("Current parameters:")
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(ItemCollaborativeFilter, params, Kfold=4, parallel_fit=True, sequential_MAP=True)
+    loss = - RunRecommender.evaluate_on_validation_set(ItemCollaborativeFilter, params, Kfold=4, parallel_fit=True)
     return loss
 
 search_space = {
@@ -41,4 +41,4 @@ if __name__ == '__main__':
 
     print(best)
 
-    RunRecommender.evaluate_on_test_set(ItemCollaborativeFilter, best, parallel_fit=True, Kfold=4, sequential_MAP=True)
+    RunRecommender.evaluate_on_test_set(ItemCollaborativeFilter, best, parallel_fit=True, Kfold=4, )

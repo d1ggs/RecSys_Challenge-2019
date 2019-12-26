@@ -73,6 +73,6 @@ if __name__ == "__main__":
 
     params = {'normalize': True, 'shrink': 18, 'similarity': 'asymmetric', 'topK': 15}
 
-    RunRecommender.evaluate_on_validation_set(cbf_recommender, params, sequential_MAP=True)
-    RunRecommender.evaluate_on_validation_set(cbf_recommender, params, sequential_MAP=False)
+    RunRecommender.evaluate_on_validation_set(cbf_recommender, params)
+    RunRecommender.evaluate_on_validation_set(cbf_recommender, params)
     # RunRecommender.run(cbf_recommender)

@@ -26,9 +26,9 @@ else:
 def objective(params):
     print(params)
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, sequential_MAP=True, parallelize_evaluation=True)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=True)
     else:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params, sequential_MAP=True)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
     return loss
 
 
@@ -61,7 +61,7 @@ best = space_eval(search_space, best)
 
 print(best)
 
-RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best, Kfold=N_KFOLD, sequential_MAP=False)
+RunRecommender.evaluate_on_test_set(HybridElasticNetICFUCFRP3Beta, best, Kfold=N_KFOLD)
 
 
 ####################################################

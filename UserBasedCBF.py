@@ -92,5 +92,5 @@ if __name__ == "__main__":
     ubcbf = UserBasedCBF
     params = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93*5}
     #ubcbf.helper.split_ucm_region()
-    RunRecommender.evaluate_on_test_set(ubcbf, params, user_group="cold", parallel_fit=True, sequential_MAP=False, Kfold=4)
+    RunRecommender.evaluate_on_test_set(ubcbf, params, user_group="cold", parallel_fit=True, Kfold=4)
     # print('{0:.128f}'.format(map10))

@@ -123,7 +123,7 @@ if __name__ == "__main__":
     # Evaluation is performed by RunRecommender
     # RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
 
-    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, sequential_MAP=True, Kfold=4)
-    #RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights, sequential_MAP=True)
+    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=4)
+    #RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
 
     RunRecommender.run(hybrid_ucficf, weights)
