@@ -43,8 +43,6 @@ class HybridElasticNetICFUCFRP3Beta(object):
     def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
 
-
-
         # Init single recommenders
         self.item_cbf = ItemCBF(URM_train)
         self.item_cf = ItemCollaborativeFilter(URM_train)

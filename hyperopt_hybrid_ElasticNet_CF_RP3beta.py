@@ -11,10 +11,14 @@ N_KFOLD = 4
 kfold = True
 
 if kfold:
+    print("Getting Kfold splits...\n")
     kfold_data = Helper().get_kfold_data(N_KFOLD)
+    print("Done!\n")
     recommender_list = []
     for i in range(4):
+        print("Fitting recommender", i+1, "...\n")
         recommender_list.append(HybridElasticNetICFUCFRP3Beta(kfold_data[i][0], mode="validation"))
+        print("\nDone!\n")
 else:
     hybrid = HybridElasticNetICFUCFRP3Beta(Helper().URM_train_validation, mode="validation")
 
@@ -49,7 +53,7 @@ new_opt = {'SLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.0301368637731
 
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
-            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=opt)
+            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[opt, new_opt])
 
 best = space_eval(search_space, best)
 
