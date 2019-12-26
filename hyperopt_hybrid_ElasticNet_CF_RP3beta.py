@@ -15,10 +15,10 @@ if kfold:
     kfold_data = Helper().get_kfold_data(N_KFOLD)
     print("Done!\n")
     recommender_list = []
-    for i in range(4):
+    for i in range(N_KFOLD):
         print("Fitting recommender", i+1, "...\n")
         recommender_list.append(HybridElasticNetICFUCFRP3Beta(kfold_data[i][0], mode="validation"))
-        print("\nDone!\n")
+        print("\nCompleted!\n")
 else:
     hybrid = HybridElasticNetICFUCFRP3Beta(Helper().URM_train_validation, mode="validation")
 
@@ -26,7 +26,7 @@ else:
 def objective(params):
     print(params)
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_test_kfold(recommender_list, params, kfold=N_KFOLD, sequential_MAP=True)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, sequential_MAP=True, parallelize_evaluation=True)
     else:
         loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params, sequential_MAP=True)
     return loss

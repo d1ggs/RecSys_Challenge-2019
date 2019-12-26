@@ -92,7 +92,7 @@ class Evaluator(object):
         return self.perform_evaluation(recommender, sequential, cold_users)
 
 
-    def evaluateRecommender(self, recommender, users_to_evaluate: set, sequential=False):
+    def evaluateRecommender(self, recommender, users_to_evaluate: set, sequential=True):
 
         if users_to_evaluate is not None:
             user_list = users_to_evaluate

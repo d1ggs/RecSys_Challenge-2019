@@ -184,7 +184,7 @@ class RunRecommender(object):
 
                 print("Parallelize fitting recommenders...")
 
-                with multiprocessing.Pool(processes=num_cores) as p:
+                with multiprocessing.Pool(processes=Kfold) as p:
                     fitted_recommenders = p.map(fit_recommender,
                                                 [(recommender_class, URM, recommender_id, fit_parameters, "validation")
                                                  for
@@ -312,59 +312,100 @@ class RunRecommender(object):
 
     @staticmethod
     def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                           sequential_MAP=True, user_group="all"):
+                                           sequential_MAP=True, user_group="all", parallelize_evaluation=False):
 
         MAP_final = 0
 
+        num_cores = multiprocessing.cpu_count()
+
+        users_to_evaluate_list = []
+        test_data_list = []
         for i in range(kfold):
             _, URM_test, _, test_data = Helper().get_kfold_data(kfold)[i]
+            test_data_list.append(test_data)
 
             if user_group == "cold":
-                users_to_evaluate = prepare_cold_users(URM_test, test_data)
+                users_to_evaluate_list.append(prepare_cold_users(URM_test, test_data))
             elif user_group == "warm":
                 raise NotImplementedError
             else:
-                users_to_evaluate = test_data.keys()
+                users_to_evaluate_list.append(list(test_data.keys()))
 
-            recommender = recommender_list[i]
-            recommender.fit(**weights)
+            recommender_list[i].fit(**weights)
 
-            MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate, test_data,
-                                                            sequential=sequential_MAP)
+        if parallelize_evaluation and kfold < num_cores:
 
-            MAP_final += MAP
+            with multiprocessing.Pool(processes=kfold) as p:
+                results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                    [(recommender_list[i], users_to_evaluate_list[i], test_data_list[i])
+                                     for i in range(kfold)])
+                for i in range(kfold):
+                    MAP_final += results[i][0]
+                MAP_final /= kfold
+            p.close()
+        else:
+            for i in range(kfold):
+                recommender = recommender_list[i]
+                # recommender.fit(**weights)
 
-        MAP_final /= kfold
+                MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
+                                                                test_data_list[i],
+                                                                sequential=sequential_MAP)
+
+                MAP_final += MAP
+
+            MAP_final /= kfold
 
         print("MAP-10 score:", MAP_final)
 
         return MAP_final
 
+
     @staticmethod
     def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
-                                           sequential_MAP=True, user_group="all"):
+                                                 sequential_MAP=True, user_group="all", parallelize_evaluation=False):
 
         MAP_final = 0
 
+        num_cores = multiprocessing.cpu_count()
+
+        users_to_evaluate_list = []
+        validation_data_list = []
         for i in range(kfold):
             URM_validation, _, validation_data, _ = Helper().get_kfold_data(kfold)[i]
+            validation_data_list.append(validation_data)
 
             if user_group == "cold":
-                users_to_evaluate = prepare_cold_users(URM_validation, validation_data)
+                users_to_evaluate_list.append(prepare_cold_users(URM_validation, validation_data))
             elif user_group == "warm":
                 raise NotImplementedError
             else:
-                users_to_evaluate = validation_data.keys()
+                users_to_evaluate_list.append(list(validation_data.keys()))
 
-            recommender = recommender_list[i]
-            recommender.fit(**weights)
+            recommender_list[i].fit(**weights)
 
-            MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data,
-                                                            sequential=sequential_MAP)
+        if parallelize_evaluation and kfold < num_cores:
 
-            MAP_final += MAP
+            with multiprocessing.Pool(processes=kfold) as p:
+                results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                    [(recommender_list[i], users_to_evaluate_list[i], validation_data_list[i])
+                                     for i in range(kfold)])
+                for i in range(kfold):
+                    MAP_final += results[i][0]
+                MAP_final /= kfold
+            p.close()
+        else:
+            for i in range(kfold):
+                recommender = recommender_list[i]
+                # recommender.fit(**weights)
 
-        MAP_final /= kfold
+                MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
+                                                                validation_data_list[i],
+                                                                sequential=sequential_MAP)
+
+                MAP_final += MAP
+
+            MAP_final /= kfold
 
         print("MAP-10 score:", MAP_final)
 
