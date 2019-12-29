@@ -1,7 +1,8 @@
 import os
+import random
 
 import numpy as np
-from scipy import sparse
+from scipy import sparse as sps
 import copy
 import pickle
 
@@ -29,53 +30,54 @@ def csr_row_set_nz_to_val(csr, row, value=0):
     """Set all nonzero elements (elements currently in the sparsity pattern)
     to the given value. Useful to set to 0 mostly.
     """
-    if not isinstance(csr, sparse.csr_matrix):
+    if not isinstance(csr, sps.csr_matrix):
         raise ValueError('Matrix given must be of CSR format.')
     csr.data[csr.indptr[row]:csr.indptr[row + 1]] = value
 
 
-def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, leave_out=1):
+def split_train_test(URM_all: sps.csr_matrix, split_fraction: float, leave_out=1):
     '''Split the full URM into a train URM and a test dictionary.
     Also save all objects in Pickle serialized format'''
 
     print("Splitting data into train and test...")
     sample_size = int((1 - split_fraction) * URM_all.shape[0])
 
-    URM_train_test, test_data = hold_out(URM_all, leave_out, sample_size)
-    URM_train_validation, validation_data = hold_out(URM_train_test, leave_out, sample_size)
+    URM_train_test, test_data = leave_one_out(URM_all)
+    URM_train_validation, validation_data = leave_one_out(URM_train_test)
 
     return URM_train_validation, URM_train_test, validation_data, test_data
 
 
-def hold_out(URM, leave_out, sample_size):
+def leave_one_out(URM):
     """Set to 0 ten random elements into train matrix for each designated test user"""
 
     URM_hold_out = URM.copy()
-    indices = sample_test_users(URM, sample_size, sample_threshold=leave_out)
-    hold_out_data = {}
+    # indices = sample_test_users(URM_hold_out, sample_size, sample_threshold=leave_out)
 
     # Convert to lil matrix to directly access elements in a faster way than CSR
-    URM_hold_out = sparse.lil_matrix(URM_hold_out)
+    # URM_hold_out = sparse.lil_matrix(URM_hold_out)
 
+    n_users = URM_hold_out.shape[0]
+    selected_users = []
+    selected_items = []
 
-    for i in range(URM.shape[0]):
-        if i in indices:
-            # It is a test user
+    for user_id in range(n_users):
 
-            # Get the corresponding row from the URM
-            row = URM[i, :]
+        start_pos = URM_hold_out.indptr[user_id]
+        end_pos = URM_hold_out.indptr[user_id + 1]
 
-            # Find the nonzero elements (interactions) indices and shuffle them
-            interactions = np.argwhere(row > 0)
-            np.random.shuffle(interactions)
+        if end_pos - start_pos > 0:
+            hold_out_item = random.sample(range(start_pos, end_pos), 1)
 
-            # Pick 1 to hold out to compute MAP@10
-            hold_out_data[i] = np.array(interactions[:, 1][:leave_out])
+            selected_users.append(user_id)
+            selected_items.append(URM_hold_out.indices[hold_out_item][0])
 
-            # Set to 0 the corresponding interaction in the train matrix
-            for inter in interactions[:leave_out]:
-                URM_hold_out[i, inter] = 0
+            URM_hold_out.data[hold_out_item] = 0  # set to 0 in train
 
+    URM_hold_out.eliminate_zeros()
     URM_hold_out = URM_hold_out.tocsr()
+    hold_out_data = dict(zip(selected_users, selected_items))
 
     return URM_hold_out, hold_out_data
+
+
