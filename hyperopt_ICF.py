@@ -7,7 +7,6 @@ from utils.helper import Helper
 
 helper = Helper()
 
-
 ### Step 1 : defining the objective function
 def objective(params):
     print("Current parameters:")
@@ -18,9 +17,9 @@ def objective(params):
 search_space = {
     "topK": hp.hp.choice('topK', np.arange(0, 100, 5)),
     "shrink": hp.hp.uniformint('shrink', 0, 50),
+    "bm_25_norm": hp.hp.choice('bm_25_norm', [True, False]),
     "similarity": hp.hp.choice('similarity',
-                               ["cosine", "adjusted", "asymmetric", "pearson", "jaccard", "dice", "tversky",
-                                "tanimoto"]),
+                               ["cosine", "jaccard", "dice", "tversky", "tanimoto"]),
 }
 
 

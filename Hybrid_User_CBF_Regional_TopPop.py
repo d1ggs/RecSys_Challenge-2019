@@ -2,6 +2,7 @@ import numpy as np
 
 from RegionalTopPopRecommender import RegionalTopPopRecommender
 from UserBasedCBF import UserBasedCBF
+from utils.helper import Helper
 from utils.run import RunRecommender
 
 
@@ -10,12 +11,15 @@ class HybridUserCBFRegionalTopPop(object):
     def __init__(self, URM_train, mode="dataset"):
         self.mode = mode
         self.URM_train = URM_train
-        self.toppop = RegionalTopPopRecommender(URM_train)
-        self.user_cbf = UserBasedCBF(URM_train)
-        self.toppop_weight = 0.5
 
-    def fit(self, top_pop_weight=0.02139131367609725, topK=765, shrink=6, normalize=True, similarity="jaccard",
+    def fit(self, top_pop_weight=0.02139131367609725, topK=765, shrink=6, normalize=True, bm_25_norm=False, similarity="jaccard",
             suppress_interactions=False):
+        if bm_25_norm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
+
+        self.toppop = RegionalTopPopRecommender(self.URM_train)
+        self.user_cbf = UserBasedCBF(self.URM_train)
+
         self.user_cbf.fit(topK=topK, shrink=shrink, normalize=normalize, similarity=similarity,
                           suppress_interactions=suppress_interactions)
         self.toppop.fit()
@@ -44,4 +48,8 @@ class HybridUserCBFRegionalTopPop(object):
 
 
 if __name__ == '__main__':
-    RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, {}, user_group="cold")
+
+    new_params_cosine = {'normalize': False, 'shrink': 50, 'suppress_interactions': False, 'topK': 540, 'top_pop_weight': 0.0020283643469209793}
+    params_test_bm_25 = {'bm_25_norm': True}
+    RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, {}, Kfold=10, user_group="cold", parallelize_evaluation=True, parallel_fit=False)
+    RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, new_params_cosine, Kfold=10, user_group="cold", parallelize_evaluation=True, parallel_fit=False)

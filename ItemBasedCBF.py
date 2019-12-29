@@ -20,7 +20,7 @@ class ItemCBF:
         w_sparse = similarity_object.compute_similarity()
         return w_sparse
 
-    def fit(self, topK=15, shrink=18, similarity="asymmetric", normalize=True):
+    def fit(self, topK=15, shrink=18, similarity="asymmetric", normalize=True, bm_25_norm=True):
 
         self.topK = topK
         self.shrink = shrink
@@ -33,11 +33,11 @@ class ItemCBF:
         matrices = [ICM_asset, ICM_sub_class, ICM_price]
         self.ICM = hstack(matrices)
 
-        if normalize:
-            self.ICM = Helper().bm25_normalization(self.ICM)
+        if bm_25_norm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         # Computing SMs
-        self.SM = self.compute_similarity_cbf(self.ICM, top_k=self.topK, shrink=self.shrink, similarity=self.similarity)
+        self.SM = self.compute_similarity_cbf(self.ICM, top_k=self.topK, shrink=self.shrink, similarity=self.similarity, normalize=normalize)
 
     def compute_scores(self, user_id):
         users_list_train = self.URM_train[user_id]

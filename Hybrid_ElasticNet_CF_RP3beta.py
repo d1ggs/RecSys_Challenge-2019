@@ -116,14 +116,15 @@ if __name__ == "__main__":
 
     #weights = {'SLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
 
-    weights = {'SLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112}
+    #weights2 = {'SLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112}
+    weights = {'SLIM_weight': 0.8737840927419455, 'item_cbf_weight': 0.037666643326618406, 'item_cf_weight': 0.014294955186782246, 'rp3_weight': 0.9314974601074552}
 
     hybrid_ucficf = HybridElasticNetICFUCFRP3Beta
 
     # Evaluation is performed by RunRecommender
     # RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights)
 
-    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=4)
+    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=4, parallelize_evaluation=True)
     #RunRecommender.evaluate_on_validation_set(hybrid_ucficf, weights)
 
     RunRecommender.run(hybrid_ucficf, weights)

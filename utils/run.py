@@ -9,6 +9,22 @@ from evaluation.Evaluator import Evaluator
 ROOT_PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def compute_mean_and_variance(data: list):
+    total_sum = 0
+
+    for val in data:
+        total_sum += val
+
+    mean = total_sum / len(data)
+
+    for val in data:
+        total_sum += (val - mean) ** 2
+
+    variance = total_sum / (len(data) - 1)
+
+    return mean, variance
+
+
 def prepare_cold_users(URM_train, evaluation_data):
     cold_users, _ = Helper().compute_cold_warm_user_ids(URM_train)
     cold_users = list(cold_users)
@@ -81,29 +97,31 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0, parallelize_evaluation=False,
-                             parallel_fit=False,
-                             user_group="all"):
+    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0,
+                             parallelize_evaluation=False,
+                             parallel_fit=False, user_group="all"):
+
         evaluator = Evaluator(test_mode=True)
 
         if Kfold > 0:
             MAP_final = 0
+            fitted_recommenders = []
 
             num_cores = multiprocessing.cpu_count()
 
-            if parallel_fit and Kfold <= num_cores:
+            kfold_data = Helper().get_kfold_data(Kfold)
+            URMs = [data[1] for data in kfold_data]
+            test_data_list = [data[3] for data in kfold_data]
+            users_to_evaluate_list = []
+            for data in kfold_data:
+                if user_group == "cold":
+                    users_to_evaluate_list.append(prepare_cold_users(data[1], data[3]))
+                elif user_group == "warm":
+                    raise NotImplementedError
+                else:
+                    users_to_evaluate_list.append(list(data[3].keys()))
 
-                kfold_data = Helper().get_kfold_data(Kfold)
-                URMs = [data[1] for data in kfold_data]
-                test_data_list = [data[3] for data in kfold_data]
-                users_to_evaluate_list = []
-                for data in kfold_data:
-                    if user_group == "cold":
-                        users_to_evaluate_list.append(prepare_cold_users(data[1], data[3]))
-                    elif user_group == "warm":
-                        raise NotImplementedError
-                    else:
-                        users_to_evaluate_list.append(list(data[3].keys()))
+            if parallel_fit and Kfold <= num_cores:
 
                 print("Parallelize fitting recommenders...")
 
@@ -115,46 +133,40 @@ class RunRecommender(object):
                 p.close()
 
                 print("Done!")
-
-                if parallelize_evaluation and Kfold < num_cores:
-
-                    with multiprocessing.Pool(processes=Kfold) as p:
-                        results = p.starmap(Evaluator().evaluate_recommender_kfold,
-                                            [(recommender, users_to_evaluate_list[recommender_id],
-                                              test_data_list[recommender_id])
-                                             for recommender, recommender_id in fitted_recommenders])
-                        for i in range(Kfold):
-                            MAP_final += results[i][0]
-                        MAP_final /= Kfold
-                    p.close()
-                else:
-                    for recommender, recommender_id in fitted_recommenders:
-                        MAP, _ = evaluator.evaluate_recommender_kfold(recommender,
-                                                                      users_to_evaluate_list[recommender_id],
-                                                                      test_data_list[recommender_id])
-                        MAP_final += MAP
-
-                    MAP_final /= Kfold
-
             else:
-                for i in range(Kfold):
-                    _, URM_test, _, test_data = Helper().get_kfold_data(Kfold)[i]
 
-                    if user_group == "cold":
-                        users_to_evaluate = prepare_cold_users(URM_test, test_data)
-                    elif user_group == "warm":
-                        raise NotImplementedError
-                    else:
-                        users_to_evaluate = test_data.keys()
+                for i in range(Kfold):
+                    URM_test = URMs[i]
 
                     recommender = recommender_class(URM_test, mode="test")
                     recommender.fit(**fit_parameters)
 
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, test_data)
+                    fitted_recommenders.append((recommender, i))
 
-                    MAP_final += MAP
+            data_list = []
 
-                MAP_final /= Kfold
+            if parallelize_evaluation and Kfold <= num_cores:
+                with multiprocessing.Pool(processes=Kfold) as p:
+                    results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                        [(recommender, users_to_evaluate_list[recommender_id],
+                                          test_data_list[recommender_id])
+                                         for recommender, recommender_id in fitted_recommenders])
+
+
+                    for i in range(len(results)):
+                        data_list.append(results[i][0])
+
+                p.close()
+            else:
+                for recommender, recommender_id in fitted_recommenders:
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender,
+                                                                  users_to_evaluate_list[recommender_id],
+                                                                  test_data_list[recommender_id])
+                    data_list.append(MAP)
+
+            MAP_final, variance = compute_mean_and_variance(data_list)
+            print("Variance over k-fold:", variance)
+
         else:
             URM_train = Helper().URM_train_test
 
@@ -177,22 +189,23 @@ class RunRecommender(object):
 
         if Kfold > 0:
             MAP_final = 0
+            fitted_recommenders = []
 
             num_cores = multiprocessing.cpu_count()
+
+            kfold_data = Helper().get_kfold_data(Kfold)
+            URMs = [data[0] for data in kfold_data]
+            validation_data_list = [data[2] for data in kfold_data]
+            users_to_evaluate_list = []
+            for data in kfold_data:
+                if user_group == "cold":
+                    users_to_evaluate_list.append(prepare_cold_users(data[0], data[2]))
+                elif user_group == "warm":
+                    raise NotImplementedError
+                else:
+                    users_to_evaluate_list.append(list(data[2].keys()))
+
             if parallel_fit and Kfold <= num_cores:
-
-                kfold_data = Helper().get_kfold_data(Kfold)
-                URMs = [data[0] for data in kfold_data]
-                validation_data_list = [data[2] for data in kfold_data]
-                users_to_evaluate_list = []
-                for data in kfold_data:
-                    if user_group == "cold":
-                        users_to_evaluate_list.append(prepare_cold_users(data[0], data[2]))
-                    elif user_group == "warm":
-                        raise NotImplementedError
-                    else:
-                        users_to_evaluate_list.append(list(data[2].keys()))
-
                 print("Parallelize fitting recommenders...")
 
                 with multiprocessing.Pool(processes=Kfold) as p:
@@ -205,23 +218,6 @@ class RunRecommender(object):
 
                 print("Done!")
 
-                if parallelize_evaluation and Kfold < num_cores:
-
-                    with multiprocessing.Pool(processes=Kfold) as p:
-                        results = p.starmap(Evaluator().evaluate_recommender_kfold,
-                                            [(recommender, users_to_evaluate_list[recommender_id], validation_data_list[recommender_id])
-                                             for recommender, recommender_id in fitted_recommenders])
-                        for i in range(Kfold):
-                            MAP_final += results[i][0]
-                        MAP_final /= Kfold
-                    p.close()
-                else:
-                    for recommender, recommender_id in fitted_recommenders:
-                        MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate_list[recommender_id],
-                                                                      validation_data_list[recommender_id])
-                        MAP_final += MAP
-
-                    MAP_final /= Kfold
             else:
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
@@ -236,11 +232,33 @@ class RunRecommender(object):
                     recommender = recommender_class(URM_validation, mode="test")
                     recommender.fit(**fit_parameters)
 
-                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender, users_to_evaluate, validation_data)
+                    fitted_recommenders.append((recommender, i))
 
-                    MAP_final += MAP
+            data_list = []
 
-                MAP_final /= Kfold
+            if parallelize_evaluation and Kfold <= num_cores:
+
+                with multiprocessing.Pool(processes=Kfold) as p:
+                    results = p.starmap(Evaluator().evaluate_recommender_kfold,
+                                        [(recommender, users_to_evaluate_list[recommender_id],
+                                          validation_data_list[recommender_id])
+                                         for recommender, recommender_id in fitted_recommenders])
+
+                    for i in range(len(results)):
+                        data_list.append(results[i][0])
+
+                p.close()
+            else:
+                for recommender, recommender_id in fitted_recommenders:
+                    MAP, _ = evaluator.evaluate_recommender_kfold(recommender,
+                                                                  users_to_evaluate_list[recommender_id],
+                                                                  validation_data_list[recommender_id])
+                    data_list.append(MAP)
+
+            MAP_final, variance = compute_mean_and_variance(data_list)
+            print("Variance over k-fold:", variance)
+
+
         else:
             URM_train = Helper().URM_train_validation
 
@@ -328,9 +346,8 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False, user_group="all", parallelize_evaluation=False):
-
-        MAP_final = 0
+    def evaluate_hybrid_weights_test_kfold(recommender_list, weights, kfold=4, parallel_fit=False, user_group="all",
+                                           parallelize_evaluation=False):
 
         num_cores = multiprocessing.cpu_count()
 
@@ -349,15 +366,16 @@ class RunRecommender(object):
 
             recommender_list[i].fit(**weights)
 
-        if parallelize_evaluation and kfold < num_cores:
+        data_list = []
+
+        if parallelize_evaluation and kfold <= num_cores:
 
             with multiprocessing.Pool(processes=kfold) as p:
                 results = p.starmap(Evaluator().evaluate_recommender_kfold,
                                     [(recommender_list[i], users_to_evaluate_list[i], test_data_list[i])
                                      for i in range(kfold)])
-                for i in range(kfold):
-                    MAP_final += results[i][0]
-                MAP_final /= kfold
+                for i in range(len(results)):
+                    data_list.append(results[i][0])
             p.close()
         else:
             for i in range(kfold):
@@ -367,19 +385,17 @@ class RunRecommender(object):
                 MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
                                                                 test_data_list[i])
 
-                MAP_final += MAP
+                data_list.append(MAP)
 
-            MAP_final /= kfold
-
+        MAP_final, variance = compute_mean_and_variance(data_list)
+        print("Variance over k-fold:", variance)
         print("MAP-10 score:", MAP_final)
 
         return MAP_final
 
-
     @staticmethod
-    def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False, user_group="all", parallelize_evaluation=False):
-
-        MAP_final = 0
+    def evaluate_hybrid_weights_validation_kfold(recommender_list, weights, kfold=4, parallel_fit=False,
+                                                 user_group="all", parallelize_evaluation=False):
 
         num_cores = multiprocessing.cpu_count()
 
@@ -398,15 +414,16 @@ class RunRecommender(object):
 
             recommender_list[i].fit(**weights)
 
-        if parallelize_evaluation and kfold < num_cores:
+        data_list = []
+
+        if parallelize_evaluation and kfold <= num_cores:
 
             with multiprocessing.Pool(processes=kfold) as p:
                 results = p.starmap(Evaluator().evaluate_recommender_kfold,
                                     [(recommender_list[i], users_to_evaluate_list[i], validation_data_list[i])
                                      for i in range(kfold)])
-                for i in range(kfold):
-                    MAP_final += results[i][0]
-                MAP_final /= kfold
+                for i in range(len(results)):
+                    data_list.append(results[i][0])
             p.close()
         else:
             for i in range(kfold):
@@ -416,10 +433,10 @@ class RunRecommender(object):
                 MAP, _ = Evaluator().evaluate_recommender_kfold(recommender, users_to_evaluate_list[i],
                                                                 validation_data_list[i])
 
-                MAP_final += MAP
+                data_list.append(MAP)
 
-            MAP_final /= kfold
-
+        MAP_final, variance = compute_mean_and_variance(data_list)
+        print("Variance over k-fold:", variance)
         print("MAP-10 score:", MAP_final)
 
         return MAP_final

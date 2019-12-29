@@ -41,8 +41,8 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, leave_ou
     print("Splitting data into train and test...")
     sample_size = int((1 - split_fraction) * URM_all.shape[0])
 
-    URM_train_test, test_data = hold_out(URM_all.copy(), leave_out, sample_size)
-    URM_train_validation, validation_data = hold_out(URM_train_test.copy(), leave_out, sample_size)
+    URM_train_test, test_data = hold_out(URM_all, leave_out, sample_size)
+    URM_train_validation, validation_data = hold_out(URM_train_test, leave_out, sample_size)
 
     return URM_train_validation, URM_train_test, validation_data, test_data
 
@@ -50,7 +50,7 @@ def split_train_test(URM_all: sparse.csr_matrix, split_fraction: float, leave_ou
 def hold_out(URM, leave_out, sample_size):
     """Set to 0 ten random elements into train matrix for each designated test user"""
 
-    URM_hold_out = copy.deepcopy(URM)
+    URM_hold_out = URM.copy()
     indices = sample_test_users(URM, sample_size, sample_threshold=leave_out)
     hold_out_data = {}
 

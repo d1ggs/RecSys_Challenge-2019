@@ -194,9 +194,10 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
             selection='random',
             max_iter=100,
             tol=1e-4,
-            random_state=None
-            ):
-        assert l1_ratio >= 0 and l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
+            random_state=None,
+            bm_25_norm=False):
+
+        assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
 
         self.l1_ratio = l1_ratio
@@ -210,6 +211,9 @@ class MultiThreadSLIM_ElasticNet(SLIMElasticNetRecommender, BaseItemSimilarityMa
         self.random_state = None
 
         self.workers = workers
+
+        if bm_25_norm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         self.URM_train = check_matrix(self.URM_train, 'csc', dtype=np.float32)
         n_items = self.URM_train.shape[1]

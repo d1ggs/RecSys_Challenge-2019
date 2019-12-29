@@ -16,8 +16,9 @@ item_cbf_space = {
     "topK": hp.hp.choice('topK', np.arange(0, 500, 5)),
     "shrink": hp.hp.uniformint('shrink', 0, 50),
     "similarity": hp.hp.choice('similarity',
-                               ["cosine", "adjusted", "asymmetric", "pearson", "jaccard", "dice", "tversky",
-                                "tanimoto"]),
+                               ["cosine", "jaccard", "dice", "tversky", "tanimoto"]),
+    "bm_25_norm": hp.hp.choice('bm_25_norm', [True, False]),
+
     "normalize": hp.hp.choice('normalize', [True, False])
 }
 

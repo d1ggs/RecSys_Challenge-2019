@@ -20,13 +20,13 @@ class ItemCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=8, shrink=46, normalize=True, similarity="jaccard"):
+    def fit(self, topK=8, shrink=46, normalize=True, similarity="jaccard", bm_25_norm=True):
         self.topK = topK
         self.shrink = shrink
         self.normalize = normalize
         self.similarity = similarity
 
-        if normalize:
+        if bm_25_norm:
             self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize,
