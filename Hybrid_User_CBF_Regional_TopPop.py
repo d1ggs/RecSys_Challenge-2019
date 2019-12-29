@@ -13,7 +13,7 @@ class HybridUserCBFRegionalTopPop(object):
         self.URM_train = URM_train
 
     def fit(self, top_pop_weight=0.02139131367609725, topK=765, shrink=6, normalize=True, bm_25_norm=False, similarity="jaccard",
-            suppress_interactions=False):
+            suppress_interactions=False, asymmetric_alpha=0.5):
         if bm_25_norm:
             self.URM_train = Helper().bm25_normalization(self.URM_train)
 
@@ -21,7 +21,7 @@ class HybridUserCBFRegionalTopPop(object):
         self.user_cbf = UserBasedCBF(self.URM_train)
 
         self.user_cbf.fit(topK=topK, shrink=shrink, normalize=normalize, similarity=similarity,
-                          suppress_interactions=suppress_interactions)
+                          suppress_interactions=suppress_interactions, asymmetric_alpha=asymmetric_alpha)
         self.toppop.fit()
         self.toppop_weight = top_pop_weight
 

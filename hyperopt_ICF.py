@@ -18,8 +18,7 @@ search_space = {
     "topK": hp.hp.choice('topK', np.arange(0, 100, 5)),
     "shrink": hp.hp.uniformint('shrink', 0, 50),
     "bm_25_norm": hp.hp.choice('bm_25_norm', [True, False]),
-    "similarity": hp.hp.choice('similarity',
-                               ["cosine", "jaccard", "dice", "tversky", "tanimoto"]),
+    "similarity": hp.hp.choice('similarity', ["cosine", "jaccard", "dice", "tversky", "tanimoto"])
 }
 
 

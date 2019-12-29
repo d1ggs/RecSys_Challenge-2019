@@ -26,25 +26,28 @@ class UserBasedCBF(object):
         # UCMs loading
         self.UCM = hstack([self.helper.load_ucm_age(), self.helper.load_ucm_region()])
         self.SM = None
+        self.asymmetric_alpha = 0.5
 
     def get_URM_train(self):
         return self.URM_train
 
-    def compute_similarity(self, UCM, topK, shrink):
-        similarity_object = Compute_Similarity_Python(UCM.T, shrink=shrink, topK=topK,
-                                                      normalize=True, similarity="cosine")
+    def compute_similarity(self, UCM):
+        similarity_object = Compute_Similarity_Python(UCM.T, shrink=self.shrink, topK=self.topK,
+                                                      normalize=True, similarity="cosine",
+                                                      asymmetric_alpha=self.asymmetric_alpha)
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=93*5, shrink=1, normalize=True, similarity="dice", suppress_interactions=True):
+    def fit(self, topK=93*5, shrink=1, normalize=True, similarity="dice", asymmetric_alpha=0.5, suppress_interactions=True):
         self.topK = topK
         self.shrink = shrink
         self.similarity = similarity
+        self.asymmetric_alpha = asymmetric_alpha
 
         if normalize:
             self.UCM = self.helper.bm25_normalization(self.UCM)
 
         # Compute similarities
-        self.SM = self.compute_similarity(self.UCM, self.topK, self.shrink)
+        self.SM = self.compute_similarity(self.UCM)
 
         # If necessary remove similarity with cold users
         if suppress_interactions:
