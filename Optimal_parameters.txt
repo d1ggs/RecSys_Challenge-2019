@@ -1,0 +1,1 @@
+hybrid_cold_users = {'bm_25_norm': True, 'normalize': True, 'shrink': 0, 'similarity': 'jaccard', 'suppress_interactions': False, 'topK': 925, 'top_pop_weight': 0.089}

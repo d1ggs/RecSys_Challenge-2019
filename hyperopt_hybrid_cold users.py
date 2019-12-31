@@ -10,9 +10,9 @@ def objective(params):
     print('###########################################')
     print(params)
     params["topK"] = int(params["topK"])
-    if type(params["similarity"]) == tuple:
-        params["asymmetric_alpha"] = params["similarity"][1]
-        params["similarity"] = params["similarity"][0]
+    # if type(params["similarity"]) == tuple:
+    #     params["asymmetric_alpha"] = params["similarity"][1]
+    #     params["similarity"] = params["similarity"][0]
     loss = - RunRecommender.evaluate_on_validation_set(HybridUserCBFRegionalTopPop, params, Kfold=10, user_group="cold", parallel_fit=False, parallelize_evaluation=True)
     return loss
 
@@ -22,9 +22,9 @@ if __name__ == '__main__':
     MAX_EVALS = 100
 
     similarities = ["cosine", "jaccard", "dice"]
-    asymmetric_list = [("asymmetric", i) for i in np.arange(0, 1, 0.1)]
-    similarities.extend(asymmetric_list)
-    print(similarities)
+    # asymmetric_list = [("asymmetric", i) for i in np.arange(0, 1, 0.1)]
+    # similarities.extend(asymmetric_list)
+    # print(similarities)
 
     user_cbf_space = {
         "topK": hp.hp.quniform('topK', 0, 1000, 5),
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     print(best)
     params = space_eval(user_cbf_space, best)
     print(params)
+    params["topK"] = int(params["topK"])
 
     print("############### Performance on test set #################")
     MAP = RunRecommender.evaluate_on_test_set(HybridUserCBFRegionalTopPop, params, Kfold=10, user_group="cold", parallel_fit=False, parallelize_evaluation=True)

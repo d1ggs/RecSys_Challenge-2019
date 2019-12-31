@@ -160,7 +160,7 @@ class Helper(object, metaclass=Singleton):
         else:
             raise AssertionError("The split parameter must be either 'dataset', 'test', or 'validation'")
 
-    def get_train_validation_test_data(self, resplit=False, save_pickle=True, split_fraction=0, leave_out=1):
+    def get_train_validation_test_data(self, resplit=False, save_pickle=True, split_fraction=0):
 
         if not resplit:
             # Load serialized Pickle data
@@ -188,8 +188,7 @@ class Helper(object, metaclass=Singleton):
 
         else:
             URM_train_eval, URM_train_test, eval_data, test_data = split_train_test(self.URM_csr,
-                                                                                    split_fraction=split_fraction,
-                                                                                    leave_out=leave_out)
+                                                                                    split_fraction=split_fraction)
 
             # Serialize the objects with Pickle, for faster loading
 

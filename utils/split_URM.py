@@ -35,12 +35,10 @@ def csr_row_set_nz_to_val(csr, row, value=0):
     csr.data[csr.indptr[row]:csr.indptr[row + 1]] = value
 
 
-def split_train_test(URM_all: sps.csr_matrix, split_fraction: float, leave_out=1):
-    '''Split the full URM into a train URM and a test dictionary.
-    Also save all objects in Pickle serialized format'''
+def split_train_test(URM_all: sps.csr_matrix, split_fraction: float):
+    '''Split the full URM into a train URM and a validation dictionary'''
 
     print("Splitting data into train and test...")
-    sample_size = int((1 - split_fraction) * URM_all.shape[0])
 
     URM_train_test, test_data = leave_one_out(URM_all)
     URM_train_validation, validation_data = leave_one_out(URM_train_test)
@@ -49,7 +47,7 @@ def split_train_test(URM_all: sps.csr_matrix, split_fraction: float, leave_out=1
 
 
 def leave_one_out(URM):
-    """Set to 0 ten random elements into train matrix for each designated test user"""
+    """Set to 0 one random element into train matrix for each designated test user and return the corresponding item"""
 
     URM_hold_out = URM.copy()
     # indices = sample_test_users(URM_hold_out, sample_size, sample_threshold=leave_out)
@@ -70,7 +68,7 @@ def leave_one_out(URM):
             hold_out_item = random.sample(range(start_pos, end_pos), 1)
 
             selected_users.append(user_id)
-            selected_items.append(URM_hold_out.indices[hold_out_item][0])
+            selected_items.append(np.array([URM_hold_out.indices[hold_out_item][0]]))
 
             URM_hold_out.data[hold_out_item] = 0  # set to 0 in train
 
