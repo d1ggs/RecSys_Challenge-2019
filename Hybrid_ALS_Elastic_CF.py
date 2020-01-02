@@ -32,7 +32,7 @@ class HybridALSElasticNetCF(object):
         self.SLIM = MultiThreadSLIM_ElasticNet(URM_train)
         self.als = AlternatingLeastSquare(URM_train)
         # Get the cold users list
-        self.cold_users = Helper().get_cold_user_ids(mode)
+        self.cold_users, _ = Helper().compute_cold_warm_user_ids(URM_train)
 
         # Fit the single recommenders, this saves time in case of changing just the relative weights
 
