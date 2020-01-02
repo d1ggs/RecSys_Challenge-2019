@@ -1,1 +1,2 @@
 hybrid_cold_users = {'bm_25_norm': True, 'normalize': True, 'shrink': 0, 'similarity': 'jaccard', 'suppress_interactions': False, 'topK': 925, 'top_pop_weight': 0.089}
+sslim = {'alpha': 0.0024081648139725204, 'l1_ratio': 0.0007553368138338653, 'positive_only': False, 'side_alpha': 3.86358712510434, 'topK': 65}

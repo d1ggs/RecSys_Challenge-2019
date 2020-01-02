@@ -34,6 +34,7 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
+            print("Instantiating new singleton")
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
@@ -276,6 +277,7 @@ class Helper(object, metaclass=Singleton):
             data = new_data
         icm_price = sps.coo_matrix((data, (row, col)))
         icm_price = icm_price.tocsr()
+
         return icm_price
 
     def load_icm_sub_class(self):
