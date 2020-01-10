@@ -1,32 +1,43 @@
+import multiprocessing
+
 import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK, space_eval
 from Hybrid_SSLIM_CF_RP3beta import HybridSSLIMICFUCFRP3Beta
 from utils.run import RunRecommender
 from utils.helper import Helper
+from utils.schleep import computer_sleep
 
 # HybridUCFICFRecommender = HybridUCFICFRecommender(Helper().URM_train_test)
 
+
+recommender_class = HybridSSLIMICFUCFRP3Beta
+
 N_KFOLD = 10
 
-kfold = True
+kfold = False
+parallel_fit = True
 
-if kfold:
+if kfold > 0:
+    MAP_final = 0
+    recommender_list = []
+
     print("Getting Kfold splits...\n")
     kfold_data = Helper().get_kfold_data(N_KFOLD)
     print("Done!\n")
-    recommender_list = []
     for i in range(N_KFOLD):
         print("Fitting recommender", i+1, "...\n")
-        recommender_list.append(HybridSSLIMICFUCFRP3Beta(kfold_data[i][0], mode="validation"))
+        recommender_list.append(HybridSSLIMICFUCFRP3Beta(kfold_data[i][0], multithreaded=True))
         print("\nCompleted!\n")
 else:
-    hybrid = HybridSSLIMICFUCFRP3Beta(Helper().URM_train_validation, mode="validation")
+    hybrid = HybridSSLIMICFUCFRP3Beta(Helper().URM_train_validation)
+
+
 
 # Step 1 : defining the objective function
 def objective(params):
     print("\n############## New iteration ##############\n", params)
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=True, parallel_fit=True)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=kfold, parallel_fit=False)
     else:
         loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
     return loss
@@ -34,10 +45,12 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'SSLIM_weight': hp.hp.uniform('SSLIM_weight', 0, 1),
-    'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 1),
-    'item_cf_weight': hp.hp.uniform('item_cf_weight', 0, 1),
-    'rp3_weight': hp.hp.uniform('rp3_weight', 0, 1)
+    'SSLIM_weight': hp.hp.uniform('SSLIM_weight', 0.6, 1),
+    # 'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 0.2),
+    # 'item_cf_weight': hp.hp.uniform('item_cf_weight', 0, 0.2),
+    'rp3_weight': hp.hp.uniform('rp3_weight', 0.6, 1),
+    'user_cbf_weight': hp.hp.uniform('user_cbf_weight', 0, 0.3),
+    'user_cf_weight': hp.hp.uniform('user_cf_weight', 0, 0.5)
 }
 
 
@@ -46,17 +59,16 @@ bayes_trials = Trials()
 MAX_EVALS = 100
 
 
-opt = {'SSLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567}
+opt = {'SSLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567, 'user_cbf_weight': 0, 'user_cf_weight': 0}
 
-new_opt = {'SSLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112}
+new_opt = {'SSLIM_weight': 0.8525330515257261, 'item_cbf_weight': 0.03013686377319209, 'item_cf_weight': 0.01129668459365759, 'rp3_weight': 0.9360587800999112, 'user_cbf_weight': 0, 'user_cf_weight': 0}
 
-last_opt = {'SSLIM_weight': 0.8737840927419455, 'item_cbf_weight': 0.037666643326618406, 'item_cf_weight': 0.014294955186782246, 'rp3_weight': 0.9314974601074552}
-
+last_opt = {'SSLIM_weight': 0.8737840927419455, 'item_cbf_weight': 0.037666643326618406, 'item_cf_weight': 0.014294955186782246, 'rp3_weight': 0.9314974601074552, 'user_cbf_weight': 0, 'user_cf_weight': 0}
 
 
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
-            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[opt, new_opt, last_opt])
+            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[])
 
 best = space_eval(search_space, best)
 
@@ -66,6 +78,8 @@ print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
 RunRecommender.evaluate_on_test_set(HybridSSLIMICFUCFRP3Beta, best, Kfold=N_KFOLD)
+
+computer_sleep(verbose=False)
 
 
 ####################################################

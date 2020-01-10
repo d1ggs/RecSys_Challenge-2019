@@ -1,12 +1,12 @@
 import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK
-from Hybrid_ALS_SLIMElastic import HybridALSElasticNet
+from Hybrid_ALS_SLIMElastic import HybridSSLIMUCF
 from utils.run import RunRecommender
 from utils.helper import Helper
 
 
 
-hybrid = HybridALSElasticNet(Helper().URM_train_validation, mode="validation")
+hybrid = HybridSSLIMUCF(Helper().URM_train_validation, mode="validation")
 
 
 ### Step 1 : defining the objective function

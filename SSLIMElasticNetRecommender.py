@@ -47,7 +47,8 @@ class SSLIMElasticNetRecommender(BaseItemSimilarityMatrixRecommender):
 
 
     @ignore_warnings(category=ConvergenceWarning)
-    def fit(self, l1_ratio=0.0007553368138338653, alpha=0.0024081648139725204, positive_only=False, topK=65, verbose=True, side_alpha=3.86358712510434, bm_25_norm=False, random_state=None):
+    def fit(self, l1_ratio=0.0007553368138338653, alpha=0.0024081648139725204, positive_only=False, topK=65, verbose=True, side_alpha=3.86358712510434, bm_25_all=False, random_state=None,
+            bm_25_urm=False, bm_25_icm=False):
 
         assert l1_ratio >= 0 and l1_ratio <= 1, "{}: l1_ratio must be between 0 and 1, provided value was {}".format(
             self.RECOMMENDER_NAME, l1_ratio)
@@ -56,12 +57,18 @@ class SSLIMElasticNetRecommender(BaseItemSimilarityMatrixRecommender):
         self.positive_only = positive_only
         self.topK = topK
 
+        if bm_25_icm:
+            self.ICM = Helper().bm25_normalization(self.ICM)
+
+        if bm_25_urm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
+
         self.ICM = self.ICM.transpose()
         self.ICM *= np.sqrt(side_alpha)
 
         self.URM_train = sps.vstack([self.URM_train, self.ICM])
 
-        if bm_25_norm:
+        if bm_25_all:
             self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         # initialize the ElasticNet model
@@ -210,15 +217,23 @@ class MultiThreadSSLIM_ElasticNet(SSLIMElasticNetRecommender, BaseItemSimilarity
             max_iter=100,
             tol=1e-4,
             random_state=None,
-            bm_25_norm=False,
+            bm_25_all=False,
+            bm_25_urm=False,
+            bm_25_icm=False,
             # SSLIM feature weight
             side_alpha=3.86358712510434):
 
         assert 0 <= l1_ratio <= 1, "SLIM_ElasticNet: l1_ratio must be between 0 and 1, provided value was {}".format(
             l1_ratio)
 
+        if bm_25_icm:
+            self.ICM = Helper().bm25_normalization(self.ICM)
+
         self.ICM = self.ICM.transpose()
         self.ICM *= np.sqrt(side_alpha)
+
+        if bm_25_urm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         self.URM_train = sps.vstack([self.URM_train, self.ICM])
 
@@ -234,7 +249,7 @@ class MultiThreadSSLIM_ElasticNet(SSLIMElasticNetRecommender, BaseItemSimilarity
 
         self.workers = workers
 
-        if bm_25_norm:
+        if bm_25_all:
             self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         self.URM_train = check_matrix(self.URM_train, 'csc', dtype=np.float32)

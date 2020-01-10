@@ -18,12 +18,14 @@ class UserCollaborativeFilter(object):
 
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=410, shrink=0, normalize=True, similarity = "cosine"):
+    def fit(self, topK=410, shrink=0, normalize=True, similarity="cosine", bm_25_norm=False):
 
         self.topK = topK
         self.shrink = shrink
         self.normalize = normalize
         self.similarity = similarity
+        if bm_25_norm:
+            self.URM_train = Helper().bm25_normalization(self.URM_train)
         self.W_sparse = self.compute_similarity_matrix(self.URM_train, self.shrink, self.topK, self.normalize, self.similarity)
 
     def compute_scores(self, user_id):

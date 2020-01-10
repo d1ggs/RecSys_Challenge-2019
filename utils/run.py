@@ -38,6 +38,19 @@ def prepare_cold_users(URM_train, evaluation_data):
 
     return cold_users
 
+def prepare_warm_users(URM_train, evaluation_data):
+    _, warm_users = Helper().compute_cold_warm_user_ids(URM_train)
+    warm_users = list(warm_users)
+
+    ok_users = []
+    for user in warm_users:
+        if user in evaluation_data.keys():
+            ok_users.append(user)
+
+    warm_users = set(ok_users)
+
+    return warm_users
+
 
 def fit_recommender(params):
     recommender_class = params[0]
@@ -117,7 +130,7 @@ class RunRecommender(object):
                 if user_group == "cold":
                     users_to_evaluate_list.append(prepare_cold_users(data[1], data[3]))
                 elif user_group == "warm":
-                    raise NotImplementedError
+                    users_to_evaluate_list.append(prepare_warm_users(data[1], data[3]))
                 else:
                     users_to_evaluate_list.append(list(data[3].keys()))
 
@@ -201,7 +214,7 @@ class RunRecommender(object):
                 if user_group == "cold":
                     users_to_evaluate_list.append(prepare_cold_users(data[0], data[2]))
                 elif user_group == "warm":
-                    raise NotImplementedError
+                    users_to_evaluate_list.append(prepare_warm_users(data[0], data[2]))
                 else:
                     users_to_evaluate_list.append(list(data[2].keys()))
 
@@ -221,13 +234,6 @@ class RunRecommender(object):
             else:
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
-
-                    if user_group == "cold":
-                        users_to_evaluate = prepare_cold_users(URM_validation, validation_data)
-                    elif user_group == "warm":
-                        raise NotImplementedError
-                    else:
-                        users_to_evaluate = validation_data.keys()
 
                     recommender = recommender_class(URM_validation, mode="test")
                     recommender.fit(**fit_parameters)

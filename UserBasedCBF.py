@@ -4,7 +4,8 @@ from Legacy.Base.Similarity.Compute_Similarity_Python import Compute_Similarity_
 import numpy as np
 from utils.helper import Helper
 from utils.run import RunRecommender
-from scipy.sparse import hstack, lil_matrix, csc_matrix
+from scipy.sparse import hstack, csc_matrix
+
 
 def csc_col_set_nz_to_val(csc, column, value=0):
     """Set all nonzero elements (elements currently in the sparsity pattern)
@@ -12,13 +13,13 @@ def csc_col_set_nz_to_val(csc, column, value=0):
     """
     if not isinstance(csc, csc_matrix):
         raise ValueError('Matrix given must be of CSR format.')
-    csc.data[csc.indptr[column]:csc.indptr[column+1]] = value
+    csc.data[csc.indptr[column]:csc.indptr[column + 1]] = value
 
 
 class UserBasedCBF(object):
     RECOMMENDER_NAME = "UserBasedCBF"
 
-    def __init__(self, URM_train, mode="dataset") :
+    def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
         self.W_sparse = None
         self.helper = Helper()
@@ -33,17 +34,18 @@ class UserBasedCBF(object):
 
     def compute_similarity(self, UCM):
         similarity_object = Compute_Similarity_Python(UCM.T, shrink=self.shrink, topK=self.topK,
-                                                      normalize=True, similarity="cosine",
+                                                      normalize=self.normalize, similarity=self.similarity,
                                                       asymmetric_alpha=self.asymmetric_alpha)
         return similarity_object.compute_similarity()
 
-    def fit(self, topK=93*5, shrink=1, normalize=True, similarity="dice", asymmetric_alpha=0.5, suppress_interactions=True):
+    def fit(self, topK=93 * 5, shrink=1, normalize=True, similarity="dice", asymmetric_alpha=0.5, suppress_interactions=True, bm_25_normalization=False):
         self.topK = topK
         self.shrink = shrink
         self.similarity = similarity
         self.asymmetric_alpha = asymmetric_alpha
+        self.normalize = normalize
 
-        if normalize:
+        if bm_25_normalization:
             self.UCM = self.helper.bm25_normalization(self.UCM)
 
         # Compute similarities
@@ -93,7 +95,7 @@ if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
     ubcbf = UserBasedCBF
-    params = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93*5}
-    #ubcbf.helper.split_ucm_region()
+    params = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93 * 5}
+    # ubcbf.helper.split_ucm_region()
     RunRecommender.evaluate_on_test_set(ubcbf, params, user_group="cold", parallel_fit=True, Kfold=4)
     # print('{0:.128f}'.format(map10))

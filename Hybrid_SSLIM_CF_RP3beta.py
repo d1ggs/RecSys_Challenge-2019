@@ -5,6 +5,9 @@ from Hybrid_User_CBF_Regional_TopPop import HybridUserCBFRegionalTopPop
 from RP3betaRecommender import RP3betaRecommender
 
 import numpy as np
+
+from UserBasedCBF import UserBasedCBF
+from UserCollaborativeFilter import UserCollaborativeFilter
 from utils.run import RunRecommender
 from utils.helper import Helper
 
@@ -25,18 +28,31 @@ item_cbf_parameters = {'normalize': True,
                        'similarity': 'cosine',
                        'topK': 200}
 
-SSLIM_parameters = {'alpha': 0.0024081648139725204,
+SSLIM_parameters_old = {'alpha': 0.0024081648139725204,
                    'l1_ratio': 0.0007553368138338653,
                    'positive_only': False,
                    'side_alpha': 3.86358712510434,
                    'topK': 65}
+
+SSLIM_parameters = {'alpha': 0.005965676587258601,
+                    'bm_25_all': False,
+                    'bm_25_icm': False,
+                    'bm_25_urm': False,
+                    'l1_ratio': 0.00024351430967307788,
+                    'positive_only': True,
+                    'side_alpha': 3.6032767753555603,
+                    'topK': 20}
+
+UCF_parameters = {'bm_25_norm': True, 'normalize': False, 'shrink': 29, 'similarity': 'cosine', 'topK': 950}
+
+user_cbf_parameters = {'bm_25_normalization': False, 'normalize': False, 'shrink': 17, 'similarity': 'jaccard', 'topK': 495}
 
 
 class HybridSSLIMICFUCFRP3Beta(object):
 
     RECOMMENDER_NAME = "HybridElasticNetCFRP3Beta"
 
-    def __init__(self, URM_train, mode="dataset", multithreaded=False, id=None):
+    def __init__(self, URM_train, multithreaded=True, mode=""):
         self.URM_train = URM_train
 
         # Init single recommenders
@@ -48,6 +64,9 @@ class HybridSSLIMICFUCFRP3Beta(object):
         else:
             self.SSLIM = SSLIMElasticNetRecommender(URM_train)
         self.rp3 = RP3betaRecommender(URM_train)
+        self.user_cf = UserCollaborativeFilter(URM_train)
+        self.user_cbf = UserBasedCBF(URM_train)
+
         # Get the cold users list
         self.cold_users, _ = Helper().compute_cold_warm_user_ids(URM_train)
 
@@ -58,26 +77,34 @@ class HybridSSLIMICFUCFRP3Beta(object):
         self.rp3.fit(**rp3_parameters)
         self.hybrid_cold.fit()
         self.SSLIM.fit(**SSLIM_parameters)
+        self.user_cf.fit(**UCF_parameters)
+        self.user_cbf.fit(**user_cbf_parameters)
 
-    def fit(self, SSLIM_weight=0.8950096358670148, item_cbf_weight=0.034234727663263104, item_cf_weight=0.011497379340447589, rp3_weight = 0.8894480634395567):
+    def fit(self, SSLIM_weight=0.8950096358670148, item_cbf_weight=0.034234727663263104, item_cf_weight=0.011497379340447589, rp3_weight = 0.8894480634395567, user_cf_weight=0, user_cbf_weight=0):
 
         # Normalize the weights, just in case
-        weight_sum = item_cf_weight + SSLIM_weight + item_cbf_weight + rp3_weight
+        weight_sum = item_cf_weight + SSLIM_weight + item_cbf_weight + rp3_weight + user_cbf_weight + user_cf_weight
 
         self.weights = {"item_cf": item_cf_weight/weight_sum,
                         "SSLIM": SSLIM_weight / weight_sum,
                         "item_cbf": item_cbf_weight/weight_sum,
-                        "rp3": rp3_weight/weight_sum}
+                        "rp3": rp3_weight/weight_sum,
+                        "user_cf": user_cf_weight,
+                        "user_cbf": user_cbf_weight}
 
     def compute_scores(self, user_id):
         scores_item_cf = self.item_cf.compute_scores(user_id)
         scores_SSLIM = self.SSLIM._compute_item_score(user_id).squeeze()
         scores_item_cbf = self.item_cbf.compute_scores(user_id)
         scores_rp3 = self.rp3._compute_item_score(user_id).squeeze()
+        scores_user_cf = self.user_cf.compute_scores(user_id)
+        scores_user_cbf = self.user_cbf.compute_scores(user_id)
         scores = (self.weights["item_cf"] * scores_item_cf) + \
                  (self.weights["SSLIM"] * scores_SSLIM) + \
                  (self.weights["item_cbf"] * scores_item_cbf) +\
-                 (self.weights["rp3"] * scores_rp3)
+                 (self.weights["rp3"] * scores_rp3) + \
+                 (self.weights["user_cf"] * scores_user_cf) + \
+                 (self.weights["user_cbf"] * scores_user_cbf)
 
         return scores
 
@@ -113,10 +140,12 @@ class HybridSSLIMICFUCFRP3Beta(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
 
-    weights = {}
+    weights = {'SSLIM_weight': 0.35630766332989877, 'item_cbf_weight': 0.0016397036630690053, 'item_cf_weight': 0.028077081167200757, 'rp3_weight': 0.6615055983108671}
 
     hybrid_ucficf = HybridSSLIMICFUCFRP3Beta
 
-    RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=4, parallelize_evaluation=True)
-
     RunRecommender.run(hybrid_ucficf, weights)
+
+    #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=10, parallelize_evaluation=True)
+
+
