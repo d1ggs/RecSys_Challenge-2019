@@ -1,7 +1,7 @@
 from tqdm import trange
 
 from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
-from UserBasedCBF import UserBasedCBF
+from UserCBF import UserCBF
 from ItemBasedCBF import ItemBasedCBF
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from UserCollaborativeFilter import UserCollaborativeFilter
@@ -40,7 +40,7 @@ if __name__ == '__main__':
                            "age_weight": 0.3}
 
     slim = MultiThreadSLIM_ElasticNet(URM_train)
-    user_cbf = UserBasedCBF(URM_train)
+    user_cbf = UserCBF(URM_train)
     item_cbf = ItemBasedCBF(URM_train)
     item_based = ItemCollaborativeFilter(URM_train)
     user_based = UserCollaborativeFilter(URM_train)

@@ -16,8 +16,8 @@ def csc_col_set_nz_to_val(csc, column, value=0):
     csc.data[csc.indptr[column]:csc.indptr[column + 1]] = value
 
 
-class UserBasedCBF(object):
-    RECOMMENDER_NAME = "UserBasedCBF"
+class UserCBF(object):
+    RECOMMENDER_NAME = "UserCBF"
 
     def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
@@ -94,7 +94,7 @@ class UserBasedCBF(object):
 if __name__ == "__main__":
     # evaluator = Evaluator()
     # evaluator.split_data_randomly_2()
-    ubcbf = UserBasedCBF
+    ubcbf = UserCBF
     params = {'normalize': True, 'shrink': 1.0, 'similarity': "dice", 'suppress_interactions': True, 'topK': 93 * 5}
     # ubcbf.helper.split_ucm_region()
     RunRecommender.evaluate_on_test_set(ubcbf, params, user_group="cold", parallel_fit=True, Kfold=4)

@@ -7,6 +7,8 @@ import numpy as np
 
 class ItemCBF:
 
+    RECOMMENDER_NAME = "ItemCBF"
+
     def __init__(self, URM, mode="dataset"):
 
         self.URM_train = URM

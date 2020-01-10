@@ -1,12 +1,14 @@
 import numpy as np
 
 from RegionalTopPopRecommender import RegionalTopPopRecommender
-from UserBasedCBF import UserBasedCBF
+from UserCBF import UserCBF
 from utils.helper import Helper
 from utils.run import RunRecommender
 
 
 class HybridUserCBFRegionalTopPop(object):
+
+    RECOMMENDER_NAME = "ColdUsersHybrid"
 
     def __init__(self, URM_train, mode="dataset"):
         self.mode = mode
@@ -18,7 +20,7 @@ class HybridUserCBFRegionalTopPop(object):
             self.URM_train = Helper().bm25_normalization(self.URM_train)
 
         self.toppop = RegionalTopPopRecommender(self.URM_train)
-        self.user_cbf = UserBasedCBF(self.URM_train)
+        self.user_cbf = UserCBF(self.URM_train)
 
         self.user_cbf.fit(topK=topK, shrink=shrink, normalize=normalize, similarity=similarity,
                           suppress_interactions=suppress_interactions, asymmetric_alpha=asymmetric_alpha)

@@ -7,6 +7,8 @@ from utils.run import RunRecommender
 
 class UserCollaborativeFilter(object):
 
+    RECOMMENDER_NAME = "UserCollaborativeFilter"
+
     def __init__(self, URM_train, mode="tomedra"):
         self.URM_train = URM_train
         self.W_sparse = None

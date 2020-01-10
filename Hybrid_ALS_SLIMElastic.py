@@ -93,7 +93,7 @@ if __name__ == "__main__":
     from SSLIMElasticNetRecommender import MultiThreadSSLIM_ElasticNet
     from Hybrid_User_CBF_Regional_TopPop import HybridUserCBFRegionalTopPop
     from UserCollaborativeFilter import UserCollaborativeFilter
-    from UserBasedCBF import UserBasedCBF
+    from UserCBF import UserCBF
 
     import numpy as np
     from utils.run import RunRecommender
@@ -117,7 +117,7 @@ if __name__ == "__main__":
             self.top_pop = HybridUserCBFRegionalTopPop(URM_train)
             self.SSLIM = MultiThreadSSLIM_ElasticNet(URM_train)
             self.UCF = UserCollaborativeFilter(URM_train)
-            self.user_cbf = UserBasedCBF(URM_train)
+            self.user_cbf = UserCBF(URM_train)
             # Get the cold users list
             self.cold_users, _ = Helper().compute_cold_warm_user_ids(URM_train)
 

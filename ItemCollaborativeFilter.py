@@ -9,6 +9,8 @@ from utils.helper import Helper
 
 class ItemCollaborativeFilter(object):
 
+    RECOMMENDER_NAME = "ItemCollaborativeFilter"
+
     def __init__(self, URM_train, mode=""):
         self.URM_train = URM_train
         self.W_sparse = None

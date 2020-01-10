@@ -2,7 +2,15 @@ import multiprocessing
 
 import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK, space_eval
+
+from ALS import AlternatingLeastSquare
+from Hybrid import Hybrid
 from Hybrid_SSLIM_CF_RP3beta import HybridSSLIMICFUCFRP3Beta
+from ItemBasedCBF import ItemCBF
+from RP3betaRecommender import RP3betaRecommender
+from SSLIMElasticNetRecommender import MultiThreadSSLIM_ElasticNet
+from UserCBF import UserCBF
+from UserCollaborativeFilter import UserCollaborativeFilter
 from utils.run import RunRecommender
 from utils.helper import Helper
 from utils.schleep import computer_sleep
@@ -10,7 +18,9 @@ from utils.schleep import computer_sleep
 # HybridUCFICFRecommender = HybridUCFICFRecommender(Helper().URM_train_test)
 
 
-recommender_class = HybridSSLIMICFUCFRP3Beta
+recommender_class = Hybrid
+
+recommenders = [UserCBF, ItemCBF, RP3betaRecommender, MultiThreadSSLIM_ElasticNet, AlternatingLeastSquare]
 
 N_KFOLD = 10
 
@@ -26,16 +36,17 @@ if kfold > 0:
     print("Done!\n")
     for i in range(N_KFOLD):
         print("Fitting recommender", i+1, "...\n")
-        recommender_list.append(HybridSSLIMICFUCFRP3Beta(kfold_data[i][0], multithreaded=True))
+        recommender_list.append(recommender_class(kfold_data[i][0], recommenders))
         print("\nCompleted!\n")
 else:
-    hybrid = HybridSSLIMICFUCFRP3Beta(Helper().URM_train_validation)
+    hybrid = recommender_class(Helper().URM_train_validation, recommenders)
 
 
 
 # Step 1 : defining the objective function
 def objective(params):
     print("\n############## New iteration ##############\n", params)
+    params = {"weights": params}
     if kfold:
         loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=kfold, parallel_fit=False)
     else:
@@ -45,12 +56,13 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'SSLIM_weight': hp.hp.uniform('SSLIM_weight', 0.6, 1),
+    'SSLIMElasticNetRecommender': hp.hp.quniform('SSLIMElasticNetRecommender', 0.6, 1, 0.0001),
     # 'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 0.2),
     # 'item_cf_weight': hp.hp.uniform('item_cf_weight', 0, 0.2),
-    'rp3_weight': hp.hp.uniform('rp3_weight', 0.6, 1),
-    'user_cbf_weight': hp.hp.uniform('user_cbf_weight', 0, 0.3),
-    'user_cf_weight': hp.hp.uniform('user_cf_weight', 0, 0.5)
+    'RP3betaRecommender': hp.hp.quniform('RP3betaRecommender', 0.6, 1, 0.0001),
+    'UserCBF': hp.hp.quniform('user_cbf_weight', 0, 0.3, 0.0001),
+    'ItemCBF': hp.hp.quniform('UserCollaborativeFilter', 0, 0.3, 0.0001),
+    'AlternatingLeastSquare': hp.hp.quniform('AlternatingLeastSquare', 0, 1, 0.0001)
 }
 
 
@@ -77,7 +89,7 @@ best = space_eval(search_space, best)
 print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
-#RunRecommender.evaluate_hybrid_weights_test(hybrid, best)
+RunRecommender.evaluate_on_test_set(HybridSSLIMICFUCFRP3Beta,  {"weights": best}, Kfold=N_KFOLD)
 
 computer_sleep(verbose=False)
 

@@ -3,7 +3,7 @@ import pickle
 import hyperopt as hp
 from hyperopt import Trials, fmin
 from utils.run import RunRecommender
-from UserBasedCBF import UserBasedCBF
+from UserCBF import UserCBF
 import numpy as np
 
 
@@ -11,7 +11,7 @@ import numpy as np
 def objective(params):
     print('###########################################')
     print(params)
-    loss = - RunRecommender.evaluate_on_validation_set(UserBasedCBF, params, Kfold=4, user_group="cold")
+    loss = - RunRecommender.evaluate_on_validation_set(UserCBF, params, Kfold=4, user_group="cold")
     return loss
 
 user_cbf_space = {
@@ -40,4 +40,4 @@ if __name__ == '__main__':
 
 
 
-    MAP = RunRecommender.evaluate_on_test_set(UserBasedCBF, best, Kfold=4, user_group="cold")
+    MAP = RunRecommender.evaluate_on_test_set(UserCBF, best, Kfold=4, user_group="cold")

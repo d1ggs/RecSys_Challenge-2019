@@ -67,13 +67,16 @@ def fit_recommender(params):
 class RunRecommender(object):
 
     @staticmethod
-    def run(recommender_class, fit_parameters, at=10, submission_path="data/recommendation_matrix_to_submit.csv"):
+    def run(recommender_class, fit_parameters, init_params=None, at=10, submission_path="data/recommendation_matrix_to_submit.csv"):
 
         # Helper contains methods to convert URM in CSR
 
+        if init_params is None:
+            init_params = {}
+
         URM_all = Helper().URM_csr
 
-        recommender = recommender_class(URM_all, mode="dataset")
+        recommender = recommender_class(URM_all, mode="dataset", **init_params)
         recommender.fit(**fit_parameters)
 
         RunRecommender.write_submission(recommender, submission_path=submission_path, at=at)

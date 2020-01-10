@@ -11,6 +11,8 @@ class AlternatingLeastSquare:
     https://medium.com/radon-dev/als-implicit-collaborative-filtering-5ed653ba39fe
     """
 
+    RECOMMENDER_NAME = "AlternatingLeastSquare"
+
     def __init__(self, URM_train):
         self.URM_train = URM_train
         
