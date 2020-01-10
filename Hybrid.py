@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # Train and test data are now loaded by the helper
     weights = {"weights": {'AlternatingLeastSquare': 0.1915, 'ItemCBF': 0.0036000000000000003, 'RP3betaRecommender': 0.7574000000000001, 'SSLIMElasticNetRecommender': 0.8771, 'UserCBF': 0.0004}}
 
-    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [UserCBF, ItemCBF, RP3betaRecommender, MultiThreadSSLIM_ElasticNet, AlternatingLeastSquare})
+    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [UserCBF, ItemCBF, RP3betaRecommender, MultiThreadSSLIM_ElasticNet, AlternatingLeastSquare]})
 
     #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=10, parallelize_evaluation=True)
 
