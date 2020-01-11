@@ -25,8 +25,7 @@ recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaReco
 
 N_KFOLD = 10
 
-kfold = False
-parallel_fit = True
+kfold = True
 
 if kfold > 0:
     MAP_final = 0
@@ -69,7 +68,7 @@ search_space = {
 
 # step 3 : storing the results of every iteration
 bayes_trials = Trials()
-MAX_EVALS = 50
+MAX_EVALS = 100
 
 
 # opt = {'SSLIM_weight': 0.8950096358670148, 'item_cbf_weight': 0.034234727663263104, 'item_cf_weight': 0.011497379340447589, 'rp3_weight': 0.8894480634395567, 'user_cbf_weight': 0, 'user_cf_weight': 0}
@@ -90,7 +89,7 @@ best = space_eval(search_space, best)
 print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
-RunRecommender.evaluate_on_test_set(Hybrid,  {"weights": best}, Kfold=N_KFOLD)
+RunRecommender.evaluate_on_test_set(Hybrid, {"weights": best}, Kfold=N_KFOLD)
 
 computer_sleep(verbose=False)
 

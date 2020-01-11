@@ -5,13 +5,13 @@ Created on 16/07/2017
 
 @author: Maurizio Ferrari Dacrema
 """
+import os
 
 """
 This script is called in a subprocess and compiles the cython source file provided
 
 python compile_script.py filename.pyx build_ext --inplace
 """
-
 
 try:
     from setuptools import setup
@@ -20,11 +20,9 @@ except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
 
-
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy, sys, re
-
 
 if len(sys.argv) != 4:
     raise ValueError("Wrong number of parameters received. Expected 4, got {}".format(sys.argv))
@@ -37,12 +35,13 @@ del sys.argv[1]
 
 extensionName = re.sub("\.pyx", "", fileToCompile)
 
+print(numpy.get_include())
 
 ext_modules = Extension(extensionName,
-                [fileToCompile],
-                extra_compile_args=['-O2'],
-                include_dirs=[numpy.get_include()],
-                )
+                        [fileToCompile],
+                        extra_compile_args=['-O2'],
+                        include_dirs=[numpy.get_include()],
+                        )
 
 setup(
     cmdclass={'build_ext': build_ext},

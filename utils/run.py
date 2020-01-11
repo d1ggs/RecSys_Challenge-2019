@@ -58,7 +58,7 @@ def fit_recommender(params):
     id = params[2]
     fit_parameters = params[3]
     mode = params[4]
-    recommender = recommender_class(URM, mode=mode)
+    recommender = recommender_class(URM)
     recommender.fit(**fit_parameters)
 
     return recommender, id
@@ -76,7 +76,7 @@ class RunRecommender(object):
 
         URM_all = Helper().URM_csr
 
-        recommender = recommender_class(URM_all, mode="dataset", **init_params)
+        recommender = recommender_class(URM_all, **init_params)
         recommender.fit(**fit_parameters)
 
         RunRecommender.write_submission(recommender, submission_path=submission_path, at=at)
@@ -154,7 +154,7 @@ class RunRecommender(object):
                 for i in range(Kfold):
                     URM_test = URMs[i]
 
-                    recommender = recommender_class(URM_test, mode="test")
+                    recommender = recommender_class(URM_test)
                     recommender.fit(**fit_parameters)
 
                     fitted_recommenders.append((recommender, i))
@@ -186,7 +186,7 @@ class RunRecommender(object):
         else:
             URM_train = Helper().URM_train_test
 
-            recommender = recommender_class(URM_train, mode="test")
+            recommender = recommender_class(URM_train)
             recommender.fit(**fit_parameters)
             if user_group == "cold":
                 MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
@@ -238,7 +238,7 @@ class RunRecommender(object):
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
 
-                    recommender = recommender_class(URM_validation, mode="test")
+                    recommender = recommender_class(URM_validation)
                     recommender.fit(**fit_parameters)
 
                     fitted_recommenders.append((recommender, i))
@@ -271,7 +271,7 @@ class RunRecommender(object):
         else:
             URM_train = Helper().URM_train_validation
 
-            recommender = recommender_class(URM_train, mode="test")
+            recommender = recommender_class(URM_train)
             recommender.fit(**fit_parameters)
             if user_group == "cold":
                 MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
