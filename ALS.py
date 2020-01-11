@@ -13,7 +13,7 @@ class AlternatingLeastSquare:
 
     RECOMMENDER_NAME = "AlternatingLeastSquare"
 
-    def __init__(self, URM_train):
+    def __init__(self, URM_train, mode="dataset"):
         self.URM_train = URM_train
         
 
@@ -25,7 +25,7 @@ class AlternatingLeastSquare:
         sparse_item_user = self.URM_train.T
 
         # Initialize the als model and fit it using the sparse item-user matrix
-        model = implicit.als.AlternatingLeastSquares(factors=self.n_factors, regularization=self.regularization, iterations=self.iterations)
+        model = implicit.als.AlternatingLeastSquares(factors=self.n_factors, regularization=self.regularization, use_gpu=True, iterations=self.iterations)
 
 
         alpha_val = 24

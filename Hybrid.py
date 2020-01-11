@@ -153,8 +153,7 @@ class Hybrid(object):
 
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
-    weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}
-}
+    weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}}
 
     RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]})
 
