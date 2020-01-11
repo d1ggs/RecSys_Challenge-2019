@@ -37,7 +37,7 @@ extensionName = re.sub("\.pyx", "", fileToCompile)
 ext_modules = Extension(extensionName,
                 [fileToCompile],
                 extra_compile_args=['-O3'],
-                include_dirs=[numpy.get_include(),],
+                include_dirs=[numpy.get_include()],
                 )
 
 setup(

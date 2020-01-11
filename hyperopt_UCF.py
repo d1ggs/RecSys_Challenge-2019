@@ -36,17 +36,6 @@ if __name__ == '__main__':
     best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
                 max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[])
 
-    params = space_eval(search_space, best)
-
-    ### best will the return the the best hyperparameter set
-
-
-    print("Best parameters:")
-    print(params)
-    params["topK"] = int(params["topK"])
-
-
-
     ### best will the return the the best hyperparameter set
 
     params = space_eval(search_space, best)
