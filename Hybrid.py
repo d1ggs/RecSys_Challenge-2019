@@ -4,7 +4,7 @@ from ItemCollaborativeFilter import ItemCollaborativeFilter
 from SSLIMElasticNetRecommender import MultiThreadSSLIM_ElasticNet, SSLIMElasticNetRecommender
 from Hybrid_User_CBF_Regional_TopPop import HybridUserCBFRegionalTopPop
 from RP3betaRecommender import RP3betaRecommender
-
+from SLIMElasticNetRecommender import MultiThreadSLIM_ElasticNet
 import numpy as np
 
 from UserCBF import UserCBF
@@ -31,32 +31,36 @@ item_cbf_parameters = {'normalize': True,
                        'shrink': 5,
                        'similarity': 'cosine',
                        'topK': 200}
+SLIM_parameters = {'alpha': 0.0023512567548654,
+                   'l1_ratio': 0.0004093694334328875,
+                   'positive_only': True,
+                   'topK': 25}
 
-SSLIM_parameters_old = {'alpha': 0.0024081648139725204,
-                   'l1_ratio': 0.0007553368138338653,
-                   'positive_only': False,
-                   'side_alpha': 3.86358712510434,
-                   'topK': 65}
+# SSLIM_parameters_old = {'alpha': 0.0024081648139725204,
+#                    'l1_ratio': 0.0007553368138338653,
+#                    'positive_only': False,
+#                    'side_alpha': 3.86358712510434,
+#                    'topK': 65}
+#
+# SSLIM_parameters = {'alpha': 0.005965676587258601,
+#                     'bm_25_all': False,
+#                     'bm_25_icm': False,
+#                     'bm_25_urm': False,
+#                     'l1_ratio': 0.00024351430967307788,
+#                     'positive_only': True,
+#                     'side_alpha': 3.6032767753555603,
+#                     'topK': 20}
 
-SSLIM_parameters = {'alpha': 0.005965676587258601,
-                    'bm_25_all': False,
-                    'bm_25_icm': False,
-                    'bm_25_urm': False,
-                    'l1_ratio': 0.00024351430967307788,
-                    'positive_only': True,
-                    'side_alpha': 3.6032767753555603,
-                    'topK': 20}
 
-UCF_parameters = {'bm_25_norm': True, 'normalize': False, 'shrink': 29, 'similarity': 'cosine', 'topK': 950}
+# UCF_parameters = {'bm_25_norm': True, 'normalize': False, 'shrink': 29, 'similarity': 'cosine', 'topK': 950}
 
-user_cbf_parameters = {'bm_25_normalization': False, 'normalize': False, 'shrink': 17, 'similarity': 'jaccard', 'topK': 495}
+# user_cbf_parameters = {'bm_25_normalization': False, 'normalize': False, 'shrink': 17, 'similarity': 'jaccard', 'topK': 495}
 
 parameters = {"ItemCollaborativeFilter": item_cf_parameters,
-              "SSLIMElasticNetRecommender": SSLIM_parameters,
+              "SLIMElasticNetRecommender": SLIM_parameters,
               "RP3betaRecommender": rp3_parameters,
-              "UserCBF": user_cbf_parameters,
               "ItemCBF": item_cbf_parameters,
-              "UserCollaborativeFilter": UCF_parameters,
+              "ItemCF": item_cf_parameters,
               "AlternatingLeastSquare": als_parameters,
               "ColdUsersHybrid": {}}
 
@@ -107,7 +111,7 @@ class Hybrid(object):
 
         for recommender in self.recommenders:
             # Deal with some legacy implementations
-            if recommender == "SSLIMElasticNetRecommender" or recommender == "RP3betaRecommender":
+            if recommender == "SLIMElasticNetRecommender" or recommender == "SSLIMElasticNetRecommender" or recommender == "RP3betaRecommender":
                 score = self.recommenders[recommender]._compute_item_score(user_id).squeeze()
             # Compute regular scores
             else:
@@ -149,9 +153,10 @@ class Hybrid(object):
 
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
-    weights = {"weights": {'AlternatingLeastSquare': 0.1915, 'ItemCBF': 0.0036000000000000003, 'RP3betaRecommender': 0.7574000000000001, 'SSLIMElasticNetRecommender': 0.8771, 'UserCBF': 0.0004}}
+    weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}
+}
 
-    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [UserCBF, ItemCBF, RP3betaRecommender, MultiThreadSSLIM_ElasticNet, AlternatingLeastSquare]})
+    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]})
 
     #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=10, parallelize_evaluation=True)
 
