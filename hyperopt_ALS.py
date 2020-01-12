@@ -4,6 +4,7 @@ from ALS import AlternatingLeastSquare
 from utils.run import RunRecommender
 import numpy as np
 from utils.helper import Helper
+from utils.schleep import computer_sleep
 
 helper = Helper()
 import gc
@@ -51,9 +52,11 @@ if __name__ == '__main__':
 
     params = space_eval(search_space, best)
     print("############### Best parameters ###############")
-    params["topK"] = int(params["topK"])
     print(params)
 
     print("############### Test set performance ###############")
     RunRecommender.evaluate_on_test_set(AlternatingLeastSquare, params, parallel_fit=False, Kfold=N_K_FOLD,
                                         parallelize_evaluation=True, user_group="warm")
+
+    computer_sleep(verbose=False)
+
