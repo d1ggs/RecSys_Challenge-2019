@@ -3,6 +3,8 @@ sslim = {'alpha': 0.0024081648139725204, 'l1_ratio': 0.0007553368138338653, 'pos
 sslim = {'alpha': 0.005965676587258601, 'bm_25_all': False, 'bm_25_icm': False, 'bm_25_urm': False, 'l1_ratio': 0.00024351430967307788, 'positive_only': True, 'side_alpha': 3.6032767753555603, 'topK': 20}
 UCF = {'bm_25_norm': True, 'normalize': False, 'shrink': 29, 'similarity': 'cosine', 'topK': 950}
 user_cbf_warm = {'bm_25_normalization': False, 'normalize': False, 'shrink': 17, 'similarity': 'jaccard', 'topK': 495}
+als = {'n_factors': 510.0, 'regularization': 0.0002597662348199242}
+
 
 
  
