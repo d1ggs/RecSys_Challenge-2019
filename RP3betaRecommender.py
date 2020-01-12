@@ -153,9 +153,10 @@ class RP3betaRecommender(BaseItemSimilarityMatrixRecommender):
         self.W_sparse = check_matrix(self.W_sparse, format='csr')
 
 if __name__ == "__main__":
-    opt2 = {'alpha': 1.0007888517936574, 'beta': 0.04055276086709765, 'implicit': True, 'min_rating': 0, 'normalize_similarity': True, 'topK': 26}
-    opt ={'alpha': 1.009077614740585, 'beta': 0.029849929646199647, 'implicit': False, 'min_rating': 0, 'normalize_similarity': False, 'topK': 600}
+    # opt2 = {'alpha': 1.0007888517936574, 'beta': 0.04055276086709765, 'implicit': True, 'min_rating': 0, 'normalize_similarity': True, 'topK': 26}
+    # opt ={'alpha': 1.009077614740585, 'beta': 0.029849929646199647, 'implicit': True, 'min_rating': 0, 'normalize_similarity': True, 'topK': 600}
+    opt_kfold = {'alpha': 0.29165867718335486, 'beta': 0.20255242992271763, 'topK': 50.0, 'implicit': True, 'min_rating': 0, 'normalize_similarity': True, 'topK': 26}
 
     # RunRecommender.evaluate_on_validation_set(RP3betaRecommender, opt)
-    RunRecommender.evaluate_on_test_set(RP3betaRecommender, opt2)
-    RunRecommender.evaluate_on_test_set(RP3betaRecommender, opt)
+
+    RunRecommender.run(RP3betaRecommender, opt_kfold)

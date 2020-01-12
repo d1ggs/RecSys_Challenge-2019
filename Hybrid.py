@@ -21,11 +21,13 @@ item_cf_parameters = {'shrink': 46.0, 'similarity': "jaccard", 'topK': 8}
 als_parameters = {'n_factors': 680, 'regularization': 0.08905996811679368, 'iterations': 30}
 
 
-rp3_parameters = {'alpha': 0.31932803725825626,
-                  'beta': 0.19051435359666555,
-                  'implicit': True, 'min_rating': 0,
-                  'normalize_similarity': True,
-                  'topK': 56}
+rp3_parameters = {'alpha': 0.29165867718335486,
+                  'beta': 0.20255242992271763,
+                  'topK': 50,
+                  'implicit': True,
+                  'min_rating': 0,
+                  'normalize_similarity': True}
+
 
 item_cbf_parameters = {'normalize': True,
                        'shrink': 5,
@@ -153,9 +155,11 @@ class Hybrid(object):
 
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
-    weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}}
+    # weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}}
+    weights = {"weights": {'RP3betaRecommender': 1}}
 
-    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]})
+    # RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]})
+    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [RP3betaRecommender]})
 
     #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=10, parallelize_evaluation=True)
 
