@@ -156,10 +156,11 @@ class Hybrid(object):
 if __name__ == "__main__":
     # Train and test data are now loaded by the helper
     # weights = {"weights": {'AlternatingLeastSquare': 0.09136760425375567, 'ItemCBF': 0.01686781824511765, 'ItemCollaborativeFilter': 0.03454041362675262, 'RP3betaRecommender': 0.8187162817070645, 'SLIMElasticNetRecommender': 0.7756431422518303}}
-    weights = {"weights": {'RP3betaRecommender': 1}}
+    weights = {"weights":{'ItemCBF': 0.013769403495491125, 'ItemCollaborativeFilter': 0.015447034894805844, 'RP3betaRecommender': 0.9945281573130214, 'SLIMElasticNetRecommender': 0.7629862396511091}}
+    # weights = {"weights": {'RP3betaRecommender': 1}}
 
-    # RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]})
-    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [RP3betaRecommender]})
+    RunRecommender.run(Hybrid, weights, init_params={"recommenders": [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF]})
+    #RunRecommender.run(Hybrid, weights, init_params={"recommenders": [RP3betaRecommender]})
 
     #RunRecommender.evaluate_on_test_set(hybrid_ucficf, weights, Kfold=10, parallelize_evaluation=True)
 
