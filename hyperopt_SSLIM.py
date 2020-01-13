@@ -12,7 +12,7 @@ def objective(params):
     print(params)
     params["random_state"] = 1234
     params["topK"] = int(params["topK"])
-    loss = - RunRecommender.evaluate_on_validation_set(MultiThreadSSLIM_ElasticNet, params, Kfold=6, user_group="warm")
+    loss = - RunRecommender.evaluate_on_validation_set(MultiThreadSSLIM_ElasticNet, params, Kfold=10, user_group="warm")
     return loss
 
 elasticnet_space = {

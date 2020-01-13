@@ -4,7 +4,7 @@ sslim = {'alpha': 0.005965676587258601, 'bm_25_all': False, 'bm_25_icm': False, 
 UCF = {'bm_25_norm': True, 'normalize': False, 'shrink': 29, 'similarity': 'cosine', 'topK': 950}
 user_cbf_warm = {'bm_25_normalization': False, 'normalize': False, 'shrink': 17, 'similarity': 'jaccard', 'topK': 495}
 als = {'n_factors': 510.0, 'regularization': 0.0002597662348199242}
-
+slim_bpr = {'batch_size': 750, 'beta_1': 0.500092640596499, 'beta_2': 0.5910590963815178, 'gamma': 0.6420501483572681, 'lambda_i': 0.01409907931507057, 'lambda_j': 0.028865691521918, 'learning_rate': 2.7803695798967347e-05, 'topK': 50, 'random_seed': 1234, 'epochs': 30}
 
 
  
