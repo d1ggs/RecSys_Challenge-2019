@@ -21,7 +21,7 @@ from utils.schleep import computer_sleep
 
 recommender_class = Hybrid
 
-recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]
+recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF]
 
 N_KFOLD = 10
 
@@ -62,7 +62,7 @@ search_space = {
     'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.8, 1),
     # 'UserCBF': hp.hp.quniform('user_cbf_weight', 0, 0.3, 0.0001),
     'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.008, 0.02),
-    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2)
+    # 'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2)
 }
 
 
@@ -98,5 +98,7 @@ computer_sleep(verbose=False)
 # Test Map to beat 0.05112213282549001             #
 # MAP-10 score: 0.05107393648464094 on kfold, k = 4#
 ####################################################
+
+new_best = {'ItemCBF': 0.013769403495491125, 'ItemCollaborativeFilter': 0.015447034894805844, 'RP3betaRecommender': 0.9945281573130214, 'SLIMElasticNetRecommender': 0.7629862396511091}
 
 # {'SLIM_weight': 0.7989266787188458, 'item_cbf_weight': 0.03258554983815878, 'item_cf_weight': 0.0077609799300920445, 'rp3_weight': 0.6740989817682256}
