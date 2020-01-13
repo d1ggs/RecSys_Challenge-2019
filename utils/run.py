@@ -113,9 +113,12 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_test_set(recommender_class, fit_parameters, users_to_evaluate=None, Kfold=0,
+    def evaluate_on_test_set(recommender_class, fit_parameters, init_params=None, users_to_evaluate=None, Kfold=0,
                              parallelize_evaluation=False,
                              parallel_fit=False, user_group="all"):
+
+        if init_params is None:
+            init_params = {}
 
         evaluator = Evaluator(test_mode=True)
 
@@ -139,6 +142,9 @@ class RunRecommender(object):
 
             if parallel_fit and Kfold <= num_cores:
 
+                if init_params is not None:
+                    raise NotImplementedError("Can't handle init params in parallel fit")
+
                 print("Parallelize fitting recommenders...")
 
                 with multiprocessing.Pool(processes=num_cores) as p:
@@ -154,7 +160,7 @@ class RunRecommender(object):
                 for i in range(Kfold):
                     URM_test = URMs[i]
 
-                    recommender = recommender_class(URM_test)
+                    recommender = recommender_class(URM_test, **init_params)
                     recommender.fit(**fit_parameters)
 
                     fitted_recommenders.append((recommender, i))
@@ -186,8 +192,9 @@ class RunRecommender(object):
         else:
             URM_train = Helper().URM_train_test
 
-            recommender = recommender_class(URM_train)
+            recommender = recommender_class(URM_train, **init_params)
             recommender.fit(**fit_parameters)
+
             if user_group == "cold":
                 MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
             else:
@@ -198,8 +205,11 @@ class RunRecommender(object):
         return MAP_final
 
     @staticmethod
-    def evaluate_on_validation_set(recommender_class, fit_parameters, user_group="all", users_to_evaluate=None, Kfold=0,
+    def evaluate_on_validation_set(recommender_class, fit_parameters, init_params=None, user_group="all", users_to_evaluate=None, Kfold=0,
                                    parallel_fit=False, parallelize_evaluation=False):
+
+        if init_params is None:
+            init_params = {}
 
         evaluator = Evaluator(test_mode=False)
 
@@ -222,6 +232,10 @@ class RunRecommender(object):
                     users_to_evaluate_list.append(list(data[2].keys()))
 
             if parallel_fit and Kfold <= num_cores:
+
+                if init_params is not None:
+                    raise NotImplementedError("Can't handle init params in parallel fit")
+
                 print("Parallelize fitting recommenders...")
 
                 with multiprocessing.Pool(processes=Kfold) as p:
@@ -238,7 +252,7 @@ class RunRecommender(object):
                 for i in range(Kfold):
                     URM_validation, _, validation_data, _ = Helper().get_kfold_data(Kfold)[i]
 
-                    recommender = recommender_class(URM_validation)
+                    recommender = recommender_class(URM_validation, **init_params)
                     recommender.fit(**fit_parameters)
 
                     fitted_recommenders.append((recommender, i))
@@ -271,8 +285,9 @@ class RunRecommender(object):
         else:
             URM_train = Helper().URM_train_validation
 
-            recommender = recommender_class(URM_train)
+            recommender = recommender_class(URM_train, **init_params)
             recommender.fit(**fit_parameters)
+
             if user_group == "cold":
                 MAP_final, _ = evaluator.evaluate_recommender_on_cold_users(recommender)
             else:
