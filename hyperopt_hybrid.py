@@ -22,7 +22,11 @@ from utils.schleep import computer_sleep
 
 recommender_class = Hybrid
 
+<<<<<<< Updated upstream
 recommenders = [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]
+=======
+recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]
+>>>>>>> Stashed changes
 
 N_KFOLD = 10
 
@@ -57,6 +61,7 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
+<<<<<<< Updated upstream
     'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.6, 1),
     # 'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 0.2),
     'ItemCollaborativeFilter': hp.hp.uniform('ItemCollaborativeFilter', 0.01, 0.04),
@@ -65,6 +70,13 @@ search_space = {
     'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.001, 0.1),
     'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.3),
     'SLIM_BPR_Recommender': hp.hp.uniform('SLIM_BPR_Recommender', 0,1)
+=======
+    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.75, 1),
+    'ItemCollaborativeFilter': hp.hp.uniform('ItemCollaborativeFilter', 0.01, 0.04),
+    'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.75, 1),
+    'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.008, 0.02),
+    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2)
+>>>>>>> Stashed changes
 }
 
 
@@ -91,12 +103,15 @@ best = space_eval(search_space, best)
 print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
+<<<<<<< Updated upstream
 RunRecommender.evaluate_on_test_set(Hybrid, {"weights": best}, Kfold=N_KFOLD,
                                     init_params={"recommenders": [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]},
                                     parallelize_evaluation=False,
                                     parallel_fit=False)
+=======
+RunRecommender.evaluate_on_test_set(Hybrid, fit_parameters={"weights": best}, init_params={"recommenders": recommenders}, Kfold=N_KFOLD)
+>>>>>>> Stashed changes
 
-computer_sleep(verbose=False)
 
 
 ####################################################
