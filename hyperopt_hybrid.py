@@ -22,11 +22,7 @@ from utils.schleep import computer_sleep
 
 recommender_class = Hybrid
 
-<<<<<<< Updated upstream
-recommenders = [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]
-=======
-recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]
->>>>>>> Stashed changes
+recommenders = [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]
 
 N_KFOLD = 10
 
@@ -53,7 +49,7 @@ def objective(params):
     print("\n############## New iteration ##############\n", params)
     params = {"weights": params}
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=False, parallel_fit=False)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=True, parallel_fit=False)
     else:
         loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
     return loss
@@ -61,22 +57,14 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-<<<<<<< Updated upstream
-    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.6, 1),
+    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.75, 1),
     # 'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 0.2),
     'ItemCollaborativeFilter': hp.hp.uniform('ItemCollaborativeFilter', 0.01, 0.04),
-    'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.7, 1),
-    # 'UserCBF': hp.hp.quniform('user_cbf_weight', 0, 0.3, 0.0001),
-    'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.001, 0.1),
-    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.3),
-    'SLIM_BPR_Recommender': hp.hp.uniform('SLIM_BPR_Recommender', 0,1)
-=======
-    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.75, 1),
-    'ItemCollaborativeFilter': hp.hp.uniform('ItemCollaborativeFilter', 0.01, 0.04),
     'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.75, 1),
+    # 'UserCBF': hp.hp.quniform('user_cbf_weight', 0, 0.3, 0.0001),
     'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.008, 0.02),
-    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2)
->>>>>>> Stashed changes
+    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2),
+    #'SLIM_BPR_Recommender': hp.hp.uniform('SLIM_BPR_Recommender', 0,1)
 }
 
 
@@ -91,7 +79,7 @@ MAX_EVALS = 100
 #
 # last_opt = {'SSLIM_weight': 0.8737840927419455, 'item_cbf_weight': 0.037666643326618406, 'item_cf_weight': 0.014294955186782246, 'rp3_weight': 0.9314974601074552, 'user_cbf_weight': 0, 'user_cf_weight': 0}
 #
-
+opt =
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
             max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
