@@ -4,6 +4,7 @@ import hyperopt as hp
 from hyperopt import Trials, fmin, STATUS_OK, space_eval
 
 from ALS import AlternatingLeastSquare
+from SLIM_BPR.Cython.SLIM_BPR_Cython import SLIM_BPR_Cython
 from ItemCollaborativeFilter import ItemCollaborativeFilter
 from Hybrid import Hybrid
 from Hybrid_SSLIM_CF_RP3beta import HybridSSLIMICFUCFRP3Beta
@@ -21,7 +22,7 @@ from utils.schleep import computer_sleep
 
 recommender_class = Hybrid
 
-recommenders = [MultiThreadSLIM_ElasticNet, ItemCollaborativeFilter, RP3betaRecommender, ItemCBF]
+recommenders = [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]
 
 N_KFOLD = 10
 
@@ -48,7 +49,7 @@ def objective(params):
     print("\n############## New iteration ##############\n", params)
     params = {"weights": params}
     if kfold:
-        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=kfold, parallel_fit=False)
+        loss = - RunRecommender.evaluate_hybrid_weights_validation_kfold(recommender_list, params, kfold=N_KFOLD, parallelize_evaluation=False, parallel_fit=False)
     else:
         loss = - RunRecommender.evaluate_hybrid_weights_validation(hybrid, params)
     return loss
@@ -56,13 +57,14 @@ def objective(params):
 
 # step 2 : defining the search space
 search_space = {
-    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.75, 1),
+    'SLIMElasticNetRecommender': hp.hp.uniform('SLIMElasticNetRecommender', 0.6, 1),
     # 'item_cbf_weight': hp.hp.uniform('item_cbf_weight', 0, 0.2),
     'ItemCollaborativeFilter': hp.hp.uniform('ItemCollaborativeFilter', 0.01, 0.04),
-    'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.8, 1),
+    'RP3betaRecommender': hp.hp.uniform('RP3betaRecommender', 0.7, 1),
     # 'UserCBF': hp.hp.quniform('user_cbf_weight', 0, 0.3, 0.0001),
-    'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.008, 0.02),
-    # 'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.2)
+    'ItemCBF': hp.hp.uniform('ItemCollaborative', 0.001, 0.1),
+    'AlternatingLeastSquare': hp.hp.uniform('AlternatingLeastSquare', 0.05, 0.3),
+    'SLIM_BPR_Recommender': hp.hp.uniform('SLIM_BPR_Recommender', 0,1)
 }
 
 
@@ -89,7 +91,10 @@ best = space_eval(search_space, best)
 print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
-RunRecommender.evaluate_on_test_set(Hybrid, {"weights": best}, Kfold=N_KFOLD)
+RunRecommender.evaluate_on_test_set(Hybrid, {"weights": best}, Kfold=N_KFOLD,
+                                    init_params={"recommenders": [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]},
+                                    parallelize_evaluation=False,
+                                    parallel_fit=False)
 
 computer_sleep(verbose=False)
 

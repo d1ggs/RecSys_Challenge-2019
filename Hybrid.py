@@ -15,6 +15,7 @@ from utils.helper import Helper
 # item_cf_parameters = {"topK": 29,
 #                       "shrink": 22}
 
+
 # New best parameters
 item_cf_parameters = {'shrink': 46.0, 'similarity': "jaccard", 'topK': 8}
 
@@ -37,6 +38,17 @@ SLIM_parameters = {'alpha': 0.0023512567548654,
                    'l1_ratio': 0.0004093694334328875,
                    'positive_only': True,
                    'topK': 25}
+
+SLIM_BPR_parameters = {'batch_size': 750,
+                       'beta_1': 0.500092640596499,
+                       'beta_2': 0.5910590963815178,
+                       'gamma': 0.6420501483572681,
+                       'lambda_i': 0.01409907931507057,
+                       'lambda_j': 0.028865691521918,
+                       'learning_rate': 2.7803695798967347e-05,
+                       'topK': 50,
+                       'random_seed': 1234,
+                       'epochs': 30}
 
 # SSLIM_parameters_old = {'alpha': 0.0024081648139725204,
 #                    'l1_ratio': 0.0007553368138338653,
@@ -64,7 +76,8 @@ parameters = {"ItemCollaborativeFilter": item_cf_parameters,
               "ItemCBF": item_cbf_parameters,
               "ItemCF": item_cf_parameters,
               "AlternatingLeastSquare": als_parameters,
-              "ColdUsersHybrid": {}}
+              "ColdUsersHybrid": {},
+              "SLIM_BPR_Recommender": SLIM_BPR_parameters}
 
 
 class Hybrid(object):
@@ -113,7 +126,7 @@ class Hybrid(object):
 
         for recommender in self.recommenders:
             # Deal with some legacy implementations
-            if recommender == "SLIMElasticNetRecommender" or recommender == "SSLIMElasticNetRecommender" or recommender == "RP3betaRecommender":
+            if recommender == "SLIMElasticNetRecommender" or recommender == "SSLIMElasticNetRecommender" or recommender == "RP3betaRecommender" or recommender =="SLIM_BPR_Recommender":
                 score = self.recommenders[recommender]._compute_item_score(user_id).squeeze()
             # Compute regular scores
             else:
