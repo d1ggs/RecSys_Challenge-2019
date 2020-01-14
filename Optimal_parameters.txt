@@ -8,3 +8,4 @@ slim_bpr = {'batch_size': 750, 'beta_1': 0.500092640596499, 'beta_2': 0.59105909
 
 
  
+weights = {'AlternatingLeastSquare': 0.07611985905191196, 'ItemCBF': 0.017561491230314447, 'ItemCollaborativeFilter': 0.0341817493248531, 'RP3betaRecommender': 0.9713719890744753, 'SLIMElasticNetRecommender': 0.9974897962716185, 'SLIM_BPR_Recommender': 0.8633266021278376}
