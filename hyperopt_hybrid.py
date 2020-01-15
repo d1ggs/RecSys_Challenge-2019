@@ -24,7 +24,8 @@ recommender_class = Hybrid
 
 recommenders = [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare]
 
-N_KFOLD = 10
+N_KFOLD = 6
+
 
 kfold = True
 
@@ -79,10 +80,11 @@ MAX_EVALS = 100
 #
 # last_opt = {'SSLIM_weight': 0.8737840927419455, 'item_cbf_weight': 0.037666643326618406, 'item_cf_weight': 0.014294955186782246, 'rp3_weight': 0.9314974601074552, 'user_cbf_weight': 0, 'user_cf_weight': 0}
 #
-opt =
+opt = {'AlternatingLeastSquare': 0.07611985905191196, 'ItemCBF': 0.017561491230314447, 'ItemCollaborativeFilter': 0.0341817493248531, 'RP3betaRecommender': 0.9713719890744753, 'SLIMElasticNetRecommender': 0.9974897962716185, 'SLIM_BPR_Recommender': 0.8633266021278376}
+
 # Optimize
 best = fmin(fn=objective, space=search_space, algo=hp.tpe.suggest,
-            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True)
+            max_evals=MAX_EVALS, trials=bayes_trials, verbose=True, points_to_evaluate=[opt])
 
 best = space_eval(search_space, best)
 
@@ -91,15 +93,12 @@ best = space_eval(search_space, best)
 print("\n############## Best Parameters ##############\n")
 print(best, "\n\nEvaluating on test set now...")
 
-<<<<<<< Updated upstream
 RunRecommender.evaluate_on_test_set(Hybrid, {"weights": best}, Kfold=N_KFOLD,
                                     init_params={"recommenders": [MultiThreadSLIM_ElasticNet, RP3betaRecommender, ItemCBF, AlternatingLeastSquare, SLIM_BPR_Cython]},
                                     parallelize_evaluation=False,
                                     parallel_fit=False)
-=======
-RunRecommender.evaluate_on_test_set(Hybrid, fit_parameters={"weights": best}, init_params={"recommenders": recommenders}, Kfold=N_KFOLD)
->>>>>>> Stashed changes
 
+computer_sleep(verbose=False)
 
 
 ####################################################
